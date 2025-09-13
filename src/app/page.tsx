@@ -35,6 +35,8 @@ export default function Home() {
   const [contactMessage, setContactMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const [prevScrollPos, setPrevScrollPos] = useState(0)
+  const [visible, setVisible] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -53,6 +55,20 @@ export default function Home() {
   const amenitiesRef = useRef<HTMLElement>(null)
   const contactRef = useRef<HTMLElement>(null)
   
+  // Handle scroll events for navbar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.pageYOffset
+      const isVisible = prevScrollPos > currentScrollPos || currentScrollPos < 10
+      
+      setVisible(isVisible)
+      setPrevScrollPos(currentScrollPos)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [prevScrollPos, visible])
+
   // Show/hide scroll to top button
   useEffect(() => {
     const handleScroll = () => {
@@ -228,10 +244,19 @@ export default function Home() {
         </div>
       )}
       {/* Navbar */}
-      <nav className="bg-green-800/95 backdrop-blur supports-[backdrop-filter]:bg-green-900/60 sticky top-0 z-50 w-full border-b border-green-700 shadow-sm">
-        <div className="container flex h-16 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent">Rabaul Hotel</h1>
+      <nav className={`bg-green-800/95 backdrop-blur supports-[backdrop-filter]:bg-green-900/60 sticky top-0 z-50 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
+        visible ? 'translate-y-0' : '-translate-y-full'
+      }`}>
+        <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
+          <div className="flex items-center space-x-3">
+            <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
+              <img 
+                src="/images/logo.png" 
+                alt="Rabaul Hotel Logo" 
+                className="h-12 w-auto hover:opacity-90 transition-opacity"
+              />
+            </button>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent"></h1>
           </div>
           <div className="hidden md:flex items-center space-x-1">
             <Button 
@@ -253,7 +278,7 @@ export default function Home() {
               onClick={() => scrollToSection(bookRef)}
               className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Book
+              Booking
             </Button>
             <Button 
               variant={activeSection === 'amenities' ? 'secondary' : 'ghost'} 
@@ -383,11 +408,21 @@ export default function Home() {
       <section 
         id="home" 
         ref={homeRef}
-        className="relative h-screen flex items-center justify-center bg-gradient-to-r from-green-900 to-green-700 text-white overflow-hidden"
+        className="relative h-screen flex items-center justify-center text-white overflow-hidden"
       >
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/beach.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
         </div>
         <div className="container max-w-7xl px-4 text-center relative z-10">
           <motion.div
@@ -400,7 +435,7 @@ export default function Home() {
               Welcome to <span className="text-yellow-300">Rabaul Hotel</span>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto">
-              Experience luxury and comfort in the heart of the city. Your perfect getaway starts here.
+            Where the Road Ends & The Adventure Begins!
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button 
@@ -1037,79 +1072,104 @@ export default function Home() {
         <div className="container max-w-7xl px-4 mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Amenities</h2>
+            <p className="text-green-700 max-w-3xl mx-auto">Experience comfort and convenience with our range of facilities designed to make your stay memorable.</p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* WiFi */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
-                <Wifi className="h-6 w-6 text-green-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* 23m Swimming Pool */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 11m16 0v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                {/* Replace with actual image: /images/amenities/pool.jpg */}
+                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Free High-Speed WiFi</h3>
-              <p className="text-green-700 text-sm">Stay connected with our complimentary high-speed internet access throughout the property.</p>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">23m Swimming Pool</h3>
+                <p className="text-green-700 text-sm">Relax and unwind in our beautiful 23-meter swimming pool surrounded by tropical gardens.</p>
+              </div>
             </div>
 
-            {/* Restaurant */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center mb-4">
-                <Utensils className="h-6 w-6 text-amber-600" />
+            {/* Phoenix Room Restaurant */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-amber-50 flex items-center justify-center">
+                  <Utensils className="h-16 w-16 text-amber-200" />
+                </div>
+                {/* Replace with actual image: /images/amenities/restaurant.jpg */}
+                <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Restaurant & Bar</h3>
-              <p className="text-green-700 text-sm">Enjoy delicious local and international cuisine at our on-site restaurant and bar.</p>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Phoenix Room Restaurant</h3>
+                <p className="text-green-700 text-sm">Savor a blend of Western, Asian, and Vegetarian cuisine in our renowned restaurant.</p>
+              </div>
             </div>
 
-            {/* Fitness Center */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-4">
-                <Dumbbell className="h-6 w-6 text-red-600" />
+            {/* Conference Facilities */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-purple-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                {/* Replace with actual image: /images/amenities/conference.jpg */}
+                <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Fitness Center</h3>
-              <p className="text-green-700 text-sm">Maintain your workout routine with our fully-equipped fitness center.</p>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Conference Facilities</h3>
+                <p className="text-green-700 text-sm">Host your next event in our air-conditioned conference room with capacity for 150+ guests.</p>
+              </div>
             </div>
 
-            {/* Swimming Pool */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center mb-4">
-                <Waves className="h-6 w-6 text-cyan-600" />
+            {/* 24/7 Reception */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-green-50 flex items-center justify-center">
+                  <ConciergeBell className="h-16 w-16 text-green-200" />
+                </div>
+                {/* Replace with actual image: /images/amenities/reception.jpg */}
+                <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Swimming Pool</h3>
-              <p className="text-green-700 text-sm">Take a refreshing dip in our outdoor swimming pool with sun loungers.</p>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">24/7 Reception</h3>
+                <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you with any needs during your stay.</p>
+              </div>
             </div>
 
-            {/* Free Parking */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
-                <Car className="h-6 w-6 text-green-600" />
+            {/* Free Secure Parking */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
+                  <Car className="h-16 w-16 text-blue-200" />
+                </div>
+                {/* Replace with actual image: /images/amenities/parking.jpg */}
+                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Free Parking</h3>
-              <p className="text-green-700 text-sm">Complimentary parking available for all our guests.</p>
-            </div>
-
-            {/* 24/7 Front Desk */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4">
-                <ConciergeBell className="h-6 w-6 text-purple-600" />
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Free Secure Parking</h3>
+                <p className="text-green-700 text-sm">Park with peace of mind in our secure, on-site parking area available to all guests.</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">24/7 Front Desk</h3>
-              <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you.</p>
             </div>
 
             {/* Room Service */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-yellow-50 rounded-lg flex items-center justify-center mb-4">
-                <Coffee className="h-6 w-6 text-yellow-600" />
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-pink-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-pink-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                {/* Replace with actual image: /images/amenities/room-service.jpg */}
+                <div className="absolute inset-0 bg-pink-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
-              <h3 className="font-semibold text-lg mb-2">24/7 Room Service</h3>
-              <p className="text-green-700 text-sm">Enjoy delicious meals and drinks delivered to your room at any time.</p>
-            </div>
-
-            {/* Air Conditioning */}
-            <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
-                <Snowflake className="h-6 w-6 text-blue-400" />
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Room Service</h3>
+                <p className="text-green-700 text-sm">Enjoy the convenience of in-room dining with our room service menu.</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">Air Conditioning</h3>
-              <p className="text-green-700 text-sm">All rooms are equipped with individual climate control for your comfort.</p>
             </div>
           </div>
         </div>
