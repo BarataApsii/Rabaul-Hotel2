@@ -983,9 +983,9 @@ export default function Home() {
             <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with our concierge team for any inquiries or assistance</p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="space-y-8">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6">Hotel Information</h3>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-4">
@@ -1029,9 +1029,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Location</h3>
-                <p className="text-gray-600 mb-4">Interactive Map</p>
+              <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
+          
+              
                 <div className="rounded-lg overflow-hidden">
                   <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDclMjQuNCJTIDE1MsKwMDclMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
@@ -1047,7 +1047,7 @@ export default function Home() {
                 <p className="text-sm text-gray-500 mt-2 text-center">(Google Maps Integration)</p>
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 h-fit">
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 h-fit w-full">
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Send us a Message</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
