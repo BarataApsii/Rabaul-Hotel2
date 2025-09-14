@@ -261,7 +261,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="relative">
       {/* Toast Notification */}
       {toast && (
         <div 
@@ -281,9 +281,9 @@ export default function Home() {
         </div>
       )}
       {/* Navbar */}
-      <nav className={`bg-[#1a5f2c] sticky top-0 z-50 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
+      <nav className={`bg-[#1a5f2c] sticky top-0 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
         visible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
+      }`} style={{ zIndex: 1000, position: 'relative' }}>
         <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center space-x-3">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
@@ -333,7 +333,7 @@ export default function Home() {
             </Button>
           </div>
           <Button 
-            className="md:hidden" 
+            className="md:hidden p-3 h-14 w-14" 
             variant="ghost" 
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -341,12 +341,12 @@ export default function Home() {
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
                 <line x1="4" x2="20" y1="18" y2="18"></line>
@@ -356,20 +356,20 @@ export default function Home() {
           
           {/* Mobile Menu */}
           <div 
-            className={`fixed inset-0 bg-background/95 backdrop-blur-md z-40 flex flex-col items-center justify-center transition-all duration-300 ease-in-out transform ${
+            className={`fixed inset-0 bg-[#1a5f2c] z-[1001] flex flex-col items-center justify-start pt-20 pb-8 overflow-y-auto transition-all duration-300 ease-in-out transform ${
               mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
             } md:hidden`}
           >
-            <div className="flex flex-col items-center space-y-6 text-xl">
+            <div className="flex flex-col items-center space-y-4 w-full max-w-md px-4 text-lg">
               <button 
                 onClick={() => {
                   scrollToSection(homeRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-center rounded-lg transition-colors ${
+                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
                   activeSection === 'home' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'hover:bg-muted'
+                    ? 'bg-green-600 text-white' 
+                    : 'text-white hover:bg-green-700/50'
                 }`}
               >
                 Home
@@ -379,10 +379,10 @@ export default function Home() {
                   scrollToSection(roomsRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-center rounded-lg transition-colors ${
+                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
                   activeSection === 'rooms' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'hover:bg-muted'
+                    ? 'bg-green-600 text-white' 
+                    : 'text-white hover:bg-green-700/50'
                 }`}
               >
                 Rooms
@@ -392,23 +392,23 @@ export default function Home() {
                   scrollToSection(bookRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-center rounded-lg transition-colors ${
+                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
                   activeSection === 'book' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'hover:bg-muted'
+                    ? 'bg-green-600 text-white' 
+                    : 'text-white hover:bg-green-700/50'
                 }`}
               >
-                Book
+                Booking
               </button>
               <button 
                 onClick={() => {
                   scrollToSection(amenitiesRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-center rounded-lg transition-colors ${
+                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
                   activeSection === 'amenities' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'hover:bg-muted'
+                    ? 'bg-green-600 text-white' 
+                    : 'text-white hover:bg-green-700/50'
                 }`}
               >
                 Amenities
@@ -418,17 +418,17 @@ export default function Home() {
                   scrollToSection(contactRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-center rounded-lg transition-colors ${
+                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
                   activeSection === 'contact' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'hover:bg-muted'
+                    ? 'bg-green-600 text-white' 
+                    : 'text-white hover:bg-green-700/50'
                 }`}
               >
                 Contact
               </button>
             </div>
             <button 
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted"
+              className="fixed top-4 right-4 p-3 rounded-full bg-green-700 hover:bg-green-600 transition-colors z-[1002]"
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close menu"
             >
@@ -446,20 +446,32 @@ export default function Home() {
         id="home" 
         ref={homeRef}
         className="relative h-screen flex items-center justify-center text-white overflow-hidden"
+        style={{ position: 'relative', zIndex: 1 }}
       >
         <div className="absolute inset-0 z-0">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline 
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/videos/beach.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
+          <div className="hidden md:block absolute inset-0">
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+              className="w-full h-full object-cover"
+            >
+              <source src="/videos/beach.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div className="md:hidden absolute inset-0" style={{ zIndex: 1 }}>
+            <Image
+              src="/images/mobile-banner.png"
+              alt="Rabaul Hotel"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute inset-0 bg-black/30" style={{ zIndex: 1 }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" style={{ zIndex: 1 }} />
         </div>
         <div className="container max-w-7xl px-4 text-center relative z-10">
           <motion.div
@@ -485,7 +497,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white text-white hover:bg-blue-600/50 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                className="bg-transparent border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
                 onClick={() => scrollToSection(roomsRef)}
               >
                 View Rooms
@@ -675,14 +687,14 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Booking Form */}
             <div className="lg:col-span-2">
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden text-white">
                 <CardHeader className="bg-[#1a5f2c] text-white py-3">
                   <CardTitle className="text-xl">Reservation Details</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1" key={`check-in-${formKey}`}>
-                      <Label htmlFor="check-in" className="font-medium">Check-in Date</Label>
+                      <Label htmlFor="check-in" className="font-medium text-white">Check-in Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -691,7 +703,7 @@ export default function Home() {
                             className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-800"
                           >
                             <CalendarIcon className="mr-2 h-5 w-5" />
-                            {checkIn ? format(checkIn, "PPP") : <span>Select check-in date</span>}
+                            {checkIn ? format(checkIn, "PPP") : <span className="text-white/70">Select check-in date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -915,25 +927,25 @@ export default function Home() {
             </div>
 
             {/* Booking Summary */}
-            <Card className="flex flex-col h-full">
+            <Card className="flex flex-col h-full border-2 border-white/50 shadow-lg shadow-green-900/20 hover:shadow-xl hover:shadow-green-900/30 transition-all duration-300">
               <div>
                 <CardHeader>
-                  <CardTitle>Booking Summary</CardTitle>
+                  <CardTitle className="text-yellow-400">Booking Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-white">
                   <span>Nights:</span>
-                  <span>{nights} night{nights > 1 ? 's' : ''}</span>
+                  <span className="font-medium">{nights} night{nights > 1 ? 's' : ''}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-white">
                   <span>Room Rate:</span>
-                  <span>K {roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] : 0} / night</span>
+                  <span className="font-medium">K {roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] : 0} / night</span>
                 </div>
-                <div className="flex justify-between border-t pt-2 font-bold">
+                <div className="flex justify-between border-t border-white pt-2 font-bold text-white">
                   <span>Total Cost:</span>
-                  <span>K {totalCost}</span>
+                  <span className="text-white">K {totalCost}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-white/80 mt-2">
                   Total Guests: {totalGuests}
                 </div>
                 <Button 
@@ -984,10 +996,10 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="py-16 bg-white scroll-mt-16"
+        className="pt-10 pb-16 bg-white scroll-mt-16"
       >
         <div className="container max-w-7xl px-4 mx-auto">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with our concierge team for any inquiries or assistance</p>
           </div>
