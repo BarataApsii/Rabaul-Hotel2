@@ -283,7 +283,7 @@ export default function Home() {
       {/* Navbar */}
       <nav className={`bg-[#1a5f2c] sticky top-0 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
         visible ? 'translate-y-0' : '-translate-y-full'
-      }`} style={{ zIndex: 1000, position: 'relative' }}>
+      }`} style={{ zIndex: 1000, position: 'fixed', width: '100%' }}>
         <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center space-x-3">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
@@ -333,20 +333,20 @@ export default function Home() {
             </Button>
           </div>
           <Button 
-            className="md:hidden p-3 h-14 w-14" 
-            variant="ghost" 
+            variant="ghost"
             size="icon"
+            className="md:hidden text-white hover:bg-white/10 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 rounded-full p-3 transition-colors w-14 h-14 flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
                 <line x1="4" x2="20" y1="18" y2="18"></line>
@@ -356,33 +356,18 @@ export default function Home() {
           
           {/* Mobile Menu */}
           <div 
-            className={`fixed inset-0 bg-[#1a5f2c] z-[1001] flex flex-col items-center justify-start pt-20 pb-8 overflow-y-auto transition-all duration-300 ease-in-out transform ${
-              mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            className={`fixed left-0 top-20 z-[1002] flex flex-col justify-start overflow-y-auto transition-all duration-300 ease-in-out transform ${
+              mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             } md:hidden`}
           >
-            <div className="flex flex-col items-center space-y-4 w-full max-w-md px-4 text-lg">
-              <button 
-                onClick={() => {
-                  scrollToSection(homeRef)
-                  setMobileMenuOpen(false)
-                }}
-                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
-                  activeSection === 'home' 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-white hover:bg-green-700/50'
-                }`}
-              >
-                Home
-              </button>
+            <div className="flex flex-col space-y-1 w-64 bg-gray-800/90 backdrop-blur-sm py-4 px-4 text-lg rounded-r-lg">
               <button 
                 onClick={() => {
                   scrollToSection(roomsRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
-                  activeSection === 'rooms' 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-white hover:bg-green-700/50'
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'rooms' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
                 Rooms
@@ -392,10 +377,8 @@ export default function Home() {
                   scrollToSection(bookRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
-                  activeSection === 'book' 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-white hover:bg-green-700/50'
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'book' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
                 Booking
@@ -405,10 +388,8 @@ export default function Home() {
                   scrollToSection(amenitiesRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
-                  activeSection === 'amenities' 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-white hover:bg-green-700/50'
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'amenities' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
                 Amenities
@@ -418,25 +399,23 @@ export default function Home() {
                   scrollToSection(contactRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-8 py-4 w-full text-center rounded-lg transition-colors ${
-                  activeSection === 'contact' 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-white hover:bg-green-700/50'
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'contact' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
                 Contact
               </button>
+              <button 
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
-            <button 
-              className="fixed top-4 right-4 p-3 rounded-full bg-green-700 hover:bg-green-600 transition-colors z-[1002]"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close menu"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
           </div>
         </div>
       </nav>
@@ -446,7 +425,7 @@ export default function Home() {
         id="home" 
         ref={homeRef}
         className="relative h-screen flex items-center justify-center text-white overflow-hidden"
-        style={{ position: 'relative', zIndex: 1 }}
+        style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
       >
         <div className="absolute inset-0 z-0">
           <div className="hidden md:block absolute inset-0">
@@ -478,15 +457,15 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto"
+            className="max-w-3xl mx-auto px-2"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-2 sm:mb-4 md:mb-6 leading-tight">
               Welcome to <span className="text-yellow-300">Rabaul Hotel</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto">
-            Where the Road Ends & The Adventure Begins!
+            <p className="text-base sm:text-xl md:text-2xl mb-4 sm:mb-8 md:mb-12 max-w-2xl mx-auto">
+              Where the Road Ends & The Adventure Begins!
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <Button 
                 size="lg" 
                 className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
