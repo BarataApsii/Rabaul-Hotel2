@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect, ChangeEvent } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,20 +14,15 @@ import { format } from 'date-fns'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, Tv, Snowflake, ArrowUp } from 'lucide-react'
 
 export default function Home() {
-  // Initialize dates in useEffect to avoid hydration mismatch
+  // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
-  
-  // Set initial dates on client side only
-  useEffect(() => {
-    setCheckIn(new Date())
-    setCheckOut(new Date(Date.now() + 86400000))
-  }, [])
-  const [roomType, setRoomType] = useState('standard')
+  const [roomType, setRoomType] = useState<string | undefined>(undefined)
   const [adults, setAdults] = useState(2)
   const [children, setChildren] = useState(0)
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
+  const [countryCode, setCountryCode] = useState('+675')
   const [email, setEmail] = useState('')
   const [country, setCountry] = useState('')
   const [specialRequest, setSpecialRequest] = useState('')
@@ -41,7 +37,36 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  
+  const [bookingDetails, setBookingDetails] = useState(null)
+  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
+  const [formKey, setFormKey] = useState(0) // Key to force remount of form components
+
+  // Reset all form data and booking summary when component mounts
+  useEffect(() => {
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    // Set all form fields in a single batch
+    setCheckIn(today)
+    setCheckOut(tomorrow)
+    setRoomType(undefined)
+    setAdults(1)
+    setChildren(0)
+    setFullName('')
+    setPhone('')
+    setEmail('')
+    setCountry('')
+    setSpecialRequest('')
+    setContactName('')
+    setContactEmail('')
+    setContactMessage('')
+    setErrors({})
+    setBookingDetails(null)
+    setIsBookingConfirmed(false)
+    setFormKey(prev => prev + 1)
+  }, [])
+
   // Show toast message
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type })
@@ -104,7 +129,7 @@ export default function Home() {
       { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
     )
     
-    const sections = [homeRef.current, roomsRef.current, bookRef.current, contactRef.current].filter(Boolean)
+    const sections = [homeRef.current, roomsRef.current, bookRef.current, amenitiesRef.current, contactRef.current].filter(Boolean)
     sections.forEach((section) => {
       if (section) observer.observe(section)
     })
@@ -122,17 +147,18 @@ export default function Home() {
   }
 
   const roomRates = {
-    budget: 100,
-    standard: 150,
-    executive: 200,
-    conference: 500 // per day for conference area
+    'select': 0, // Default selection
+    budget: 150,
+    standard: 200,
+    executive: 300,
+    conference: 450 // per day for conference area
   }
 
   // Calculate number of nights - handle undefined dates during SSR
   const nights = checkIn && checkOut 
     ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
     : 1
-  const totalCost = roomRates[roomType as keyof typeof roomRates] * nights
+  const totalCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
   const totalGuests = adults + children
 
   const validateBookingForm = () => {
@@ -166,13 +192,24 @@ export default function Home() {
       // Show success toast
       showToast('Reservation confirmed! We have sent a confirmation to your email.', 'success')
       
-      // Reset form
+      // Reset form and booking summary with default dates
+      const today = new Date()
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      
+      setCheckIn(today)
+      setCheckOut(tomorrow)
+      setRoomType(undefined) // Reset to show 'Select Room' by default
+      setAdults(1)
+      setChildren(0)
       setFullName('')
-      setEmail('')
       setPhone('')
+      setEmail('')
       setCountry('')
       setSpecialRequest('')
       setErrors({})
+      setBookingDetails(null)
+      setIsBookingConfirmed(false)
       
     } catch (error) {
       console.error('Booking failed:', error)
@@ -244,7 +281,7 @@ export default function Home() {
         </div>
       )}
       {/* Navbar */}
-      <nav className={`bg-green-800/95 backdrop-blur supports-[backdrop-filter]:bg-green-900/60 sticky top-0 z-50 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
+      <nav className={`bg-[#1a5f2c] sticky top-0 z-50 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
         visible ? 'translate-y-0' : '-translate-y-full'
       }`}>
         <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
@@ -260,37 +297,37 @@ export default function Home() {
           </div>
           <div className="hidden md:flex items-center space-x-1">
             <Button 
-              variant={activeSection === 'home' ? 'secondary' : 'ghost'} 
+              variant="ghost"
               onClick={() => scrollToSection(homeRef)}
-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Home
             </Button>
             <Button 
-              variant={activeSection === 'rooms' ? 'secondary' : 'ghost'} 
+              variant="ghost"
               onClick={() => scrollToSection(roomsRef)}
-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Rooms
             </Button>
             <Button 
-              variant={activeSection === 'book' ? 'secondary' : 'ghost'} 
+              variant="ghost"
               onClick={() => scrollToSection(bookRef)}
-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Booking
             </Button>
             <Button 
-              variant={activeSection === 'amenities' ? 'secondary' : 'ghost'} 
+              variant="ghost"
               onClick={() => scrollToSection(amenitiesRef)}
-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Amenities
             </Button>
             <Button 
-              variant={activeSection === 'contact' ? 'secondary' : 'ghost'} 
+              variant="ghost"
               onClick={() => scrollToSection(contactRef)}
-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Contact
             </Button>
@@ -421,8 +458,8 @@ export default function Home() {
             <source src="/videos/beach.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
         </div>
         <div className="container max-w-7xl px-4 text-center relative z-10">
           <motion.div
@@ -440,7 +477,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-green-800 hover:bg-green-50 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 onClick={() => scrollToSection(bookRef)}
               >
                 Book Now
@@ -448,7 +485,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white text-white hover:bg-green-800/50 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                className="border-white text-white hover:bg-blue-600/50 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
                 onClick={() => scrollToSection(roomsRef)}
               >
                 View Rooms
@@ -459,227 +496,166 @@ export default function Home() {
       </section>
 
       {/* Our Rooms Section */}
-      <section 
-        id="rooms" 
-        ref={roomsRef}
-        className="py-20 bg-muted/50 scroll-mt-16"
-      >
-        <div className="container max-w-7xl px-4">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-4xl font-bold mb-4">Our Rooms & Suites</h2>
-            <p className="text-muted-foreground">Experience comfort and luxury in our carefully designed rooms, each offering a perfect blend of style and functionality.</p>
+      <section id="rooms" ref={roomsRef} className="py-16 bg-gray-50 scroll-mt-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Our Rooms & Suites</h2>
+            <div className="w-20 h-1 bg-[#1a5f2c] mx-auto mb-6"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">Experience comfort and luxury in our carefully designed rooms, each offering a perfect blend of style and functionality.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              whileHover={{ y: -10, transition: { duration: 0.2 } }}
-              className="h-full"
-            >
-              <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src="https://source.unsplash.com/random/600x400?hotel-room-budget" 
-                    alt="Budget Room" 
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Budget Room */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-64 overflow-hidden group">
+                <Image 
+                  src="/images/rooms/budget-room.PNG" 
+                  alt="Budget Room"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-2xl font-bold mb-2">Budget Room</h3>
+                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K200</span> per night</p>
+                  </div>
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-start">
-                    <span>Budget Room</span>
-                    <span className="text-lg font-semibold text-blue-600">$100</span>
-                  </CardTitle>
-                  <CardDescription>Cozy and affordable stay with all essential amenities</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Queen Size Bed
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Free WiFi
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Air Conditioning
-                    </li>
-                  </ul>
+                <div className="absolute top-4 right-4 bg-[#1a5f2c] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  Best Value
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <span className="flex items-center mr-4">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    24/7 Check-in
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                    Free WiFi
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">Budget Room</h4>
+                    <p className="text-gray-500 text-sm">Max guests: 2</p>
+                  </div>
                   <Button 
-                    className="mt-auto w-full hover:bg-blue-700 transition-colors"
                     onClick={() => {
-                      setRoomType('budget')
-                      scrollToSection(bookRef)
+                      setRoomType('budget');
+                      scrollToSection(bookRef);
                     }}
+                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
                   >
                     Book Now
                   </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-            <motion.div
-              whileHover={{ y: -10, transition: { duration: 0.2 } }}
-              className="h-full"
-            >
-              <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src="https://source.unsplash.com/random/600x400?hotel-room-standard" 
-                    alt="Standard Room" 
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-start">
-                    <span>Standard Room</span>
-                    <span className="text-lg font-semibold text-blue-600">$150</span>
-                  </CardTitle>
-                  <CardDescription>Comfortable with modern amenities and city view</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      King Size Bed
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Premium WiFi
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Work Desk
-                    </li>
-                  </ul>
-                  <Button 
-                    className="mt-auto w-full hover:bg-blue-700 transition-colors"
-                    onClick={() => {
-                      setRoomType('standard')
-                      scrollToSection(bookRef)
-                    }}
-                  >
-                    Book Now
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+              </div>
+            </div>
 
-            <motion.div
-              whileHover={{ y: -10, transition: { duration: 0.2 } }}
-              className="h-full"
-            >
-              <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src="https://source.unsplash.com/random/600x400?hotel-room-deluxe" 
-                    alt="Executive Room" 
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
+            {/* Standard Room */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-64 overflow-hidden group">
+                <Image 
+                  src="/images/rooms/standard-room.PNG" 
+                  alt="Standard Room"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-2xl font-bold mb-2">Standard Room</h3>
+                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K300</span> per night</p>
+                  </div>
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-start">
-                    <span>Executive Room</span>
-                    <span className="text-lg font-semibold text-blue-600">$200</span>
-                  </CardTitle>
-                  <CardDescription>Luxury with premium features and panoramic views</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      King Size Bed
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Executive Lounge Access
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Premium Amenities
-                    </li>
-                  </ul>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <span className="flex items-center mr-4">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    24/7 Check-in
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                    Free WiFi
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">Standard Room</h4>
+                    <p className="text-gray-500 text-sm">Max guests: 2</p>
+                  </div>
                   <Button 
-                    className="mt-auto w-full hover:bg-blue-700 transition-colors"
                     onClick={() => {
-                      setRoomType('executive')
-                      scrollToSection(bookRef)
+                      setRoomType('standard');
+                      scrollToSection(bookRef);
                     }}
+                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
                   >
                     Book Now
                   </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -10, transition: { duration: 0.2 } }}
-              className="h-full"
-            >
-              <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src="https://source.unsplash.com/random/600x400?conference-room" 
-                    alt="Conference Area" 
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-start">
-                    <span>Conference Area</span>
-                    <span className="text-lg font-semibold text-blue-600">$500</span>
-                  </CardTitle>
-                  <CardDescription>Spacious area for meetings and special events</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Up to 50 people
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      AV Equipment Included
-                    </li>
-                    <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Catering Available
-                    </li>
-                  </ul>
+              </div>
+            </div>
+
+            {/* Executive Room */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-64 overflow-hidden group">
+                <Image 
+                  src="/images/rooms/executive-room.PNG" 
+                  alt="Executive Room"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-2xl font-bold mb-2">Executive Room</h3>
+                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K450</span> per night</p>
+                  </div>
+                </div>
+                <div className="absolute top-4 right-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  Popular
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <span className="flex items-center mr-4">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    24/7 Check-in
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                    Free WiFi
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">Executive Room</h4>
+                    <p className="text-gray-500 text-sm">Max guests: 3</p>
+                  </div>
                   <Button 
-                    className="mt-auto w-full hover:bg-blue-700 transition-colors"
                     onClick={() => {
-                      setRoomType('conference')
-                      scrollToSection(bookRef)
+                      setRoomType('executive');
+                      scrollToSection(bookRef);
                     }}
+                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
                   >
-                    Inquire Now
+                    Book Now
                   </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -688,31 +664,31 @@ export default function Home() {
       <section 
         id="book" 
         ref={bookRef}
-        className="py-12 md:py-20 scroll-mt-16"
+        className="py-8 md:py-12 scroll-mt-16 relative bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/booking-background.PNG')" }}
       >
-        <div className="container max-w-7xl px-4">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Book Your Stay</h2>
-            <p className="text-muted-foreground">Fill in your details below to secure your reservation at Rabaul Hotel</p>
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="container max-w-7xl px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-12 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Book Your Stay</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Booking Form */}
             <div className="lg:col-span-2">
               <Card className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                  <CardTitle className="text-2xl">Reservation Details</CardTitle>
-                  <CardDescription className="text-blue-100">Fill in your information to complete your booking</CardDescription>
+                <CardHeader className="bg-[#1a5f2c] text-white py-3">
+                  <CardTitle className="text-xl">Reservation Details</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
+                <CardContent className="p-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1" key={`check-in-${formKey}`}>
                       <Label htmlFor="check-in" className="font-medium">Check-in Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             id="check-in"
                             variant="outline"
-                            className="w-full justify-start text-left font-normal h-12 px-4"
+                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-800"
                           >
                             <CalendarIcon className="mr-2 h-5 w-5" />
                             {checkIn ? format(checkIn, "PPP") : <span>Select check-in date</span>}
@@ -726,19 +702,20 @@ export default function Home() {
                             initialFocus
                             disabled={(date) => date < new Date()}
                             className="rounded-md border"
+                            key={`calendar-in-${formKey}`}
                           />
                         </PopoverContent>
                       </Popover>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1" key={`check-out-${formKey}`}>
                       <Label htmlFor="check-out" className="font-medium">Check-out Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             id="check-out"
                             variant="outline"
-                            className="w-full justify-start text-left font-normal h-12 px-4"
+                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-800"
                           >
                             <CalendarIcon className="mr-2 h-5 w-5" />
                             {checkOut ? format(checkOut, "PPP") : <span>Select check-out date</span>}
@@ -746,6 +723,7 @@ export default function Home() {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
+                            key={`calendar-out-${formKey}`}
                             mode="single"
                             selected={checkOut}
                             onSelect={setCheckOut}
@@ -759,31 +737,32 @@ export default function Home() {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="room-type" className="font-medium">Room Type</Label>
-                      <Select value={roomType} onValueChange={setRoomType}>
-                        <SelectTrigger id="room-type" className="h-12">
+                    <div className="space-y-1">
+                      <Label htmlFor="room-type" className="text-sm font-medium text-gray-600">Room Type</Label>
+                      <Select value={roomType || 'select'} onValueChange={value => setRoomType(value === 'select' ? undefined : value)}>
+                        <SelectTrigger id="room-type" className="h-10 text-sm">
                           <SelectValue placeholder="Select room type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="budget">Budget Room ($100/night)</SelectItem>
-                          <SelectItem value="standard">Standard Room ($150/night)</SelectItem>
-                          <SelectItem value="executive">Executive Room ($200/night)</SelectItem>
-                          <SelectItem value="conference">Conference Area ($500/day)</SelectItem>
+                          <SelectItem value="select">Select Room</SelectItem>
+                          <SelectItem value="budget">Budget Room</SelectItem>
+                          <SelectItem value="standard">Standard Room</SelectItem>
+                          <SelectItem value="executive">Executive Room</SelectItem>
+                          <SelectItem value="conference">Conference Room</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label className="font-medium">Guests</Label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="adults" className="text-sm font-normal text-muted-foreground">Adults</Label>
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium text-gray-600">Guests</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="adults" className="text-xs font-medium text-gray-600">Adults</Label>
                           <Select 
                             value={adults.toString()} 
                             onValueChange={(value) => setAdults(parseInt(value))}
                           >
-                            <SelectTrigger id="adults" className="h-12">
+                            <SelectTrigger id="adults" className="h-9 text-sm">
                               <SelectValue placeholder="Adults" />
                             </SelectTrigger>
                             <SelectContent>
@@ -795,13 +774,13 @@ export default function Home() {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div>
-                          <Label htmlFor="children" className="text-sm font-normal text-muted-foreground">Children</Label>
+                        <div className="space-y-1">
+                          <Label htmlFor="children" className="text-xs font-medium text-gray-600">Children</Label>
                           <Select 
                             value={children.toString()} 
                             onValueChange={(value) => setChildren(parseInt(value))}
                           >
-                            <SelectTrigger id="children" className="h-12">
+                            <SelectTrigger id="children" className="h-9 text-sm">
                               <SelectValue placeholder="Children" />
                             </SelectTrigger>
                             <SelectContent>
@@ -816,62 +795,118 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Personal Information Fields */}
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullname">Full Name *</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
                       <Input 
-                        id="fullname" 
-                        value={fullName} 
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
-                        className={errors.fullName ? 'border-red-500' : ''}
+                        id="fullName"
+                        type="text"
+                        placeholder="John Doe"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="h-9 text-sm"
                       />
                       {errors.fullName && (
-                        <p className="text-sm text-red-500 mt-1">{errors.fullName}</p>
+                        <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
                       )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="phone">Phone *</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="your@email.com" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="h-9 text-sm"
+                      />
+                      {errors.email && (
+                        <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="phone" className="text-sm font-medium text-gray-600">Phone</Label>
+                      <div className="flex">
+                        <Select 
+                          value={countryCode}
+                          onValueChange={setCountryCode}
+                        >
+                          <SelectTrigger className="w-[120px] h-9 text-sm rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0">
+                            <SelectValue placeholder="Code" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[400px] overflow-y-auto">
+                            {/* Americas */}
+                            <SelectItem value="+1">🇺🇸 +1 (US/CA)</SelectItem>
+                            <SelectItem value="+52">🇲🇽 +52 (MX)</SelectItem>
+                            <SelectItem value="+55">🇧🇷 +55 (BR)</SelectItem>
+                            <SelectItem value="+54">🇦🇷 +54 (AR)</SelectItem>
+                            <SelectItem value="+51">🇵🇪 +51 (PE)</SelectItem>
+                            <SelectItem value="+56">🇨🇱 +56 (CL)</SelectItem>
+                            <SelectItem value="+57">🇨🇴 +57 (CO)</SelectItem>
+                            
+                            {/* Europe */}
+                            <SelectItem value="+44">🇬🇧 +44 (UK)</SelectItem>
+                            <SelectItem value="+33">🇫🇷 +33 (FR)</SelectItem>
+                            <SelectItem value="+49">🇩🇪 +49 (DE)</SelectItem>
+                            <SelectItem value="+39">🇮🇹 +39 (IT)</SelectItem>
+                            <SelectItem value="+34">🇪🇸 +34 (ES)</SelectItem>
+                            <SelectItem value="+7">🇷🇺 +7 (RU)</SelectItem>
+                            <SelectItem value="+31">🇳🇱 +31 (NL)</SelectItem>
+                            <SelectItem value="+41">🇨🇭 +41 (CH)</SelectItem>
+                            <SelectItem value="+46">🇸🇪 +46 (SE)</SelectItem>
+                            
+                            {/* Asia Pacific */}
+                            <SelectItem value="+61">🇦🇺 +61 (AU)</SelectItem>
+                            <SelectItem value="+64">🇳🇿 +64 (NZ)</SelectItem>
+                            <SelectItem value="+675">🇵🇬 +675 (PNG)</SelectItem>
+                            <SelectItem value="+62">🇮🇩 +62 (ID)</SelectItem>
+                            <SelectItem value="+60">🇲🇾 +60 (MY)</SelectItem>
+                            <SelectItem value="+63">🇵🇭 +63 (PH)</SelectItem>
+                            <SelectItem value="+65">🇸🇬 +65 (SG)</SelectItem>
+                            <SelectItem value="+66">🇹🇭 +66 (TH)</SelectItem>
+                            <SelectItem value="+81">🇯🇵 +81 (JP)</SelectItem>
+                            <SelectItem value="+82">🇰🇷 +82 (KR)</SelectItem>
+                            <SelectItem value="+84">🇻🇳 +84 (VN)</SelectItem>
+                            <SelectItem value="+86">🇨🇳 +86 (CN)</SelectItem>
+                            <SelectItem value="+91">🇮🇳 +91 (IN)</SelectItem>
+                            <SelectItem value="+92">🇵🇰 +92 (PK)</SelectItem>
+                            <SelectItem value="+94">🇱🇰 +94 (LK)</SelectItem>
+                            <SelectItem value="+95">🇲🇲 +95 (MM)</SelectItem>
+                            <SelectItem value="+98">🇮🇷 +98 (IR)</SelectItem>
+                            
+                            {/* Middle East & Africa */}
+                            <SelectItem value="+20">🇪🇬 +20 (EG)</SelectItem>
+                            <SelectItem value="+27">🇿🇦 +27 (ZA)</SelectItem>
+                            <SelectItem value="+30">🇬🇷 +30 (GR)</SelectItem>
+                            <SelectItem value="+90">🇹🇷 +90 (TR)</SelectItem>
+                            <SelectItem value="+966">🇸🇦 +966 (SA)</SelectItem>
+                            <SelectItem value="+971">🇦🇪 +971 (AE)</SelectItem>
+                            <SelectItem value="+972">🇮🇱 +972 (IL)</SelectItem>
+                            <SelectItem value="+234">🇳🇬 +234 (NG)</SelectItem>
+                            <SelectItem value="+254">🇰🇪 +254 (KE)</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <Input 
                           id="phone" 
-                          value={phone} 
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
-                          className={errors.phone ? 'border-red-500' : ''}
+                          type="tel" 
+                          placeholder="1234567" 
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="h-9 text-sm rounded-l-none flex-1"
                         />
-                        {errors.phone && (
-                          <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
-                        )}
                       </div>
-                      <div>
-                        <Label htmlFor="email">Email *</Label>
-                        <Input 
-                          id="email" 
-                          type="email" 
-                          value={email} 
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                          className={errors.email ? 'border-red-500' : ''}
-                        />
-                        {errors.email && (
-                          <p className="text-sm text-red-500 mt-1">{errors.email}</p>
-                        )}
-                      </div>
+                      {errors.phone && (
+                        <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
+                      )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="country">Country</Label>
-                        <Input id="country" value={country} onChange={(e: ChangeEvent<HTMLInputElement>) => setCountry(e.target.value)} />
-                      </div>
-                      <div />
-                    </div>
-                    <div>
-                      <Label htmlFor="special">Special Request</Label>
+                    <div className="space-y-1 col-span-2">
+                      <Label htmlFor="special-requests" className="text-sm font-medium text-gray-600">Special Requests</Label>
                       <Textarea
-                        id="special"
+                        id="special-requests"
+                        placeholder="Any special requirements?"
                         value={specialRequest}
-                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setSpecialRequest(e.target.value)}
-                        placeholder="Any special requests?"
+                        onChange={(e) => setSpecialRequest(e.target.value)}
+                        className="min-h-[80px] text-sm"
                       />
                     </div>
                   </div>
@@ -880,42 +915,66 @@ export default function Home() {
             </div>
 
             {/* Booking Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Booking Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <Card className="flex flex-col h-full">
+              <div>
+                <CardHeader>
+                  <CardTitle>Booking Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
                 <div className="flex justify-between">
                   <span>Nights:</span>
                   <span>{nights} night{nights > 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Room Rate:</span>
-                  <span>${roomRates[roomType as keyof typeof roomRates]} / night</span>
+                  <span>K {roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] : 0} / night</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 font-bold">
                   <span>Total Cost:</span>
-                  <span>${totalCost}</span>
+                  <span>K {totalCost}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Guests: {totalGuests}
                 </div>
                 <Button 
                   onClick={handleBookingConfirm} 
-                  className="w-full mt-4"
+                  className="w-full mt-4 py-4 text-base font-semibold bg-[#1a5f2c] hover:bg-[#2a7d3c] text-white shadow-lg transform transition-all duration-200"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Processing...
+                      Processing Your Booking...
                     </>
-                  ) : 'Confirm Reservation'}
+                  ) : (
+                    <span className="flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Confirm Your Stay
+                    </span>
+                  )}
                 </Button>
               </CardContent>
+              </div>
+              <div className="mt-auto p-4 border-t border-gray-200">
+                <div className="flex justify-center">
+                  <img 
+                    src="/images/logo.png" 
+                    alt="Rabaul Hotel" 
+                    className="h-12 w-auto"
+                    style={{
+                      imageRendering: 'crisp-edges',
+                      WebkitBackfaceVisibility: 'hidden',
+                      WebkitTransform: 'translateZ(0)',
+                      transform: 'translateZ(0)'
+                    }}
+                  />
+                </div>
+              </div>
             </Card>
           </div>
         </div>
@@ -925,143 +984,139 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="py-12 md:py-20 bg-muted/50 scroll-mt-16"
+        className="py-16 bg-white scroll-mt-16"
       >
-        <div className="container max-w-7xl px-4">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h2>
-            <p className="text-muted-foreground">Have questions or special requests? We&apos;re here to help!</p>
+        <div className="container max-w-7xl px-4 mx-auto">
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with our concierge team for any inquiries or assistance</p>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-8">
-              <Card className="overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                  <CardTitle className="text-2xl">Get in Touch</CardTitle>
-                  <CardDescription className="text-blue-100">Our friendly staff is ready to assist you</CardDescription>
-                </CardHeader>
-                <CardContent className="p-6 space-y-6">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Hotel Information</h3>
+                <div className="space-y-4">
                   <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-full flex-shrink-0">
-                      <MapPin className="h-5 w-5 text-primary" />
+                    <div className="mt-0.5">
+                      <MapPin className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">Address</h4>
-                      <p className="text-muted-foreground">123 Hotel Street, Rabaul, Papua New Guinea</p>
+                      <h4 className="font-medium text-gray-900">Address</h4>
+                      <p className="text-gray-600">8th Street, Rabaul</p>
+                      <p className="text-gray-600">East New Britain, Papua New Guinea</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-full flex-shrink-0">
-                      <Phone className="h-5 w-5 text-primary" />
+                    <div className="mt-0.5">
+                      <Phone className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">Phone</h4>
-                      <p className="text-muted-foreground">+675 123 4567</p>
-                      <p className="text-sm text-muted-foreground mt-1">Available 24/7</p>
+                      <h4 className="font-medium text-gray-900">Phone</h4>
+                      <p className="text-gray-600">+675 7653 4563</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-full flex-shrink-0">
-                      <Mail className="h-5 w-5 text-primary" />
+                    <div className="mt-0.5">
+                      <Mail className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">Email</h4>
+                      <h4 className="font-medium text-gray-900">Email</h4>
                       <a href="mailto:info@rabaulhotel.com" className="text-blue-600 hover:underline">
                         info@rabaulhotel.com
                       </a>
-                      <p className="text-sm text-muted-foreground mt-1">We typically respond within 24 hours</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-full flex-shrink-0">
-                      <Clock className="h-5 w-5 text-primary" />
+                    <div className="mt-0.5">
+                      <Clock className="h-5 w-5 text-gray-500" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">Reception Hours</h4>
-                      <p className="text-muted-foreground">24/7</p>
-                      <p className="text-sm text-muted-foreground mt-1">Our front desk is always open to assist you</p>
+                      <h4 className="font-medium text-gray-900">Reception Hours</h4>
+                      <p className="text-gray-600">24/7 Front Desk Service</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              <div className="overflow-hidden rounded-lg">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDcnMjQuNCJTIDE1MsKwMDcnMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
-                  width="100%" 
-                  height="300" 
-                  style={{ border: 0 }} 
-                  allowFullScreen 
-                  loading="lazy"
-                  className="rounded-lg shadow-md w-full h-64 md:h-full min-h-[300px]"
-                  aria-label="Our location on map"
-                ></iframe>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Location</h3>
+                <p className="text-gray-600 mb-4">Interactive Map</p>
+                <div className="rounded-lg overflow-hidden">
+                  <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDclMjQuNCJTIDE1MsKwMDclMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
+                    width="100%" 
+                    height="200" 
+                    style={{ border: 0 }} 
+                    allowFullScreen 
+                    loading="lazy"
+                    className="rounded-lg w-full"
+                    aria-label="Our location on map"
+                  ></iframe>
+                </div>
+                <p className="text-sm text-gray-500 mt-2 text-center">(Google Maps Integration)</p>
               </div>
             </div>
-            <div className="space-y-6 lg:col-span-1">
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                  <CardTitle className="text-2xl">Send Us a Message</CardTitle>
-                  <CardDescription className="text-blue-100"> We'd love to hear from you. Fill out the form below.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 h-fit">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Send us a Message</h3>
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="contactName">Full Name *</Label>
+                    <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
                     <Input
-                      id="contactName"
-                      value={contactName}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setContactName(e.target.value)}
-                      className={errors.contactName ? 'border-red-500' : ''}
-                      placeholder="Enter your full name"
+                      id="firstName"
+                      type="text"
+                      className="w-full"
+                      placeholder="Enter your first name"
                     />
-                    {errors.contactName && (
-                      <p className="text-sm text-red-500 mt-1">{errors.contactName}</p>
-                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contactEmail">Email *</Label>
+                    <Label htmlFor="lastName" className="text-gray-700">Last Name</Label>
                     <Input
-                      id="contactEmail"
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setContactEmail(e.target.value)}
-                      className={errors.contactEmail ? 'border-red-500' : ''}
-                      placeholder="Enter your email"
+                      id="lastName"
+                      type="text"
+                      className="w-full"
+                      placeholder="Enter your last name"
                     />
-                    {errors.contactEmail && (
-                      <p className="text-sm text-red-500 mt-1">{errors.contactEmail}</p>
-                    )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contactMessage">Message *</Label>
-                    <Textarea
-                      id="contactMessage"
-                      value={contactMessage}
-                      onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setContactMessage(e.target.value)}
-                      className={errors.contactMessage ? 'border-red-500' : ''}
-                      placeholder="Tell us how we can help you..."
-                      rows={5}
-                    />
-                    {errors.contactMessage && (
-                      <p className="text-sm text-red-500 mt-1">{errors.contactMessage}</p>
-                    )}
-                  </div>
-                  <Button
-                    onClick={handleContactSubmit}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-gray-700">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
                     className="w-full"
-                    disabled={isLoading}
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subject" className="text-gray-700">Subject</Label>
+                  <select
+                    id="subject"
+                    className="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Sending...
-                      </>
-                    ) : 'Send Message'}
-                  </Button>
-                </CardContent>
-              </Card>
+                    <option value="" className="text-gray-700">Select a subject</option>
+                    <option value="reservation" className="text-gray-900 hover:bg-gray-100">Reservation Inquiry</option>
+                    <option value="services" className="text-gray-900 hover:bg-gray-100">Services & Amenities</option>
+                    <option value="events" className="text-gray-900 hover:bg-gray-100">Events & Meetings</option>
+                    <option value="feedback" className="text-gray-900 hover:bg-gray-100">Feedback</option>
+                    <option value="other" className="text-gray-900 hover:bg-gray-100">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-gray-700">Message</Label>
+                  <Textarea
+                    id="message"
+                    className="w-full min-h-[120px]"
+                    placeholder="Type your message here..."
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
+                >
+                  Send Message
+                </Button>
+              </form>
             </div>
           </div>
         </div>
@@ -1176,7 +1231,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-green-900 text-white py-12">
+      <footer className="bg-[#1a5f2c] text-white py-12">
         <div className="container max-w-7xl px-4 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             {/* About */}
@@ -1214,11 +1269,11 @@ export default function Home() {
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <MapPin className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                  <span className="text-green-300">123 Rabaul Street, City Center, Papua New Guinea</span>
+                  <span className="text-green-300">8th street Rabaul WNB Papua New Guinea</span>
                 </li>
                 <li className="flex items-center">
                   <Phone className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
-                  <a href="tel:+61212345678" className="text-green-300 hover:text-white transition-colors">+61 2 1234 5678</a>
+                  <a href="tel:+67576534563" className="text-green-300 hover:text-white transition-colors">+675 7653 4563</a>
                 </li>
                 <li className="flex items-center">
                   <Mail className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
@@ -1227,26 +1282,23 @@ export default function Home() {
               </ul>
             </div>
 
-            {/* Newsletter */}
+            {/* Services */}
             <div>
-              <h4 className="text-lg font-semibold mb-4">Newsletter</h4>
-              <p className="text-green-300 mb-4">Subscribe to our newsletter for special offers and updates.</p>
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your email address" 
-                  className="px-4 py-2 text-green-900 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                />
-                <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-r-md font-medium transition-colors">
-                  Subscribe
-                </button>
-              </div>
+              <h4 className="text-lg font-semibold mb-4">Our Services</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">24/7 Room Service</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Airport Transfer</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Laundry Service</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Tour Arrangements</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Car Rental</a></li>
+              </ul>
             </div>
+
           </div>
 
-          <div className="border-t border-green-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-green-300 text-sm mb-4 md:mb-0">&copy; {new Date().getFullYear()} Rabaul Hotel. All rights reserved.</p>
-            <div className="flex space-x-6">
+          <div className="border-t border-green-800 pt-8">
+            <div className="flex flex-wrap justify-center items-center gap-6">
+              <span className="text-green-300 text-sm">&copy; {new Date().getFullYear()} Rabaul Hotel. All rights reserved.</span>
               <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Privacy Policy</a>
               <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Terms of Service</a>
               <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Sitemap</a>
@@ -1258,7 +1310,7 @@ export default function Home() {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 p-3 rounded-full bg-green-700 text-white shadow-lg hover:bg-green-800 transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        className={`fixed bottom-6 right-6 p-3 rounded-full bg-[#1a5f2c] text-white shadow-lg hover:bg-[#144a22] transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         aria-label="Scroll to top"
       >
         <ArrowUp className="h-6 w-6" />
