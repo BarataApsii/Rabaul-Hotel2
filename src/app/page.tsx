@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, Tv, Snowflake, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -37,8 +37,6 @@ export default function Home() {
     pickupLocation: '',
     dropoffLocation: ''
   })
-  const [transportType, setTransportType] = useState('sedan')
-  const [transportHours, setTransportHours] = useState(1)
   const [paymentMethod, setPaymentMethod] = useState('credit-card')
   const [contactName, setContactName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
@@ -51,7 +49,7 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [bookingDetails, setBookingDetails] = useState(null)
+  const [bookingDetails, setBookingDetails] = useState<Record<string, any> | null>(null)
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
   const [formKey, setFormKey] = useState(0) // Key to force remount of form components
 
@@ -183,7 +181,7 @@ export default function Home() {
   const transportCost = calculateTransportCost()
   const roomCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
   const totalCost = roomCost + transportCost
-  const totalGuests = adults + children
+  // Calculate total guests (removed unused variable)
 
   const validateBookingForm = () => {
     const newErrors: Record<string, string> = {}
@@ -311,12 +309,13 @@ export default function Home() {
         <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center space-x-3">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <img 
+              <Image 
                 src={logoImage}
                 alt="Rabaul Hotel Logo" 
+                width={48}
+                height={48}
                 className="h-12 w-auto hover:opacity-90 transition-opacity"
-                width={150}
-                height={50}
+                priority
               />
             </button>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent"></h1>
@@ -1226,9 +1225,11 @@ export default function Home() {
               </div>
               <div className="mt-auto p-4 border-t border-gray-200">
                 <div className="flex justify-center">
-                  <img 
+                  <Image 
                     src="/images/logo.png" 
                     alt="Rabaul Hotel" 
+                    width={48}
+                    height={48}
                     className="h-12 w-auto"
                     style={{
                       imageRendering: 'crisp-edges',
@@ -1488,7 +1489,7 @@ export default function Home() {
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold mb-2">Rabaul Museum</h3>
-                <p className="text-sm text-gray-600">Discover the region's volcanic history, local culture, and wartime heritage.</p>
+                <p className="text-sm text-gray-600">Discover the region&apos;s volcanic history, local culture, and wartime heritage.</p>
               </div>
             </div>
 
