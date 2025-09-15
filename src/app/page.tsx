@@ -933,24 +933,38 @@ export default function Home() {
                       <div className="space-y-1">
                         <Label className="text-sm font-medium text-white">Transport Services</Label>
                         <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="radio"
-                              id="needs-transport"
-                              name="transport-option"
-                              checked={transportServices.needsTransport}
-                              onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
-                              className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                            />
-                            <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
+                          <div className="flex flex-wrap gap-6">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="needs-transport"
+                                name="transport-option"
+                                checked={transportServices.needsTransport}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
+                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              />
+                              <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="no-transport"
+                                name="transport-option"
+                                checked={transportServices.noTransport}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, noTransport: true, transportType: '' }))}
+                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              />
+                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
+                            </div>
                           </div>
                           
                           {transportServices.needsTransport && (
                             <div className="ml-6 space-y-3 border-l-2 border-white/20 pl-4">
                               <div className="space-y-2">
                                 <Label className="text-sm font-medium text-white">Transport Type</Label>
-                                <div className="space-y-2">
-                                  <label className="flex items-center space-x-2">
+                                <div className="flex flex-wrap items-center gap-6">
+                                  <label className="inline-flex items-center space-x-2">
                                     <input
                                       type="radio"
                                       name="transport-type"
@@ -958,9 +972,9 @@ export default function Home() {
                                       onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white">Pick Up</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
                                   </label>
-                                  <label className="flex items-center space-x-2">
+                                  <label className="inline-flex items-center space-x-2">
                                     <input
                                       type="radio"
                                       name="transport-type"
@@ -968,9 +982,9 @@ export default function Home() {
                                       onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'dropoff' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white">Drop Off</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Drop Off Only</span>
                                   </label>
-                                  <label className="flex items-center space-x-2">
+                                  <label className="inline-flex items-center space-x-2">
                                     <input
                                       type="radio"
                                       name="transport-type"
@@ -978,7 +992,7 @@ export default function Home() {
                                       onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white">Pick Up & Drop Off</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
                                   </label>
                                 </div>
                               </div>
@@ -986,54 +1000,54 @@ export default function Home() {
                               <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1">
-                                      <Label className="text-sm font-medium text-white">Pick Up Location</Label>
-                                      <input
-                                        type="text"
-                                        placeholder="Enter pick-up address"
-                                        value={transportServices.pickupLocation}
-                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupLocation: e.target.value }))}
-                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                      />
+                                    <div className="space-y-2">
+                                      <div className="space-y-1">
+                                        <Label className="text-sm font-medium text-white">Pick Up Location</Label>
+                                        <input
+                                          type="text"
+                                          placeholder="Enter pick-up address"
+                                          value={transportServices.pickupLocation}
+                                          onChange={(e) => setTransportServices(prev => ({ ...prev, pickupLocation: e.target.value }))}
+                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                        />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <Label className="text-sm font-medium text-white">Pick Up Time</Label>
+                                        <input
+                                          type="time"
+                                          value={transportServices.pickupTime}
+                                          onChange={(e) => setTransportServices(prev => ({ ...prev, pickupTime: e.target.value }))}
+                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                        />
+                                      </div>
                                     </div>
                                   )}
                                   
                                   {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1">
-                                      <Label className="text-sm font-medium text-white">Drop Off Location</Label>
-                                      <input
-                                        type="text"
-                                        placeholder="Enter drop-off address"
-                                        value={transportServices.dropoffLocation}
-                                        onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffLocation: e.target.value }))}
-                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1">
-                                      <Label className="text-sm font-medium text-white">Pick Up Time</Label>
-                                      <input
-                                        type="time"
-                                        value={transportServices.pickupTime}
-                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupTime: e.target.value }))}
-                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                      />
-                                    </div>
-                                  )}
-                                  
-                                  {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1">
-                                      <Label className="text-sm font-medium text-white">Drop Off Time</Label>
-                                      <input
-                                        type="time"
-                                        value={transportServices.dropoffTime}
-                                        onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffTime: e.target.value }))}
-                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                      />
+                                    <div className="space-y-2">
+                                      <div className="space-y-1">
+                                        <Label className="text-sm font-medium text-white">
+                                          {transportServices.transportType === 'both' ? 'Drop Off' : 'Drop Off'} Location
+                                        </Label>
+                                        <input
+                                          type="text"
+                                          placeholder="Enter drop-off address"
+                                          value={transportServices.dropoffLocation}
+                                          onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffLocation: e.target.value }))}
+                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                        />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <Label className="text-sm font-medium text-white">
+                                          {transportServices.transportType === 'both' ? 'Drop Off' : 'Drop Off'} Time
+                                        </Label>
+                                        <input
+                                          type="time"
+                                          value={transportServices.dropoffTime}
+                                          onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffTime: e.target.value }))}
+                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                        />
+                                      </div>
                                     </div>
                                   )}
                                 </div>
@@ -1041,17 +1055,6 @@ export default function Home() {
                             </div>
                           )}
                           
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="radio"
-                              id="no-transport"
-                              name="transport-option"
-                              checked={transportServices.noTransport}
-                              onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, noTransport: true, transportType: '' }))}
-                              className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                            />
-                            <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
-                          </div>
                         </div>
                       </div>
 
@@ -1144,9 +1147,9 @@ export default function Home() {
                     <div className="pt-2 border-t border-white/20">
                       <div className="text-sm font-medium mb-1">Transport Services:</div>
                       <div className="text-sm space-y-1">
-                        <div className="pl-2">• {transportServices.transportType === 'pickup' && 'Airport Pickup'}
-                                              {transportServices.transportType === 'dropoff' && 'Airport Drop-off'}
-                                              {transportServices.transportType === 'both' && 'Airport Pickup & Drop-off'}</div>
+                        <div className="pl-2">• {transportServices.transportType === 'pickup' && 'Pick Up'}
+                                              {transportServices.transportType === 'dropoff' && 'Drop Off'}
+                                              {transportServices.transportType === 'both' && 'Pick Up & Drop Off'}</div>
                         {transportServices.pickupLocation && (
                           <div className="pl-4 text-white/80">From: {transportServices.pickupLocation}</div>
                         )}
@@ -1154,10 +1157,7 @@ export default function Home() {
                           <div className="pl-4 text-white/80">To: {transportServices.dropoffLocation}</div>
                         )}
                         {transportServices.pickupTime && (
-                          <div className="pl-4 text-white/80">Pickup Time: {transportServices.pickupTime}</div>
-                        )}
-                        {transportServices.dropoffTime && (
-                          <div className="pl-4 text-white/80">Drop-off Time: {transportServices.dropoffTime}</div>
+                          <div className="pl-4 text-white/80">Time: {transportServices.pickupTime}</div>
                         )}
                       </div>
                       <div className="flex justify-between text-sm font-medium mt-1 pt-1 border-t border-white/20">
