@@ -550,8 +550,6 @@ export default function Home() {
               }}
             />
           </div>
-          <div className="absolute inset-0 bg-black/30" style={{ zIndex: 1 }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" style={{ zIndex: 1 }} />
         </div>
         <div className="container max-w-7xl px-4 relative z-10 w-full pt-16 sm:pt-24 md:pt-32">
           <motion.div
@@ -1360,11 +1358,146 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Our Amenities Section */}
+      <section ref={exploreRef} className="py-16 bg-white scroll-mt-16" id="explore">
+        <div className="container max-w-7xl px-4 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Amenities</h2>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Discover the natural beauty and rich history of Rabaul, where volcanic landscapes meet World War II relics and vibrant local culture.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* 23m Swimming Pool */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 7m16 0v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <Image 
+                  src="/images/amenities/swimming-pool.PNG" 
+                  alt="Swimming Pool"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">23m Swimming Pool</h3>
+                <p className="text-green-700 text-sm">Relax and unwind in our beautiful 23-meter swimming pool surrounded by tropical gardens.</p>
+              </div>
+            </div>
+
+            {/* Phoenix Room Restaurant */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-amber-50 flex items-center justify-center">
+                  <Utensils className="h-16 w-16 text-amber-200" />
+                </div>
+                <Image 
+                  src="/images/amenities/phoenix.jpeg" 
+                  alt="Restaurant"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Phoenix Room Restaurant</h3>
+                <p className="text-green-700 text-sm">Savor a blend of Western, Asian, and Vegetarian cuisine in our renowned restaurant.</p>
+              </div>
+            </div>
+
+            {/* Conference Facilities */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-purple-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <Image 
+                  src="/images/amenities/conference-room.PNG" 
+                  alt="Conference Room"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Conference Facilities</h3>
+                <p className="text-green-700 text-sm">Host your next event in our air-conditioned conference room with capacity for 150+ guests.</p>
+              </div>
+            </div>
+
+            {/* 24/7 Reception */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-green-50 flex items-center justify-center">
+                  <ConciergeBell className="h-16 w-16 text-green-200" />
+                </div>
+                <Image 
+                  src="/images/amenities/hotel-reception.PNG" 
+                  alt="Hotel Reception"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">24/7 Reception</h3>
+                <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you with any needs during your stay.</p>
+              </div>
+            </div>
+
+            {/* Free Secure Parking */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
+                  <Car className="h-16 w-16 text-blue-200" />
+                </div>
+                <Image 
+                  src="/images/amenities/parking.PNG" 
+                  alt="Parking"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Free Secure Parking</h3>
+                <p className="text-green-700 text-sm">Park with peace of mind in our secure, on-site parking area available to all guests.</p>
+              </div>
+            </div>
+
+            {/* Room Service */}
+            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
+              <div className="relative h-48 overflow-hidden">
+                <div className="absolute inset-0 bg-pink-50 flex items-center justify-center">
+                  <svg className="h-16 w-16 text-pink-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                {/* Replace with actual image: /images/amenities/room-service.jpg */}
+                <div className="absolute inset-0 bg-pink-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+              </div>
+              <div className="p-6">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">Room Service</h3>
+                <p className="text-green-700 text-sm">Enjoy the convenience of in-room dining with our room service menu.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Us Section */}
       <section 
         id="contact" 
         ref={contactRef}
-        className="py-20 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-16 relative overflow-hidden"
+        className="pt-8 pb-12 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
       >
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -1372,7 +1505,7 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         
         <div className="container max-w-6xl px-4 mx-auto relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-6">
             <span className="inline-block px-4 py-1.5 text-sm font-semibold text-green-700 bg-green-100 rounded-full mb-4">Get In Touch</span>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h2>
             <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto mb-6"></div>
@@ -1470,33 +1603,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              
-              {/* Map */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-1 border border-white/20 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="rounded-xl overflow-hidden h-64">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDclMjQuNCJTIDE1MsKwMDclMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0 }} 
-                    allowFullScreen 
-                    loading="lazy"
-                    className="rounded-xl w-full h-full"
-                    aria-label="Our location on map"
-                  ></iframe>
-                </div>
-                <div className="p-4 text-center">
-                  <a 
-                    href="https://maps.google.com/?q=8th+Street,+Rabaul,+Papua+New+Guinea" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-                  >
-                    <MapPin className="w-4 h-4 mr-1" />
-                    View on Google Maps
-                  </a>
-                </div>
-              </div>
+            
             </div>
             
             {/* Right Column - Contact Form */}
@@ -1743,156 +1850,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Amenities Section */}
-      <section ref={amenitiesRef} className="py-16 bg-green-50 scroll-mt-16" id="amenities">
-        <div className="container max-w-7xl px-4 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Amenities</h2>
-            <p className="text-green-700 max-w-3xl mx-auto">Experience comfort and convenience with our range of facilities designed to make your stay memorable.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* 23m Swimming Pool */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 7m16 0v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/swimming-pool.PNG" 
-                  alt="Swimming Pool"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">23m Swimming Pool</h3>
-                <p className="text-green-700 text-sm">Relax and unwind in our beautiful 23-meter swimming pool surrounded by tropical gardens.</p>
-              </div>
-            </div>
-
-            {/* Phoenix Room Restaurant */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-amber-50 flex items-center justify-center">
-                  <Utensils className="h-16 w-16 text-amber-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/phoenix.jpeg" 
-                  alt="Restaurant"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Phoenix Room Restaurant</h3>
-                <p className="text-green-700 text-sm">Savor a blend of Western, Asian, and Vegetarian cuisine in our renowned restaurant.</p>
-              </div>
-            </div>
-
-            {/* Conference Facilities */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-purple-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/conference-room.PNG" 
-                  alt="Conference Room"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Conference Facilities</h3>
-                <p className="text-green-700 text-sm">Host your next event in our air-conditioned conference room with capacity for 150+ guests.</p>
-              </div>
-            </div>
-
-            {/* 24/7 Reception */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-green-50 flex items-center justify-center">
-                  <ConciergeBell className="h-16 w-16 text-green-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/hotel-reception.PNG" 
-                  alt="Hotel Reception"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">24/7 Reception</h3>
-                <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you with any needs during your stay.</p>
-              </div>
-            </div>
-
-            {/* Free Secure Parking */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <Car className="h-16 w-16 text-blue-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/parking.PNG" 
-                  alt="Parking"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Free Secure Parking</h3>
-                <p className="text-green-700 text-sm">Park with peace of mind in our secure, on-site parking area available to all guests.</p>
-              </div>
-            </div>
-
-            {/* Room Service */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-pink-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-pink-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </div>
-                {/* Replace with actual image: /images/amenities/room-service.jpg */}
-                <div className="absolute inset-0 bg-pink-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Room Service</h3>
-                <p className="text-green-700 text-sm">Enjoy the convenience of in-room dining with our room service menu.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-[#1a5f2c] text-white py-12">
         <div className="container max-w-7xl px-4 mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-            {/* About */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Rabaul Hotel */}
             <div>
-              <h3 className="text-xl font-bold mb-4">Rabaul Hotel</h3>
-              <p className="text-green-300 mb-6">Experience luxury and comfort in the heart of the city. Our hotel offers world-class amenities and exceptional service.</p>
-              <div className="flex space-x-4 mt-4">
+              <h3 className="text-2xl font-bold mb-2">Rabaul Hotel</h3>
+              <div className="flex items-start mb-4">
+                <MapPin className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                <span className="text-green-300 block -mt-0.5">
+                  Mango Avenue<br />
+                  P.O Box 1<br />
+                  Rabaul, East New Britain Province<br />
+                  Papua New Guinea
+                </span>
+              </div>
+              <p className="text-green-300 mb-6">Experience luxury and comfort in the heart of Rabaul. Our hotel offers world-class amenities and breathtaking views of the surrounding landscape.</p>
+              <div className="flex space-x-4">
                 <a href="#" className="text-green-300 hover:text-white transition-colors">
-                  <Facebook className="w-5 h-5" />
+                  <span className="sr-only">Facebook</span>
+                  <Facebook className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-green-300 hover:text-white transition-colors">
-                  <Instagram className="w-5 h-5" />
+                  <span className="sr-only">Twitter</span>
+                  <Twitter className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-green-300 hover:text-white transition-colors">
-                  <Twitter className="w-5 h-5" />
+                  <span className="sr-only">Instagram</span>
+                  <Instagram className="h-6 w-6" />
                 </a>
               </div>
             </div>
@@ -1901,11 +1887,12 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-3">
-                <li><button onClick={() => scrollToSection(homeRef)} className="text-green-300 hover:text-white transition-colors">Home</button></li>
-                <li><button onClick={() => scrollToSection(roomsRef)} className="text-green-300 hover:text-white transition-colors">Rooms & Suites</button></li>
-                <li><button onClick={() => scrollToSection(bookRef)} className="text-green-300 hover:text-white transition-colors">Book Now</button></li>
-                <li><button onClick={() => scrollToSection(contactRef)} className="text-green-300 hover:text-white transition-colors">Contact Us</button></li>
-                <li><a href="#amenities" className="text-green-300 hover:text-white transition-colors">Amenities</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Home</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Rooms & Suites</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Dining</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Facilities</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Gallery</a></li>
+                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Contact Us</a></li>
               </ul>
             </div>
 
@@ -1913,19 +1900,23 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <MapPin className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                  <span className="text-green-300">8th street Rabaul WNB Papua New Guinea</span>
+                <li className="flex items-start space-x-3">
+                  <Phone className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <a href="tel:+67571893571" className="block text-green-300 hover:text-white transition-colors">+675 7189 3571</a>
+                    <a href="tel:+6759821999" className="block text-green-300 hover:text-white transition-colors mt-1">+675 982 1999</a>
+                    <a href="tel:+67571749608" className="block text-green-300 hover:text-white transition-colors mt-1">+675 7174 9608</a>
+                  </div>
                 </li>
-                <li className="flex items-center">
-                  <Phone className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
-                  <a href="tel:+67576534563" className="text-green-300 hover:text-white transition-colors">+675 7653 4563</a>
-                </li>
-                <li className="flex items-center">
-                  <p className="text-green-300">Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call us at <a href="tel:+6751234567" className="text-white hover:underline">+675 123 4567</a> - we&apos;re happy to help!</p>
+                <li className="text-green-300 mt-4">
+                  Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call our 24/7 front desk - we're happy to help!
                 </li>
               </ul>
-              <h4 className="text-lg font-semibold mb-4 mt-6">Our Services</h4>
+            </div>
+
+            {/* Our Services */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Our Services</h4>
               <ul className="space-y-3">
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">24/7 Room Service</a></li>
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">Airport Transfer</a></li>
@@ -1950,7 +1941,7 @@ export default function Home() {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 p-3 rounded-full bg-[#1a5f2c] text-white shadow-lg hover:bg-[#144a22] transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        className={`fixed bottom-6 right-6 p-3 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         aria-label="Scroll to top"
       >
         <ArrowUp className="h-6 w-6" />
