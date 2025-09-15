@@ -1,28 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
-    // Disable the Next.js development toolbar
-    reactDevOverlay: false,
+    serverActions: {}
   },
   // Disable development indicators
   devIndicators: {
-    position: 'bottom-right',
+    position: 'bottom-right'
   },
   // Disable React Strict Mode in development
   reactStrictMode: false,
-  // Disable the Next.js development toolbar
+  // Disable console in production
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production'
   },
-  // Disable source maps in development
+  // Configure output directory for the build
+  output: 'standalone',
+  // Disable source maps in production
   productionBrowserSourceMaps: false,
-  // Disable the Next.js development toolbar
+  // Disable the powered by header
   poweredByHeader: false,
-  // Disable the Next.js development toolbar
-  webpack: (config, { dev }) => {
-    if (dev) {
-      // Remove the ReactDevOverlay plugin
+  // Webpack configuration
+  webpack: (config, { isServer }) => {
+    // Add any custom webpack configuration here
+    if (process.env.NODE_ENV === 'development') {
+      // Remove the ReactDevOverlay plugin in development
       const reactDevOverlayIndex = config.plugins.findIndex(
         (plugin) => plugin.constructor.name === 'ReactDevOverlay'
       );
@@ -32,6 +33,15 @@ const nextConfig = {
     }
     return config;
   },
+  // Images configuration
+  images: {
+    domains: ['images.unsplash.com'],
+    formats: ['image/avif', 'image/webp']
+  },
+  // Enable React Refresh
+  reactRefresh: true,
+  // Configure page extensions
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js']
 };
 
 module.exports = nextConfig;
