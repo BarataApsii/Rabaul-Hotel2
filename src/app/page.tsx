@@ -933,19 +933,7 @@ export default function Home() {
                       <div className="space-y-1">
                         <Label className="text-sm font-medium text-white">Transport Services</Label>
                         <div className="space-y-3">
-                          <div className="flex flex-wrap gap-6">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="needs-transport"
-                                name="transport-option"
-                                checked={transportServices.needsTransport}
-                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
-                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                              />
-                              <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
-                            </div>
-                            
+                          <div className="flex flex-wrap gap-6 justify-start w-full">
                             <div className="flex items-center space-x-2">
                               <input
                                 type="radio"
@@ -956,6 +944,18 @@ export default function Home() {
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
                               <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="needs-transport"
+                                name="transport-option"
+                                checked={transportServices.needsTransport}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
+                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              />
+                              <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
                             </div>
                           </div>
                           
@@ -968,11 +968,11 @@ export default function Home() {
                                     <input
                                       type="radio"
                                       name="transport-type"
-                                      checked={transportServices.transportType === 'pickup'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
+                                      checked={transportServices.transportType === 'both'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
                                   </label>
                                   <label className="inline-flex items-center space-x-2">
                                     <input
@@ -988,11 +988,11 @@ export default function Home() {
                                     <input
                                       type="radio"
                                       name="transport-type"
-                                      checked={transportServices.transportType === 'both'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
+                                      checked={transportServices.transportType === 'pickup'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
                                   </label>
                                 </div>
                               </div>
