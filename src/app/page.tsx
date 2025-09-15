@@ -527,7 +527,7 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="md:hidden absolute inset-0 w-full h-full">
+          <div className="md:hidden absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 to-green-900">
             <Image
               src="/images/mobile-banner.png"
               alt="Rabaul Hotel - Your Tropical Paradise"
@@ -545,8 +545,7 @@ export default function Home() {
               onError={(e) => {
                 // Fallback to a solid color if image fails to load
                 const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD1cImdcIiB4MT1cIjAlXCIgeTE9XCIwJVwiIHgyPVwiMTAwJVwiIHkyPVwiMTAwJVwiPjxzdG9wIG9mZnNldD1cIjAlXCIgc3RvcC1jb2xvcj1cIiMwMDdiMWZcIi8+PHN0b3Agb2Zmc2V0PVwiMTAwJVwiIHN0b3AtY29sb3I9XCIjMDA2ZGQ5XCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPVwiMTAwJVwiIGhlaWdodD1cIjEwMCVcIiBmaWxsPVwidXJsKCNnKVwiLz48L3N2Zz4=';
+                target.style.display = 'none';
               }}
             />
           </div>
@@ -1386,7 +1385,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">23m Swimming Pool</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">23m Swimming Pool</h3>
                 <p className="text-green-700 text-sm">Relax and unwind in our beautiful 23-meter swimming pool surrounded by tropical gardens.</p>
               </div>
             </div>
@@ -1406,7 +1405,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Phoenix Room Restaurant</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Phoenix Room Restaurant</h3>
                 <p className="text-green-700 text-sm">Savor a blend of Western, Asian, and Vegetarian cuisine in our renowned restaurant.</p>
               </div>
             </div>
@@ -1428,7 +1427,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Conference Facilities</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Conference Facilities</h3>
                 <p className="text-green-700 text-sm">Host your next event in our air-conditioned conference room with capacity for 150+ guests.</p>
               </div>
             </div>
@@ -1448,7 +1447,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">24/7 Reception</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">24/7 Reception</h3>
                 <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you with any needs during your stay.</p>
               </div>
             </div>
@@ -1468,7 +1467,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Free Secure Parking</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">Free Secure Parking</h3>
                 <p className="text-green-700 text-sm">Park with peace of mind in our secure, on-site parking area available to all guests.</p>
               </div>
             </div>
@@ -1723,7 +1722,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Mt Tavurvur Volcano</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Mt Tavurvur Volcano</h3>
                 <p className="text-sm text-gray-600">Witness the power of nature at this active volcano with dramatic crater views, especially stunning at sunrise.</p>
               </div>
             </div>
@@ -1740,7 +1739,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Simpson Harbour & Caldera</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Simpson Harbour & Caldera</h3>
                 <p className="text-sm text-gray-600">Stunning flooded caldera surrounded by volcanoes, perfect for scenic walks and wildlife spotting.</p>
               </div>
             </div>
@@ -1757,7 +1756,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Matupit Island</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Matupit Island</h3>
                 <p className="text-sm text-gray-600">Experience traditional village life and enjoy excellent snorkeling in crystal clear waters.</p>
               </div>
             </div>
@@ -1774,7 +1773,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">WWII Relics & Tunnels</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">WWII Relics & Tunnels</h3>
                 <p className="text-sm text-gray-600">Explore historic tunnels and bunkers from the Japanese occupation during World War II.</p>
               </div>
             </div>
@@ -1791,7 +1790,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Old Rabaul Ruins</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Old Rabaul Ruins</h3>
                 <p className="text-sm text-gray-600">See the remnants of the old town, a powerful reminder of the 1994 volcanic eruptions.</p>
               </div>
             </div>
