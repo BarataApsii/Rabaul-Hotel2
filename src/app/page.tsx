@@ -968,11 +968,11 @@ export default function Home() {
                                     <input
                                       type="radio"
                                       name="transport-type"
-                                      checked={transportServices.transportType === 'both'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
+                                      checked={transportServices.transportType === 'pickup'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
                                   </label>
                                   <label className="inline-flex items-center space-x-2">
                                     <input
@@ -988,11 +988,11 @@ export default function Home() {
                                     <input
                                       type="radio"
                                       name="transport-type"
-                                      checked={transportServices.transportType === 'pickup'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
+                                      checked={transportServices.transportType === 'both'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
                                       className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                                     />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
+                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
                                   </label>
                                 </div>
                               </div>
@@ -1225,15 +1225,15 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="pt-10 pb-16 bg-white scroll-mt-16"
+        className="py-16 bg-white scroll-mt-16"
       >
-        <div className="container max-w-7xl px-4 mx-auto">
-          <div className="mb-8 text-center">
+        <div className="container max-w-5xl px-4 mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with our concierge team for any inquiries or assistance</p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-8">
               <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6">Hotel Information</h3>
@@ -1280,8 +1280,6 @@ export default function Home() {
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
-          
-              
                 <div className="rounded-lg overflow-hidden">
                   <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDclMjQuNCJTIDE1MsKwMDclMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
@@ -1321,7 +1319,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">Email Address</Label>
+                  <Label htmlFor="email" className="text-gray-700">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -1331,24 +1329,19 @@ export default function Home() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subject" className="text-gray-700">Subject</Label>
-                  <select
+                  <Input
                     id="subject"
-                    className="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <option value="" className="text-gray-700">Select a subject</option>
-                    <option value="reservation" className="text-gray-900 hover:bg-gray-100">Reservation Inquiry</option>
-                    <option value="services" className="text-gray-900 hover:bg-gray-100">Services & Amenities</option>
-                    <option value="events" className="text-gray-900 hover:bg-gray-100">Events & Meetings</option>
-                    <option value="feedback" className="text-gray-900 hover:bg-gray-100">Feedback</option>
-                    <option value="other" className="text-gray-900 hover:bg-gray-100">Other</option>
-                  </select>
+                    type="text"
+                    className="w-full"
+                    placeholder="Enter subject"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-gray-700">Message</Label>
                   <Textarea
                     id="message"
-                    className="w-full min-h-[120px]"
-                    placeholder="Type your message here..."
+                    className="min-h-[120px]"
+                    placeholder="Enter your message"
                   />
                 </div>
                 <Button
