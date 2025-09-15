@@ -309,14 +309,17 @@ export default function Home() {
         <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center space-x-3">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <Image 
-                src={logoImage}
-                alt="Rabaul Hotel Logo" 
-                width={48}
-                height={48}
-                className="h-12 w-auto hover:opacity-90 transition-opacity"
-                priority
-              />
+              <div className="relative h-20 w-48 ml-4">
+                <Image 
+                  src={logoImage}
+                  alt="Rabaul Hotel Logo"
+                  fill
+                  sizes="(max-width: 768px) 192px, 240px"
+                  className="object-contain hover:opacity-90 transition-opacity"
+                  priority
+                  quality={100}
+                />
+              </div>
             </button>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent"></h1>
           </div>
@@ -546,7 +549,10 @@ export default function Home() {
                   src="/images/rooms/budget-room.PNG" 
                   alt="Budget Room"
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  quality={100}
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -598,7 +604,10 @@ export default function Home() {
                   src="/images/rooms/standard-room.PNG" 
                   alt="Standard Room"
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  quality={100}
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -647,7 +656,10 @@ export default function Home() {
                   src="/images/rooms/executive-room.PNG" 
                   alt="Executive Room"
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  quality={100}
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -1225,19 +1237,16 @@ export default function Home() {
               </div>
               <div className="mt-auto p-4 border-t border-gray-200">
                 <div className="flex justify-center">
-                  <Image 
-                    src="/images/logo.png" 
-                    alt="Rabaul Hotel" 
-                    width={48}
-                    height={48}
-                    className="h-12 w-auto"
-                    style={{
-                      imageRendering: 'crisp-edges',
-                      WebkitBackfaceVisibility: 'hidden',
-                      WebkitTransform: 'translateZ(0)',
-                      transform: 'translateZ(0)'
-                    }}
-                  />
+                  <div className="relative h-20 w-48">
+                    <Image 
+                      src={logoImage}
+                      alt="Rabaul Hotel"
+                      fill
+                      sizes="192px"
+                      className="object-contain"
+                      quality={100}
+                    />
+                  </div>
                 </div>
               </div>
             </Card>
