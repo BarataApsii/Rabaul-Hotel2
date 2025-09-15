@@ -28,11 +28,13 @@ export default function Home() {
   const [country, setCountry] = useState('')
   const [specialRequest, setSpecialRequest] = useState('')
   const [transportServices, setTransportServices] = useState({
-    airportPickup: false,
-    airportDropoff: false,
-    localTransport: false,
-    shuttleService: false,
-    ownVehicle: false
+    needsTransport: false,
+    noTransport: true,
+    transportType: '',
+    pickupTime: '',
+    dropoffTime: '',
+    pickupLocation: '',
+    dropoffLocation: ''
   })
   const [transportType, setTransportType] = useState('sedan')
   const [transportHours, setTransportHours] = useState(1)
@@ -171,38 +173,8 @@ export default function Home() {
     : 0;
   // Calculate transport cost
   const calculateTransportCost = () => {
-    let cost = 0
-    
-    if (transportServices.shuttleService) {
-      // Shuttle service cost (fixed price per person)
-      const shuttleCostPerPerson = 50 // PGK 50 per person
-      cost += (adults + children) * shuttleCostPerPerson
-    } else if (!transportServices.ownVehicle) {
-      // Airport pickup cost
-      if (transportServices.airportPickup) {
-        switch(transportType) {
-          case 'sedan': cost += 100; break
-          case 'van': cost += 150; break
-          case 'bus': cost += 250; break
-        }
-      }
-      
-      // Airport drop-off cost (same as pickup)
-      if (transportServices.airportDropoff) {
-        switch(transportType) {
-          case 'sedan': cost += 100; break
-          case 'van': cost += 150; break
-          case 'bus': cost += 250; break
-        }
-      }
-      
-      // Local transport cost
-      if (transportServices.localTransport) {
-        cost += 80 * transportHours
-      }
-    }
-    
-    return cost
+    // Fixed transport cost when transport is needed
+    return transportServices.needsTransport ? 100 : 0
   }
 
   // Calculate total cost
@@ -960,97 +932,136 @@ export default function Home() {
                     <div className="space-y-3 col-span-2">
                       <div className="space-y-1">
                         <Label className="text-sm font-medium text-white">Transport Services</Label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          <div className="flex items-center space-x-2 col-span-1">
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
                             <input
-                              type="checkbox"
-                              id="airport-pickup"
-                              checked={transportServices.airportPickup}
-                              onChange={(e) => setTransportServices({...transportServices, airportPickup: e.target.checked})}
-                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              type="radio"
+                              id="needs-transport"
+                              name="transport-option"
+                              checked={transportServices.needsTransport}
+                              onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
+                              className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                             />
-                            <Label htmlFor="airport-pickup" className="text-sm font-normal text-white">Airport Pickup</Label>
+                            <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
                           </div>
-                          <div className="flex items-center space-x-2 col-span-1">
+                          
+                          {transportServices.needsTransport && (
+                            <div className="ml-6 space-y-3 border-l-2 border-white/20 pl-4">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium text-white">Transport Type</Label>
+                                <div className="space-y-2">
+                                  <label className="flex items-center space-x-2">
+                                    <input
+                                      type="radio"
+                                      name="transport-type"
+                                      checked={transportServices.transportType === 'pickup'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
+                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                                    />
+                                    <span className="text-sm text-white">Pick Up</span>
+                                  </label>
+                                  <label className="flex items-center space-x-2">
+                                    <input
+                                      type="radio"
+                                      name="transport-type"
+                                      checked={transportServices.transportType === 'dropoff'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'dropoff' }))}
+                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                                    />
+                                    <span className="text-sm text-white">Drop Off</span>
+                                  </label>
+                                  <label className="flex items-center space-x-2">
+                                    <input
+                                      type="radio"
+                                      name="transport-type"
+                                      checked={transportServices.transportType === 'both'}
+                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
+                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                                    />
+                                    <span className="text-sm text-white">Pick Up & Drop Off</span>
+                                  </label>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Pick Up Location</Label>
+                                      <input
+                                        type="text"
+                                        placeholder="Enter pick-up address"
+                                        value={transportServices.pickupLocation}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupLocation: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
+                                    </div>
+                                  )}
+                                  
+                                  {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Drop Off Location</Label>
+                                      <input
+                                        type="text"
+                                        placeholder="Enter drop-off address"
+                                        value={transportServices.dropoffLocation}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffLocation: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Pick Up Time</Label>
+                                      <input
+                                        type="time"
+                                        value={transportServices.pickupTime}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupTime: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
+                                    </div>
+                                  )}
+                                  
+                                  {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Drop Off Time</Label>
+                                      <input
+                                        type="time"
+                                        value={transportServices.dropoffTime}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffTime: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center space-x-2">
                             <input
-                              type="checkbox"
-                              id="airport-dropoff"
-                              checked={transportServices.airportDropoff}
-                              onChange={(e) => setTransportServices({...transportServices, airportDropoff: e.target.checked})}
-                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              type="radio"
+                              id="no-transport"
+                              name="transport-option"
+                              checked={transportServices.noTransport}
+                              onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, noTransport: true, transportType: '' }))}
+                              className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                             />
-                            <Label htmlFor="airport-dropoff" className="text-sm font-normal text-white">Airport Drop-off</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 col-span-1">
-                            <input
-                              type="checkbox"
-                              id="local-transport"
-                              checked={transportServices.localTransport}
-                              onChange={(e) => setTransportServices({...transportServices, localTransport: e.target.checked})}
-                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                            />
-                            <Label htmlFor="local-transport" className="text-sm font-normal text-white">Local Transport</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 col-span-1">
-                            <input
-                              type="checkbox"
-                              id="shuttle-service"
-                              checked={transportServices.shuttleService}
-                              onChange={(e) => setTransportServices({...transportServices, shuttleService: e.target.checked})}
-                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                            />
-                            <Label htmlFor="shuttle-service" className="text-sm font-normal text-white">Shuttle Service</Label>
-                          </div>
-                          <div className="flex items-center space-x-2 col-span-1">
-                            <input
-                              type="checkbox"
-                              id="own-vehicle"
-                              checked={transportServices.ownVehicle}
-                              onChange={(e) => setTransportServices({...transportServices, ownVehicle: e.target.checked})}
-                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                            />
-                            <Label htmlFor="own-vehicle" className="text-sm font-normal text-white">Using Own Vehicle</Label>
+                            <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
                           </div>
                         </div>
                       </div>
 
-                      {(transportServices.airportPickup || transportServices.airportDropoff) && !transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="space-y-1">
-                          <Label className="text-sm font-medium text-white">Vehicle Type</Label>
-                          <Select 
-                            value={transportType}
-                            onValueChange={setTransportType}
-                          >
-                            <SelectTrigger className="h-9 text-sm border-white/30">
-                              <SelectValue placeholder="Select vehicle type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="sedan">Sedan (K100 per trip)</SelectItem>
-                              <SelectItem value="van">Van (K150 per trip)</SelectItem>
-                              <SelectItem value="bus">Bus (K250 per trip)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-
-                      {transportServices.localTransport && !transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="space-y-1">
-                          <Label className="text-sm font-medium text-white">Local Transport Hours</Label>
-                          <Select 
-                            value={transportHours.toString()}
-                            onValueChange={(value) => setTransportHours(parseInt(value))}
-                          >
-                            <SelectTrigger className="h-9 text-sm border-white/30">
-                              <SelectValue placeholder="Select hours" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[1, 2, 3, 4, 5, 6, 7, 8].map(hours => (
-                                <SelectItem key={hours} value={hours.toString()}>
-                                  {hours} hour{hours > 1 ? 's' : ''} (K{80 * hours})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                      {transportCost > 0 && (
+                        <div className="pt-2 border-t border-white/20">
+                          <div className="text-sm font-medium mb-1">Transport Services:</div>
+                          <div className="flex justify-between text-sm">
+                            <span className="pl-2">• Transport Service</span>
+                            <span>K 100</span>
+                          </div>
                         </div>
                       )}
 
@@ -1132,36 +1143,23 @@ export default function Home() {
                   {transportCost > 0 && (
                     <div className="pt-2 border-t border-white/20">
                       <div className="text-sm font-medium mb-1">Transport Services:</div>
-                      {transportServices.airportPickup && !transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="pl-2">• Airport Pickup ({transportType})</span>
-                          <span>K {transportType === 'sedan' ? 100 : transportType === 'van' ? 150 : 250}</span>
-                        </div>
-                      )}
-                      {transportServices.airportDropoff && !transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="pl-2">• Airport Drop-off ({transportType})</span>
-                          <span>K {transportType === 'sedan' ? 100 : transportType === 'van' ? 150 : 250}</span>
-                        </div>
-                      )}
-                      {transportServices.localTransport && !transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="pl-2">• Local Transport ({transportHours} hour{transportHours > 1 ? 's' : ''})</span>
-                          <span>K {80 * transportHours}</span>
-                        </div>
-                      )}
-                      {transportServices.shuttleService && !transportServices.ownVehicle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="pl-2">• Shuttle Service (per person)</span>
-                          <span>K {50 * (adults + children)}</span>
-                        </div>
-                      )}
-                      {transportServices.ownVehicle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="pl-2">• Using Own Vehicle</span>
-                          <span>K 0</span>
-                        </div>
-                      )}
+                      <div className="text-sm space-y-1">
+                        <div className="pl-2">• {transportServices.transportType === 'pickup' && 'Airport Pickup'}
+                                              {transportServices.transportType === 'dropoff' && 'Airport Drop-off'}
+                                              {transportServices.transportType === 'both' && 'Airport Pickup & Drop-off'}</div>
+                        {transportServices.pickupLocation && (
+                          <div className="pl-4 text-white/80">From: {transportServices.pickupLocation}</div>
+                        )}
+                        {transportServices.dropoffLocation && (
+                          <div className="pl-4 text-white/80">To: {transportServices.dropoffLocation}</div>
+                        )}
+                        {transportServices.pickupTime && (
+                          <div className="pl-4 text-white/80">Pickup Time: {transportServices.pickupTime}</div>
+                        )}
+                        {transportServices.dropoffTime && (
+                          <div className="pl-4 text-white/80">Drop-off Time: {transportServices.dropoffTime}</div>
+                        )}
+                      </div>
                       <div className="flex justify-between text-sm font-medium mt-1 pt-1 border-t border-white/20">
                         <span>Subtotal (Transport):</span>
                         <span>K {transportCost}</span>
