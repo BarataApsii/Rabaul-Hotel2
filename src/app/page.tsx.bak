@@ -2,16 +2,39 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { format } from 'date-fns'
+
+// UI Components
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { format } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, Tv, Snowflake, ArrowUp } from 'lucide-react'
+
+// Icons
+import { 
+  CalendarIcon, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Clock, 
+  Facebook, 
+  Instagram, 
+  Twitter, 
+  Wifi, 
+  Utensils, 
+  Dumbbell, 
+  Waves, 
+  Car, 
+  ConciergeBell, 
+  Coffee, 
+  Tv, 
+  Snowflake, 
+  ArrowUp 
+} from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -87,11 +110,12 @@ export default function Home() {
   }
   
   // Refs for sections
-  const homeRef = useRef<HTMLElement>(null)
-  const roomsRef = useRef<HTMLElement>(null)
-  const bookRef = useRef<HTMLElement>(null)
-  const amenitiesRef = useRef<HTMLElement>(null)
-  const contactRef = useRef<HTMLElement>(null)
+  const homeRef = useRef<HTMLElement | null>(null)
+  const roomsRef = useRef<HTMLElement | null>(null)
+  const bookRef = useRef<HTMLElement | null>(null)
+  const amenitiesRef = useRef<HTMLElement | null>(null)
+  const exploreRef = useRef<HTMLElement | null>(null)
+  const contactRef = useRef<HTMLElement | null>(null)
   
   // Handle scroll events for navbar visibility
   useEffect(() => {
@@ -142,21 +166,36 @@ export default function Home() {
       { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
     )
     
-    const sections = [homeRef.current, roomsRef.current, bookRef.current, amenitiesRef.current, contactRef.current].filter(Boolean)
-    sections.forEach((section) => {
-      if (section) observer.observe(section)
+    const sections = [homeRef.current, roomsRef.current, bookRef.current, amenitiesRef.current, exploreRef.current, contactRef.current].filter((section): section is HTMLElement => section !== null)
+    sections.forEach((section: HTMLElement) => {
+      observer.observe(section)
     })
     
     return () => {
-      sections.forEach((section) => {
-        if (section) observer.unobserve(section)
+      sections.forEach((section: HTMLElement) => {
+        observer.unobserve(section)
       })
     }
   }, [])
-  
-  // Smooth scroll function
+
   const scrollToSection = (ref: React.RefObject<HTMLElement | null>) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth' })
+    if (!ref.current) return;
+    
+    let sectionId = ''
+    if (ref === homeRef) sectionId = 'home'
+    else if (ref === roomsRef) sectionId = 'rooms'
+    else if (ref === bookRef) sectionId = 'book'
+    else if (ref === amenitiesRef) sectionId = 'amenities'
+    else if (ref === exploreRef) sectionId = 'explore'
+    else if (ref === contactRef) sectionId = 'contact'
+    
+    setActiveSection(sectionId)
+    
+    if (ref.current) {
+      const yOffset = -80 // Adjust for fixed header
+      const y = ref.current.getBoundingClientRect().top + window.pageYOffset + yOffset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
   }
 
   const roomRates = {
@@ -348,10 +387,17 @@ export default function Home() {
             </Button>
             <Button 
               variant="ghost"
+              onClick={() => scrollToSection(exploreRef)}
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+            >
+              Explore
+            </Button>
+            <Button 
+              variant="ghost"
               onClick={() => scrollToSection(contactRef)}
               className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
-              Contact
+              Contact Us
             </Button>
           </div>
           <Button 
@@ -418,6 +464,17 @@ export default function Home() {
               </button>
               <button 
                 onClick={() => {
+                  scrollToSection(exploreRef)
+                  setMobileMenuOpen(false)
+                }}
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'explore' ? 'bg-white/20 font-medium' : ''
+                }`}
+              >
+                Explore
+              </button>
+              <button 
+                onClick={() => {
                   scrollToSection(contactRef)
                   setMobileMenuOpen(false)
                 }}
@@ -425,7 +482,7 @@ export default function Home() {
                   activeSection === 'contact' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
-                Contact
+                Contact Us
               </button>
               <button 
                 className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
@@ -767,7 +824,7 @@ export default function Home() {
                     </div>
                     
                     <div className="space-y-1">
-                      <Label className="text-sm font-medium text-white">Guests</Label>
+                      <Label className="text-sm font-medium text-white"></Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label htmlFor="adults" className="text-xs font-medium text-white">Adults</Label>
@@ -937,18 +994,6 @@ export default function Home() {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="radio"
-                                id="needs-transport"
-                                name="transport-option"
-                                checked={transportServices.needsTransport}
-                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
-                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                              />
-                              <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
-                            </div>
-                            
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
                                 id="no-transport"
                                 name="transport-option"
                                 checked={transportServices.noTransport}
@@ -956,6 +1001,18 @@ export default function Home() {
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
                               <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="needs-transport"
+                                name="transport-option"
+                                checked={transportServices.needsTransport}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
+                                className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                              />
+                              <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
                             </div>
                           </div>
                           
@@ -1220,6 +1277,182 @@ export default function Home() {
           </div>
         </div>
       </section>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/mt-tavurvur.PNG" 
+                    alt="Mt Tavurvur Volcano" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Mt Tavurvur Volcano</h4>
+                  <p className="text-gray-600 mb-4">Witness the power of nature at this active volcano with dramatic eruption history. Enjoy breathtaking crater views, especially at sunrise.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Nearby hot springs with geothermal activity</p>
+                    <p>• Guided tours available</p>
+                    <p>• Spectacular photo opportunities</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/simpson-harbour-at-sunset.jpg" 
+                    alt="Simpson Harbour & Rabaul Caldera" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Simpson Harbour & Caldera</h4>
+                  <p className="text-gray-600 mb-4">A stunning natural harbor within a massive flooded caldera, surrounded by striking volcanic landscapes.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Scenic walks with panoramic views</p>
+                    <p>• Spectacular sunset spots</p>
+                    <p>• Rich marine life and birdwatching</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/matupit-island.PNG" 
+                    alt="Matupit Island" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Matupit Island & Villages</h4>
+                  <p className="text-gray-600 mb-4">Experience traditional village life just a short boat ride away from Rabaul.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Cultural immersion experiences</p>
+                    <p>• Excellent snorkeling spots</p>
+                    <p>• Local handicrafts and traditions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* History & Culture */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">History & Culture</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/war-tunnel.PNG" 
+                    alt="WWII Tunnels & Bunkers" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">WWII Relics & Tunnels</h4>
+                  <p className="text-gray-600 mb-4">Explore the extensive network of tunnels, bunkers, and wartime relics from the Japanese occupation during WWII.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Visit the Yamamoto Bunker</p>
+                    <p>• Learn about Rabaul's wartime history</p>
+                    <p>• Guided historical tours available</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/old-rabaul-ruins.PNG" 
+                    alt="Old Rabaul Ruins" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Old Rabaul Ruins</h4>
+                  <p className="text-gray-600 mb-4">Walk through the remnants of the old town, preserved after the devastating 1994 volcanic eruptions.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• See nature reclaiming the town</p>
+                    <p>• Powerful reminder of volcanic power</p>
+                    <p>• Unique photo opportunities</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/kokopo-war-museum.jpg" 
+                    alt="Rabaul Museum & Observatory" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Rabaul Museum & Observatory</h4>
+                  <p className="text-gray-600 mb-4">Discover the region's volcanic history, local culture, and wartime past at these fascinating sites.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Volcanic monitoring exhibits</p>
+                    <p>• Cultural artifacts and history</p>
+                    <p>• Panoramic views from the observatory</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Local Life */}
+          <div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">Local Life & Activities</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/rabaul-market.jpg" 
+                    alt="Rabaul Market" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Rabaul Market</h4>
+                  <p className="text-gray-600 mb-4">Immerse yourself in local culture at this vibrant market, a hub of daily life in Rabaul.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Fresh tropical fruits and seafood</p>
+                    <p>• Traditional shell money and crafts</p>
+                    <p>• Authentic local cuisine</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/scenic-lookouts.PNG" 
+                    alt="Observation Hill" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Scenic Lookouts & Walks</h4>
+                  <p className="text-gray-600 mb-4">Discover breathtaking viewpoints around Rabaul, perfect for photography and nature appreciation.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Panoramic harbor and volcano views</p>
+                    <p>• Easy to moderate walking trails</p>
+                    <p>• Perfect for sunset photography</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Contact Us Section */}
       <section 
@@ -1375,18 +1608,13 @@ export default function Home() {
             {/* 23m Swimming Pool */}
             <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 11m16 0v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/swimming-pool.PNG" 
+                <Image
+                  src="/images/amenities/swimming-pool.PNG"
                   alt="Swimming Pool"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
                 <h3 className="font-semibold text-lg mb-2 text-gray-900">23m Swimming Pool</h3>
@@ -1397,16 +1625,13 @@ export default function Home() {
             {/* Phoenix Room Restaurant */}
             <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-amber-50 flex items-center justify-center">
-                  <Utensils className="h-16 w-16 text-amber-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/phoenix.jpeg" 
-                  alt="Restaurant"
+                <Image
+                  src="/images/amenities/phoenix.jpeg"
+                  alt="Phoenix Room Restaurant"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
                 <h3 className="font-semibold text-lg mb-2 text-gray-900">Phoenix Room Restaurant</h3>
@@ -1417,18 +1642,13 @@ export default function Home() {
             {/* Conference Facilities */}
             <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-purple-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/conference-room.PNG" 
-                  alt="Conference Room"
+                <Image
+                  src="/images/amenities/conference-room.PNG"
+                  alt="Conference Facilities"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
                 <h3 className="font-semibold text-lg mb-2 text-gray-900">Conference Facilities</h3>
@@ -1442,12 +1662,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-green-50 flex items-center justify-center">
                   <ConciergeBell className="h-16 w-16 text-green-200" />
                 </div>
-                <Image 
-                  src="/images/amenities/hotel-reception.PNG" 
-                  alt="Hotel Reception"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+                {/* Replace with actual image: /images/amenities/reception.jpg */}
                 <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
@@ -1459,16 +1674,13 @@ export default function Home() {
             {/* Free Secure Parking */}
             <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <Car className="h-16 w-16 text-blue-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/parking.PNG" 
-                  alt="Parking"
+                <Image
+                  src="/images/amenities/parking.PNG"
+                  alt="Free Secure Parking"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
                 <h3 className="font-semibold text-lg mb-2 text-gray-900">Free Secure Parking</h3>
@@ -1479,17 +1691,211 @@ export default function Home() {
             {/* Room Service */}
             <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
               <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-pink-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-pink-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </div>
-                {/* Replace with actual image: /images/amenities/room-service.jpg */}
-                <div className="absolute inset-0 bg-pink-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
+                <Image
+                  src="/images/amenities/room-service.jpg"
+                  alt="Room Service"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6">
                 <h3 className="font-semibold text-lg mb-2 text-gray-900">Room Service</h3>
                 <p className="text-green-700 text-sm">Enjoy the convenience of in-room dining with our room service menu.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Explore Rabaul Section */}
+      <section id="explore" ref={exploreRef} className="py-20 bg-gray-50 scroll-mt-16">
+        <div className="container max-w-7xl px-4 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Explore Rabaul</h2>
+            <p className="text-gray-600 max-w-3xl mx-auto">Discover the natural wonders, rich history, and vibrant culture of Rabaul, Papua New Guinea</p>
+          </div>
+
+          {/* Natural & Scenic */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">Natural & Scenic Highlights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/mt-tavurvur.PNG" 
+                    alt="Mt Tavurvur Volcano" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Mt Tavurvur Volcano</h4>
+                  <p className="text-gray-600 mb-4">Witness the power of nature at this active volcano with dramatic eruption history. Enjoy breathtaking crater views, especially at sunrise.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Nearby hot springs with geothermal activity</p>
+                    <p>• Guided tours available</p>
+                    <p>• Spectacular photo opportunities</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/simpson-harbour-at-sunset.jpg" 
+                    alt="Simpson Harbour & Rabaul Caldera" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Simpson Harbour & Caldera</h4>
+                  <p className="text-gray-600 mb-4">A stunning natural harbor within a massive flooded caldera, surrounded by striking volcanic landscapes.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Scenic walks with panoramic views</p>
+                    <p>• Spectacular sunset spots</p>
+                    <p>• Rich marine life and birdwatching</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/matupit-island.PNG" 
+                    alt="Matupit Island" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Matupit Island & Villages</h4>
+                  <p className="text-gray-600 mb-4">Experience traditional village life just a short boat ride away from Rabaul.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Cultural immersion experiences</p>
+                    <p>• Excellent snorkeling spots</p>
+                    <p>• Local handicrafts and traditions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* History & Culture */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">History & Culture</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/war-tunnel.PNG" 
+                    alt="WWII Tunnels & Bunkers" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">WWII Relics & Tunnels</h4>
+                  <p className="text-gray-600 mb-4">Explore the extensive network of tunnels, bunkers, and wartime relics from the Japanese occupation during WWII.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Visit the Yamamoto Bunker</p>
+                    <p>• Learn about Rabaul's wartime history</p>
+                    <p>• Guided historical tours available</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/old-rabaul-ruins.PNG" 
+                    alt="Old Rabaul Ruins" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Old Rabaul Ruins</h4>
+                  <p className="text-gray-600 mb-4">Walk through the remnants of the old town, preserved after the devastating 1994 volcanic eruptions.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• See nature reclaiming the town</p>
+                    <p>• Powerful reminder of volcanic power</p>
+                    <p>• Unique photo opportunities</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Local Life */}
+          <div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">Local Life & Activities</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/kokopo-war-museum.jpg" 
+                    alt="Rabaul Museum & Observatory" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Rabaul Museum & Observatory</h4>
+                  <p className="text-gray-600 mb-4">Discover the region's volcanic history, local culture, and wartime past at these fascinating sites.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Volcanic monitoring exhibits</p>
+                    <p>• Cultural artifacts and history</p>
+                    <p>• Panoramic views from the observatory</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Local Markets & Shopping */}
+          <div className="mt-12">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 pb-2 border-b border-green-200">Local Markets & Shopping</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/rabaul-market.jpg" 
+                    alt="Rabaul Market" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Rabaul Market</h4>
+                  <p className="text-gray-600 mb-4">Immerse yourself in local culture at this vibrant market, a hub of daily life in Rabaul.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Fresh tropical fruits and seafood</p>
+                    <p>• Traditional shell money and crafts</p>
+                    <p>• Authentic local cuisine</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-48 bg-gray-100">
+                  <Image 
+                    src="/images/cards/scenic-lookouts.PNG" 
+                    alt="Observation Hill" 
+                    fill 
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold mb-2">Scenic Lookouts & Walks</h4>
+                  <p className="text-gray-600 mb-4">Discover breathtaking viewpoints around Rabaul, perfect for photography and nature appreciation.</p>
+                  <div className="text-sm text-green-700">
+                    <p>• Panoramic harbor and volcano views</p>
+                    <p>• Easy to moderate walking trails</p>
+                    <p>• Perfect for sunset photography</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
