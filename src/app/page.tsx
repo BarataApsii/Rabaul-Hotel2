@@ -524,35 +524,81 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/30" style={{ zIndex: 1 }} />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" style={{ zIndex: 1 }} />
         </div>
-        <div className="container max-w-7xl px-4 text-center relative z-10">
+        <div className="container max-w-7xl px-4 relative z-10 w-full pt-16 sm:pt-24 md:pt-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto px-2"
+            className="max-w-3xl mx-auto px-4 w-full text-center"
           >
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-2 sm:mb-4 md:mb-6 leading-tight">
-              Welcome to <span className="text-yellow-300">Rabaul Hotel</span>
-            </h1>
-            <p className="text-base sm:text-xl md:text-2xl mb-4 sm:mb-8 md:mb-12 max-w-2xl mx-auto">
-              Where the Road Ends & The Adventure Begins!
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-              <Button 
-                size="lg" 
-                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                onClick={() => scrollToSection(bookRef)}
+            <div className="space-y-2 sm:space-y-3 md:space-y-4">
+              <motion.div
+                className="hidden md:block"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
               >
-                Book Now
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="bg-transparent border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
-                onClick={() => scrollToSection(roomsRef)}
-              >
-                View Rooms
-              </Button>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 sm:mb-4 md:mb-6 leading-tight">
+                  Welcome to <span className="text-yellow-300">Rabaul Hotel</span>
+                </h1>
+                <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 md:mb-12 mx-auto">
+                  Where the Road Ends & The Adventure Begins!
+                </p>
+              </motion.div>
+              <div className="md:hidden space-y-2">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  className="text-4xl font-bold"
+                >
+                  Welcome to
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-5xl font-bold text-yellow-300 mb-3"
+                >
+                  Rabaul Hotel
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="text-xl font-medium text-white/90 italic"
+                >
+                  Where the Road Ends
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="text-xl font-medium text-white/90 italic"
+                >
+                  & The Adventure Begins
+                </motion.div>
+              </div>
+            </div>
+            
+            <div className="mt-12 sm:mt-16 md:mt-20">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+                <Button 
+                  size="lg" 
+                  className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  onClick={() => scrollToSection(bookRef)}
+                >
+                  Book Now
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="bg-transparent border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                  onClick={() => scrollToSection(roomsRef)}
+                >
+                  View Rooms
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -1316,8 +1362,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-1">Our Location</h4>
-                      <p className="text-gray-600">8th Street, Rabaul</p>
-                      <p className="text-gray-600">East New Britain, Papua New Guinea</p>
+                      <p className="text-gray-600">Mango Avenue</p>
+                      <p className="text-gray-600">P.O Box 1</p>
+                      <p className="text-gray-600">Rabaul, East New Britain Province</p>
+                      <p className="text-gray-600">Papua New Guinea</p>
                     </div>
                   </div>
                   
@@ -1326,10 +1374,18 @@ export default function Home() {
                       <Phone className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Number</h4>
-                      <a href="tel:+67576534563" className="text-gray-600 hover:text-blue-600 transition-colors">
-                        +675 7653 4563
-                      </a>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Numbers</h4>
+                      <div className="space-y-1">
+                        <a href="tel:+67571893571" className="block text-gray-600 hover:text-blue-600 transition-colors">
+                          +675 7189 3571
+                        </a>
+                        <a href="tel:+6759821999" className="block text-gray-600 hover:text-blue-600 transition-colors">
+                          +675 982 1999
+                        </a>
+                        <a href="tel:+67571749608" className="block text-gray-600 hover:text-blue-600 transition-colors">
+                          +675 7174 9608
+                        </a>
+                      </div>
                     </div>
                   </div>
                   
