@@ -20,12 +20,23 @@ export default function Home() {
   const [roomType, setRoomType] = useState<string | undefined>(undefined)
   const [adults, setAdults] = useState(2)
   const [children, setChildren] = useState(0)
+  const [title, setTitle] = useState('mr')
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
   const [countryCode, setCountryCode] = useState('+675')
   const [email, setEmail] = useState('')
   const [country, setCountry] = useState('')
   const [specialRequest, setSpecialRequest] = useState('')
+  const [transportServices, setTransportServices] = useState({
+    airportPickup: false,
+    airportDropoff: false,
+    localTransport: false,
+    shuttleService: false,
+    ownVehicle: false
+  })
+  const [transportType, setTransportType] = useState('sedan')
+  const [transportHours, setTransportHours] = useState(1)
+  const [paymentMethod, setPaymentMethod] = useState('credit-card')
   const [contactName, setContactName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
   const [contactMessage, setContactMessage] = useState('')
@@ -157,8 +168,47 @@ export default function Home() {
   // Calculate number of nights - handle undefined dates during SSR
   const nights = checkIn && checkOut 
     ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
-    : 1
-  const totalCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
+    : 0;
+  // Calculate transport cost
+  const calculateTransportCost = () => {
+    let cost = 0
+    
+    if (transportServices.shuttleService) {
+      // Shuttle service cost (fixed price per person)
+      const shuttleCostPerPerson = 50 // PGK 50 per person
+      cost += (adults + children) * shuttleCostPerPerson
+    } else if (!transportServices.ownVehicle) {
+      // Airport pickup cost
+      if (transportServices.airportPickup) {
+        switch(transportType) {
+          case 'sedan': cost += 100; break
+          case 'van': cost += 150; break
+          case 'bus': cost += 250; break
+        }
+      }
+      
+      // Airport drop-off cost (same as pickup)
+      if (transportServices.airportDropoff) {
+        switch(transportType) {
+          case 'sedan': cost += 100; break
+          case 'van': cost += 150; break
+          case 'bus': cost += 250; break
+        }
+      }
+      
+      // Local transport cost
+      if (transportServices.localTransport) {
+        cost += 80 * transportHours
+      }
+    }
+    
+    return cost
+  }
+
+  // Calculate total cost
+  const transportCost = calculateTransportCost()
+  const roomCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
+  const totalCost = roomCost + transportCost
   const totalGuests = adults + children
 
   const validateBookingForm = () => {
@@ -670,7 +720,7 @@ export default function Home() {
                 <CardHeader className="bg-[#1a5f2c] text-white py-3">
                   <CardTitle className="text-xl">Reservation Details</CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 space-y-4">
+                <CardContent className="p-4 space-y-4 text-white">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1" key={`check-in-${formKey}`}>
                       <Label htmlFor="check-in" className="font-medium text-white">Check-in Date</Label>
@@ -679,7 +729,7 @@ export default function Home() {
                           <Button
                             id="check-in"
                             variant="outline"
-                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-800"
+                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white/10 hover:bg-white/20 text-white border-white/30"
                           >
                             <CalendarIcon className="mr-2 h-5 w-5" />
                             {checkIn ? format(checkIn, "PPP") : <span className="text-white/70">Select check-in date</span>}
@@ -700,16 +750,16 @@ export default function Home() {
                     </div>
                     
                     <div className="space-y-1" key={`check-out-${formKey}`}>
-                      <Label htmlFor="check-out" className="font-medium">Check-out Date</Label>
+                      <Label htmlFor="check-out" className="font-medium text-white">Check-out Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             id="check-out"
                             variant="outline"
-                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-800"
+                            className="w-full justify-start text-left font-normal h-12 px-4 bg-white/10 hover:bg-white/20 text-white border-white/30"
                           >
                             <CalendarIcon className="mr-2 h-5 w-5" />
-                            {checkOut ? format(checkOut, "PPP") : <span>Select check-out date</span>}
+                            {checkOut ? format(checkOut, "PPP") : <span className="text-white/70">Select check-out date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -729,9 +779,9 @@ export default function Home() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
-                      <Label htmlFor="room-type" className="text-sm font-medium text-gray-600">Room Type</Label>
+                      <Label htmlFor="room-type" className="text-sm font-medium text-white">Room Type</Label>
                       <Select value={roomType || 'select'} onValueChange={value => setRoomType(value === 'select' ? undefined : value)}>
-                        <SelectTrigger id="room-type" className="h-10 text-sm">
+                        <SelectTrigger id="room-type" className="h-10 text-sm border-white/30">
                           <SelectValue placeholder="Select room type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -745,15 +795,15 @@ export default function Home() {
                     </div>
                     
                     <div className="space-y-1">
-                      <Label className="text-sm font-medium text-gray-600">Guests</Label>
+                      <Label className="text-sm font-medium text-white">Guests</Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <Label htmlFor="adults" className="text-xs font-medium text-gray-600">Adults</Label>
+                          <Label htmlFor="adults" className="text-xs font-medium text-white">Adults</Label>
                           <Select 
                             value={adults.toString()} 
                             onValueChange={(value) => setAdults(parseInt(value))}
                           >
-                            <SelectTrigger id="adults" className="h-9 text-sm">
+                            <SelectTrigger id="adults" className="h-9 text-sm border-white/30">
                               <SelectValue placeholder="Adults" />
                             </SelectTrigger>
                             <SelectContent>
@@ -766,12 +816,12 @@ export default function Home() {
                           </Select>
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor="children" className="text-xs font-medium text-gray-600">Children</Label>
+                          <Label htmlFor="children" className="text-xs font-medium text-white">Children</Label>
                           <Select 
                             value={children.toString()} 
                             onValueChange={(value) => setChildren(parseInt(value))}
                           >
-                            <SelectTrigger id="children" className="h-9 text-sm">
+                            <SelectTrigger id="children" className="h-9 text-sm border-white/30">
                               <SelectValue placeholder="Children" />
                             </SelectTrigger>
                             <SelectContent>
@@ -788,41 +838,58 @@ export default function Home() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="fullName" className="text-sm font-medium text-gray-600">Full Name</Label>
-                      <Input 
-                        id="fullName"
-                        type="text"
-                        placeholder="John Doe"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="h-9 text-sm"
-                      />
+                      <Label className="text-sm font-medium text-white">Title & Full Name</Label>
+                      <div className="flex gap-2">
+                        <Select 
+                          value={title}
+                          onValueChange={setTitle}
+                        >
+                          <SelectTrigger className="w-24 h-9 text-sm border-white/30">
+                            <SelectValue placeholder="Title" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="mr">Mr.</SelectItem>
+                            <SelectItem value="mrs">Mrs.</SelectItem>
+                            <SelectItem value="ms">Ms.</SelectItem>
+                            <SelectItem value="dr">Dr.</SelectItem>
+                            <SelectItem value="prof">Prof.</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Input 
+                          id="fullName"
+                          type="text"
+                          placeholder="John Doe"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="h-9 text-sm flex-1 border-white/30"
+                        />
+                      </div>
                       {errors.fullName && (
                         <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
                       )}
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
+                      <Label htmlFor="email" className="text-sm font-medium text-white">Email</Label>
                       <Input 
                         id="email" 
                         type="email" 
                         placeholder="your@email.com" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-9 text-sm"
+                        className="h-9 text-sm border-white/30"
                       />
                       {errors.email && (
                         <p className="text-xs text-red-500 mt-1">{errors.email}</p>
                       )}
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="phone" className="text-sm font-medium text-gray-600">Phone</Label>
+                      <Label htmlFor="phone" className="text-sm font-medium text-white">Phone</Label>
                       <div className="flex">
                         <Select 
                           value={countryCode}
                           onValueChange={setCountryCode}
                         >
-                          <SelectTrigger className="w-[120px] h-9 text-sm rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0">
+                          <SelectTrigger className="w-[120px] h-9 text-sm rounded-r-none border-r-0 focus:ring-0 focus:ring-offset-0 border-white/30">
                             <SelectValue placeholder="Code" />
                           </SelectTrigger>
                           <SelectContent className="max-h-[400px] overflow-y-auto">
@@ -883,22 +950,159 @@ export default function Home() {
                           placeholder="1234567" 
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="h-9 text-sm rounded-l-none flex-1"
+                          className="h-9 text-sm rounded-l-none flex-1 border-white/30"
                         />
                       </div>
                       {errors.phone && (
                         <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
                       )}
                     </div>
-                    <div className="space-y-1 col-span-2">
-                      <Label htmlFor="special-requests" className="text-sm font-medium text-gray-600">Special Requests</Label>
-                      <Textarea
-                        id="special-requests"
-                        placeholder="Any special requirements?"
-                        value={specialRequest}
-                        onChange={(e) => setSpecialRequest(e.target.value)}
-                        className="min-h-[80px] text-sm"
-                      />
+                    <div className="space-y-3 col-span-2">
+                      <div className="space-y-1">
+                        <Label className="text-sm font-medium text-white">Transport Services</Label>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <div className="flex items-center space-x-2 col-span-1">
+                            <input
+                              type="checkbox"
+                              id="airport-pickup"
+                              checked={transportServices.airportPickup}
+                              onChange={(e) => setTransportServices({...transportServices, airportPickup: e.target.checked})}
+                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                            />
+                            <Label htmlFor="airport-pickup" className="text-sm font-normal text-white">Airport Pickup</Label>
+                          </div>
+                          <div className="flex items-center space-x-2 col-span-1">
+                            <input
+                              type="checkbox"
+                              id="airport-dropoff"
+                              checked={transportServices.airportDropoff}
+                              onChange={(e) => setTransportServices({...transportServices, airportDropoff: e.target.checked})}
+                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                            />
+                            <Label htmlFor="airport-dropoff" className="text-sm font-normal text-white">Airport Drop-off</Label>
+                          </div>
+                          <div className="flex items-center space-x-2 col-span-1">
+                            <input
+                              type="checkbox"
+                              id="local-transport"
+                              checked={transportServices.localTransport}
+                              onChange={(e) => setTransportServices({...transportServices, localTransport: e.target.checked})}
+                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                            />
+                            <Label htmlFor="local-transport" className="text-sm font-normal text-white">Local Transport</Label>
+                          </div>
+                          <div className="flex items-center space-x-2 col-span-1">
+                            <input
+                              type="checkbox"
+                              id="shuttle-service"
+                              checked={transportServices.shuttleService}
+                              onChange={(e) => setTransportServices({...transportServices, shuttleService: e.target.checked})}
+                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                            />
+                            <Label htmlFor="shuttle-service" className="text-sm font-normal text-white">Shuttle Service</Label>
+                          </div>
+                          <div className="flex items-center space-x-2 col-span-1">
+                            <input
+                              type="checkbox"
+                              id="own-vehicle"
+                              checked={transportServices.ownVehicle}
+                              onChange={(e) => setTransportServices({...transportServices, ownVehicle: e.target.checked})}
+                              className="h-4 w-4 rounded border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
+                            />
+                            <Label htmlFor="own-vehicle" className="text-sm font-normal text-white">Using Own Vehicle</Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {(transportServices.airportPickup || transportServices.airportDropoff) && !transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="space-y-1">
+                          <Label className="text-sm font-medium text-white">Vehicle Type</Label>
+                          <Select 
+                            value={transportType}
+                            onValueChange={setTransportType}
+                          >
+                            <SelectTrigger className="h-9 text-sm border-white/30">
+                              <SelectValue placeholder="Select vehicle type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="sedan">Sedan (K100 per trip)</SelectItem>
+                              <SelectItem value="van">Van (K150 per trip)</SelectItem>
+                              <SelectItem value="bus">Bus (K250 per trip)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {transportServices.localTransport && !transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="space-y-1">
+                          <Label className="text-sm font-medium text-white">Local Transport Hours</Label>
+                          <Select 
+                            value={transportHours.toString()}
+                            onValueChange={(value) => setTransportHours(parseInt(value))}
+                          >
+                            <SelectTrigger className="h-9 text-sm border-white/30">
+                              <SelectValue placeholder="Select hours" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map(hours => (
+                                <SelectItem key={hours} value={hours.toString()}>
+                                  {hours} hour{hours > 1 ? 's' : ''} (K{80 * hours})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-white">Payment Method</Label>
+                        <div className="flex items-center space-x-6">
+                          <label className="inline-flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="paymentMethod"
+                              value="credit-card"
+                              checked={paymentMethod === 'credit-card'}
+                              onChange={() => setPaymentMethod('credit-card')}
+                              className="h-4 w-4 text-[#1a5f2c] focus:ring-[#1a5f2c] border-white/50"
+                            />
+                            <span className="text-sm text-white">Credit Card</span>
+                          </label>
+                          <label className="inline-flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="paymentMethod"
+                              value="bank-transfer"
+                              checked={paymentMethod === 'bank-transfer'}
+                              onChange={() => setPaymentMethod('bank-transfer')}
+                              className="h-4 w-4 text-[#1a5f2c] focus:ring-[#1a5f2c] border-white/50"
+                            />
+                            <span className="text-sm text-white">Bank Transfer</span>
+                          </label>
+                          <label className="inline-flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="paymentMethod"
+                              value="cash"
+                              checked={paymentMethod === 'cash'}
+                              onChange={() => setPaymentMethod('cash')}
+                              className="h-4 w-4 text-[#1a5f2c] focus:ring-[#1a5f2c] border-white/50"
+                            />
+                            <span className="text-sm text-white">Cash on Arrival</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label htmlFor="special-requests" className="text-sm font-medium text-white">Special Requests</Label>
+                        <Textarea
+                          id="special-requests"
+                          placeholder="Any special requirements?"
+                          value={specialRequest}
+                          onChange={(e) => setSpecialRequest(e.target.value)}
+                          className="min-h-[80px] text-sm border-white/30"
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -912,20 +1116,68 @@ export default function Home() {
                   <CardTitle className="text-yellow-400">Booking Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                <div className="flex justify-between text-white">
-                  <span>Nights:</span>
-                  <span className="font-medium">{nights} night{nights > 1 ? 's' : ''}</span>
-                </div>
-                <div className="flex justify-between text-white">
-                  <span>Room Rate:</span>
-                  <span className="font-medium">K {roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] : 0} / night</span>
-                </div>
-                <div className="flex justify-between border-t border-white pt-2 font-bold text-white">
-                  <span>Total Cost:</span>
-                  <span className="text-white">K {totalCost}</span>
-                </div>
-                <div className="text-sm text-white/80 mt-2">
-                  Total Guests: {totalGuests}
+                <div className="space-y-2 text-white">
+                  <div className="flex justify-between">
+                    <span>Nights:</span>
+                    <span className="font-medium">{nights} night{nights > 1 ? 's' : ''}</span>
+                  </div>
+                  
+                  {roomType && roomType !== 'select' && (
+                    <div className="flex justify-between">
+                      <span>Room ({roomType.charAt(0).toUpperCase() + roomType.slice(1)}):</span>
+                      <span className="font-medium">K {roomRates[roomType as keyof typeof roomRates]} × {nights} = K {roomCost}</span>
+                    </div>
+                  )}
+                  
+                  {transportCost > 0 && (
+                    <div className="pt-2 border-t border-white/20">
+                      <div className="text-sm font-medium mb-1">Transport Services:</div>
+                      {transportServices.airportPickup && !transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="flex justify-between text-sm">
+                          <span className="pl-2">• Airport Pickup ({transportType})</span>
+                          <span>K {transportType === 'sedan' ? 100 : transportType === 'van' ? 150 : 250}</span>
+                        </div>
+                      )}
+                      {transportServices.airportDropoff && !transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="flex justify-between text-sm">
+                          <span className="pl-2">• Airport Drop-off ({transportType})</span>
+                          <span>K {transportType === 'sedan' ? 100 : transportType === 'van' ? 150 : 250}</span>
+                        </div>
+                      )}
+                      {transportServices.localTransport && !transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="flex justify-between text-sm">
+                          <span className="pl-2">• Local Transport ({transportHours} hour{transportHours > 1 ? 's' : ''})</span>
+                          <span>K {80 * transportHours}</span>
+                        </div>
+                      )}
+                      {transportServices.shuttleService && !transportServices.ownVehicle && (
+                        <div className="flex justify-between text-sm">
+                          <span className="pl-2">• Shuttle Service (per person)</span>
+                          <span>K {50 * (adults + children)}</span>
+                        </div>
+                      )}
+                      {transportServices.ownVehicle && (
+                        <div className="flex justify-between text-sm">
+                          <span className="pl-2">• Using Own Vehicle</span>
+                          <span>K 0</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm font-medium mt-1 pt-1 border-t border-white/20">
+                        <span>Subtotal (Transport):</span>
+                        <span>K {transportCost}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between border-t border-white/30 pt-2 font-bold">
+                    <span>Total Cost:</span>
+                    <span className="text-yellow-300">K {totalCost}</span>
+                  </div>
+                  
+                  <div className="text-sm text-white/80">
+                    <div>Guests: {adults} Adult{adults > 1 ? 's' : ''} {children > 0 ? `& ${children} Child${children > 1 ? 'ren' : ''}` : ''}</div>
+                    <div>Payment: {paymentMethod === 'credit-card' ? 'Credit Card' : paymentMethod === 'bank-transfer' ? 'Bank Transfer' : 'Cash on Arrival'}</div>
+                  </div>
                 </div>
                 <Button 
                   onClick={handleBookingConfirm} 
