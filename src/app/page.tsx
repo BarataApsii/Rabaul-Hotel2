@@ -49,7 +49,25 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  const [bookingDetails, setBookingDetails] = useState<Record<string, any> | null>(null)
+  interface BookingDetails {
+    name: string;
+    email: string;
+    checkIn: string;
+    checkOut: string;
+    roomType?: string;
+    guests?: number;
+    specialRequests?: string;
+  }
+
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>({
+    name: '',
+    email: '',
+    checkIn: '',
+    checkOut: '',
+    roomType: '',
+    guests: 1,
+    specialRequests: ''
+  })
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
   const [formKey, setFormKey] = useState(0) // Key to force remount of form components
 
