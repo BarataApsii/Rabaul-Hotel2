@@ -15,6 +15,8 @@ const nextConfig = {
   },
   // Configure output directory for the build
   output: 'standalone',
+  // Set the root directory for file tracing (resolves lockfile warning)
+  outputFileTracingRoot: __dirname,
   // Disable source maps in production
   productionBrowserSourceMaps: false,
   // Disable the powered by header
@@ -35,11 +37,14 @@ const nextConfig = {
   },
   // Images configuration
   images: {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
     formats: ['image/avif', 'image/webp']
   },
-  // Enable React Refresh
-  reactRefresh: true,
   // Configure page extensions
   pageExtensions: ['tsx', 'ts', 'jsx', 'js']
 };

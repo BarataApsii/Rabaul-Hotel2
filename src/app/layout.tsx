@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: "Rabaul Hotel",
   description: "Experience luxury and comfort at Rabaul Hotel, where the road ends and the adventure begins!",
   icons: {
@@ -35,10 +36,17 @@ export const metadata: Metadata = {
         url: '/images/logo.png',
         width: 800,
         height: 600,
+        alt: 'Rabaul Hotel Logo',
       },
     ],
     locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rabaul Hotel',
+    description: 'Experience luxury and comfort at Rabaul Hotel, where the road ends and the adventure begins!',
+    images: ['/images/logo.png'],
   },
 };
 

@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { roomImages, attractionImages, amenityImages, logoImage, mobileBannerImage } from '@/lib/images'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -90,6 +91,7 @@ export default function Home() {
   const homeRef = useRef<HTMLElement>(null)
   const roomsRef = useRef<HTMLElement>(null)
   const bookRef = useRef<HTMLElement>(null)
+  const exploreRef = useRef<HTMLElement>(null)
   const amenitiesRef = useRef<HTMLElement>(null)
   const contactRef = useRef<HTMLElement>(null)
   
@@ -142,7 +144,7 @@ export default function Home() {
       { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
     )
     
-    const sections = [homeRef.current, roomsRef.current, bookRef.current, amenitiesRef.current, contactRef.current].filter(Boolean)
+    const sections = [homeRef.current, roomsRef.current, bookRef.current, exploreRef.current, amenitiesRef.current, contactRef.current].filter(Boolean)
     sections.forEach((section) => {
       if (section) observer.observe(section)
     })
@@ -310,9 +312,11 @@ export default function Home() {
           <div className="flex items-center space-x-3">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
               <img 
-                src="/images/logo.png" 
+                src={logoImage}
                 alt="Rabaul Hotel Logo" 
                 className="h-12 w-auto hover:opacity-90 transition-opacity"
+                width={150}
+                height={50}
               />
             </button>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent"></h1>
@@ -338,6 +342,13 @@ export default function Home() {
               className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
             >
               Booking
+            </Button>
+            <Button 
+              variant="ghost"
+              onClick={() => scrollToSection(exploreRef)}
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+            >
+              Explore
             </Button>
             <Button 
               variant="ghost"
@@ -407,6 +418,17 @@ export default function Home() {
               </button>
               <button 
                 onClick={() => {
+                  scrollToSection(exploreRef)
+                  setMobileMenuOpen(false)
+                }}
+                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                  activeSection === 'explore' ? 'bg-white/20 font-medium' : ''
+                }`}
+              >
+                Explore
+              </button>
+              <button 
+                onClick={() => {
                   scrollToSection(amenitiesRef)
                   setMobileMenuOpen(false)
                 }}
@@ -464,9 +486,10 @@ export default function Home() {
           </div>
           <div className="md:hidden absolute inset-0" style={{ zIndex: 1 }}>
             <Image
-              src="/images/mobile-banner.png"
+              src={mobileBannerImage}
               alt="Rabaul Hotel"
               fill
+              sizes="100vw"
               className="object-cover"
               priority
             />
@@ -943,7 +966,7 @@ export default function Home() {
                                 onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, noTransport: true, transportType: '' }))}
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
-                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
+                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don&apos;t need transport services</Label>
                             </div>
                             
                             <div className="flex items-center space-x-2">
@@ -1230,7 +1253,7 @@ export default function Home() {
         <div className="container max-w-5xl px-4 mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Get in touch with our concierge team for any inquiries or assistance</p>
+            <p className="text-gray-600 max-w-2xl mx-auto">It&apos;s time to start your adventure in Rabaul. We can&apos;t wait to welcome you to our little piece of paradise. If you have any questions or need assistance, our team is always here to help. See you soon!</p>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1351,6 +1374,156 @@ export default function Home() {
                   Send Message
                 </Button>
               </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Explore Rabaul Section */}
+      <section ref={exploreRef} className="py-16 bg-white scroll-mt-16" id="explore">
+        <div className="container max-w-7xl px-4 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Explore Rabaul</h2>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Discover the natural beauty and rich history of Rabaul, where volcanic landscapes meet World War II relics and vibrant local culture.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.tavurvur}
+                  alt="Mt Tavurvur Volcano"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Mt Tavurvur Volcano</h3>
+                <p className="text-sm text-gray-600">Witness the power of nature at this active volcano with dramatic crater views, especially stunning at sunrise.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.simpsonHarbour}
+                  alt="Simpson Harbour & Caldera"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Simpson Harbour & Caldera</h3>
+                <p className="text-sm text-gray-600">Stunning flooded caldera surrounded by volcanoes, perfect for scenic walks and wildlife spotting.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.matupitIsland}
+                  alt="Matupit Island"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Matupit Island</h3>
+                <p className="text-sm text-gray-600">Experience traditional village life and enjoy excellent snorkeling in crystal clear waters.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.ww2Tunnels}
+                  alt="WWII Relics & Tunnels"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">WWII Relics & Tunnels</h3>
+                <p className="text-sm text-gray-600">Explore historic tunnels and bunkers from the Japanese occupation during World War II.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.oldRabaul}
+                  alt="Old Rabaul Ruins"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Old Rabaul Ruins</h3>
+                <p className="text-sm text-gray-600">See the remnants of the old town, a powerful reminder of the 1994 volcanic eruptions.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.museum}
+                  alt="Rabaul Museum"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Rabaul Museum</h3>
+                <p className="text-sm text-gray-600">Discover the region's volcanic history, local culture, and wartime heritage.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.warCemetery}
+                  alt="Bitapaka War Cemetery"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Bitapaka War Cemetery</h3>
+                <p className="text-sm text-gray-600">A peaceful memorial honoring those who perished in World Wars I and II.</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={attractionImages.market}
+                  alt="Rabaul Market"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">Rabaul Market</h3>
+                <p className="text-sm text-gray-600">Immerse yourself in local life with fresh seafood, tropical fruits, and traditional crafts.</p>
+              </div>
             </div>
           </div>
         </div>
