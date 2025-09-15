@@ -23,9 +23,7 @@ const nextConfig = {
   poweredByHeader: false,
   // Webpack configuration
   webpack: (config, { isServer }) => {
-    // Add any custom webpack configuration here
     if (process.env.NODE_ENV === 'development') {
-      // Remove the ReactDevOverlay plugin in development
       const reactDevOverlayIndex = config.plugins.findIndex(
         (plugin) => plugin.constructor.name === 'ReactDevOverlay'
       );
@@ -43,7 +41,9 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-    formats: ['image/avif', 'image/webp']
+    formats: ['image/avif', 'image/webp'],
+    // Define allowed quality values for the Image component
+    qualities: [75, 90, 95, 100],
   },
   // Configure page extensions
   pageExtensions: ['tsx', 'ts', 'jsx', 'js']
