@@ -2,7 +2,29 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { roomImages, attractionImages, amenityImages, logoImage, mobileBannerImage } from '@/lib/images'
+// Import specific images directly instead of from lib/images
+const logoImage = '/images/logo.png';
+
+// Define attraction images with proper typing
+interface AttractionImage {
+  src: string;
+  alt: string;
+}
+
+interface AttractionImages {
+  [key: string]: AttractionImage;
+}
+
+const attractionImages: AttractionImages = {
+  tavurvur: { src: '/images/cards/mt-tavurvur.PNG', alt: 'Tavurvur Volcano' },
+  simpsonHarbour: { src: '/images/cards/simpson-harbour-at-sunset.jpg', alt: 'Simpson Harbour' },
+  matupitIsland: { src: '/images/cards/matupit-island.PNG', alt: 'Matupit Island' },
+  ww2Tunnels: { src: '/images/cards/war-tunnel.PNG', alt: 'WW2 Tunnels' },
+  oldRabaul: { src: '/images/cards/old-rabaul-ruins.PNG', alt: 'Old Rabaul' },
+  museum: { src: '/images/cards/kokopo-war-museum.jpg', alt: 'Rabaul Museum' },
+  warCemetery: { src: '/images/cards/scenic-lookouts.PNG', alt: 'War Cemetery' },
+  market: { src: '/images/cards/rabaul-market.jpg', alt: 'Local Market' },
+};
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,7 +34,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -1553,8 +1575,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.tavurvur}
-                  alt="Mt Tavurvur Volcano"
+                  src={attractionImages.tavurvur.src}
+                  alt={attractionImages.tavurvur.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1570,8 +1592,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.simpsonHarbour}
-                  alt="Simpson Harbour & Caldera"
+                  src={attractionImages.simpsonHarbour.src}
+                  alt={attractionImages.simpsonHarbour.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1587,8 +1609,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.matupitIsland}
-                  alt="Matupit Island"
+                  src={attractionImages.matupitIsland.src}
+                  alt={attractionImages.matupitIsland.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1604,8 +1626,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.ww2Tunnels}
-                  alt="WWII Relics & Tunnels"
+                  src={attractionImages.ww2Tunnels.src}
+                  alt={attractionImages.ww2Tunnels.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1621,8 +1643,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.oldRabaul}
-                  alt="Old Rabaul Ruins"
+                  src={attractionImages.oldRabaul.src}
+                  alt={attractionImages.oldRabaul.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1638,8 +1660,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.museum}
-                  alt="Rabaul Museum"
+                  src={attractionImages.museum.src}
+                  alt={attractionImages.museum.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1655,8 +1677,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.warCemetery}
-                  alt="Bitapaka War Cemetery"
+                  src={attractionImages.warCemetery.src}
+                  alt={attractionImages.warCemetery.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
@@ -1672,8 +1694,8 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48 w-full">
                 <Image 
-                  src={attractionImages.market}
-                  alt="Rabaul Market"
+                  src={attractionImages.market.src}
+                  alt={attractionImages.market.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
