@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Wifi, Utensils, Dumbbell, Waves, Car, ConciergeBell, Coffee, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -504,14 +504,17 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="md:hidden absolute inset-0" style={{ zIndex: 1 }}>
+          <div className="md:hidden absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
             <Image
               src={mobileBannerImage}
-              alt="Rabaul Hotel"
+              alt="Rabaul Hotel - Your Tropical Paradise"
               fill
-              sizes="100vw"
-              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 0"
+              className="object-cover object-center"
               priority
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAGAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABQj/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAAH/2Q=="
             />
           </div>
           <div className="absolute inset-0 bg-black/30" style={{ zIndex: 1 }} />
@@ -1276,78 +1279,135 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="py-16 bg-white scroll-mt-16"
+        className="py-20 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-16 relative overflow-hidden"
       >
-        <div className="container max-w-5xl px-4 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">It&apos;s time to start your adventure in Rabaul. We can&apos;t wait to welcome you to our little piece of paradise. If you have any questions or need assistance, our team is always here to help. See you soon!</p>
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        
+        <div className="container max-w-6xl px-4 mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-1.5 text-sm font-semibold text-green-700 bg-green-100 rounded-full mb-4">Get In Touch</span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto mb-6"></div>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Have questions or need assistance? Our team is here to help you plan your perfect stay in Rabaul.</p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left Column - Contact Info */}
             <div className="space-y-8">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">Hotel Information</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-4">
-                    <div className="mt-0.5">
-                      <MapPin className="h-5 w-5 text-gray-500" />
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <h3 className="text-2xl font-bold text-gray-900 mb-8 relative pb-4">
+                  <span className="relative">
+                    Our Information
+                    <span className="absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></span>
+                  </span>
+                </h3>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-5 group">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
+                      <MapPin className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Address</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Our Location</h4>
                       <p className="text-gray-600">8th Street, Rabaul</p>
                       <p className="text-gray-600">East New Britain, Papua New Guinea</p>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="mt-0.5">
-                      <Phone className="h-5 w-5 text-gray-500" />
+                  
+                  <div className="flex items-start space-x-5 group">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                      <Phone className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Phone</h4>
-                      <p className="text-gray-600">+675 7653 4563</p>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Number</h4>
+                      <a href="tel:+67576534563" className="text-gray-600 hover:text-blue-600 transition-colors">
+                        +675 7653 4563
+                      </a>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="mt-0.5">
-                      <Mail className="h-5 w-5 text-gray-500" />
+                  
+                  <div className="flex items-start space-x-5 group">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                      <Mail className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Email</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Email Address</h4>
                       <a href="mailto:info@rabaulhotel.com" className="text-blue-600 hover:underline">
                         info@rabaulhotel.com
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="mt-0.5">
-                      <Clock className="h-5 w-5 text-gray-500" />
+                  
+                  <div className="flex items-start space-x-5 group">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+                      <Clock className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Reception Hours</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Working Hours</h4>
                       <p className="text-gray-600">24/7 Front Desk Service</p>
+                      <p className="text-sm text-gray-500">Check-in: 2:00 PM | Check-out: 11:00 AM</p>
                     </div>
                   </div>
                 </div>
+                
+                {/* Social Media Links */}
+                <div className="mt-10">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Follow Us</h4>
+                  <div className="flex space-x-4">
+                    {[
+                      { icon: Facebook, color: 'bg-blue-500 hover:bg-blue-600', label: 'Facebook' },
+                      { icon: Instagram, color: 'bg-pink-500 hover:bg-pink-600', label: 'Instagram' },
+                      { icon: Twitter, color: 'bg-sky-400 hover:bg-sky-500', label: 'Twitter' },
+                      { icon: Youtube, color: 'bg-red-500 hover:bg-red-600', label: 'YouTube' }
+                    ].map((social, index) => (
+                      <a 
+                        key={index}
+                        href="#" 
+                        className={`w-10 h-10 rounded-full ${social.color} text-white flex items-center justify-center transition-colors duration-300 transform hover:-translate-y-1`}
+                        aria-label={social.label}
+                      >
+                        <social.icon className="h-5 w-5" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="bg-white rounded-lg p-5 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 w-full">
-                <div className="rounded-lg overflow-hidden">
+              
+              {/* Map */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-1 border border-white/20 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="rounded-xl overflow-hidden h-64">
                   <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.123456789012!2d152.1234567!3d-4.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwMDclMjQuNCJTIDE1MsKwMDclMjQuNCJF!5e0!3m2!1sen!2spg!4v1234567890123!5m2!1sen!2spg" 
                     width="100%" 
-                    height="200" 
+                    height="100%" 
                     style={{ border: 0 }} 
                     allowFullScreen 
                     loading="lazy"
-                    className="rounded-lg w-full"
+                    className="rounded-xl w-full h-full"
                     aria-label="Our location on map"
                   ></iframe>
                 </div>
-                <p className="text-sm text-gray-500 mt-2 text-center">(Google Maps Integration)</p>
+                <div className="p-4 text-center">
+                  <a 
+                    href="https://maps.google.com/?q=8th+Street,+Rabaul,+Papua+New+Guinea" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    <MapPin className="w-4 h-4 mr-1" />
+                    View on Google Maps
+                  </a>
+                </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 h-fit w-full">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Send us a Message</h3>
+            
+            {/* Right Column - Contact Form */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Send us a Message</h3>
+              <p className="text-gray-600 mb-8">We'll get back to you within 24 hours</p>
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
