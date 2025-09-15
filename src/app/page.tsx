@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect, ChangeEvent } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 // Import specific images directly instead of from lib/images
@@ -26,7 +26,7 @@ const attractionImages: AttractionImages = {
   market: { src: '/images/cards/rabaul-market.jpg', alt: 'Local Market' },
 };
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -81,7 +81,7 @@ export default function Home() {
     specialRequests?: string;
   }
 
-  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>({
+  const [, setBookingDetails] = useState<BookingDetails | null>({
     name: '',
     email: '',
     checkIn: '',
@@ -90,7 +90,7 @@ export default function Home() {
     guests: 1,
     specialRequests: ''
   })
-  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
+  const [, setIsBookingConfirmed] = useState(false)
   const [formKey, setFormKey] = useState(0) // Key to force remount of form components
 
   // Reset all form data and booking summary when component mounts
@@ -296,7 +296,8 @@ export default function Home() {
     return Object.keys(newErrors).length === 0
   }
   
-  const handleContactSubmit = async () => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     if (!validateContactForm()) return
     
     setIsLoading(true)
@@ -653,7 +654,7 @@ export default function Home() {
                   quality={95}
                   priority
                   placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -710,7 +711,7 @@ export default function Home() {
                   quality={95}
                   priority
                   placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -764,7 +765,7 @@ export default function Home() {
                   quality={95}
                   priority
                   placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
@@ -1501,8 +1502,8 @@ export default function Home() {
             {/* Right Column - Contact Form */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Send us a Message</h3>
-              <p className="text-gray-600 mb-8">We'll get back to you within 24 hours</p>
-              <form className="space-y-4">
+              <p className="text-gray-600 mb-8">We&apos;ll get back to you within 24 hours</p>
+              <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
@@ -1511,7 +1512,12 @@ export default function Home() {
                       type="text"
                       className="w-full"
                       placeholder="Enter your first name"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
                     />
+                    {errors.contactName && (
+                      <p className="text-xs text-red-500 mt-1">{errors.contactName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName" className="text-gray-700">Last Name</Label>
@@ -1530,7 +1536,12 @@ export default function Home() {
                     type="email"
                     className="w-full"
                     placeholder="Enter your email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
                   />
+                  {errors.contactEmail && (
+                    <p className="text-xs text-red-500 mt-1">{errors.contactEmail}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subject" className="text-gray-700">Subject</Label>
@@ -1547,13 +1558,34 @@ export default function Home() {
                     id="message"
                     className="min-h-[120px]"
                     placeholder="Enter your message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
                   />
+                  {errors.contactMessage && (
+                    <p className="text-xs text-red-500 mt-1">{errors.contactMessage}</p>
+                  )}
                 </div>
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
+                  disabled={isLoading}
                 >
-                  Send Message
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sending Your Message...
+                    </>
+                  ) : (
+                    <span className="flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Send Message
+                    </span>
+                  )}
                 </Button>
               </form>
             </div>
@@ -1725,7 +1757,7 @@ export default function Home() {
               <div className="relative h-48 overflow-hidden">
                 <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
                   <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 11m16 0v10M4 7v10l8 4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 7m16 0v10M4 7v10l8 4" />
                   </svg>
                 </div>
                 <Image 
@@ -1890,20 +1922,14 @@ export default function Home() {
                   <a href="tel:+67576534563" className="text-green-300 hover:text-white transition-colors">+675 7653 4563</a>
                 </li>
                 <li className="flex items-center">
-                  <Mail className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
-                  <a href="mailto:info@rabaulhotel.com" className="text-green-300 hover:text-white transition-colors">info@rabaulhotel.com</a>
+                  <p className="text-green-300">Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call us at <a href="tel:+6751234567" className="text-white hover:underline">+675 123 4567</a> - we&apos;re happy to help!</p>
                 </li>
               </ul>
-            </div>
-
-            {/* Services */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Our Services</h4>
+              <h4 className="text-lg font-semibold mb-4 mt-6">Our Services</h4>
               <ul className="space-y-3">
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">24/7 Room Service</a></li>
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">Airport Transfer</a></li>
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">Laundry Service</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Tour Arrangements</a></li>
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">Car Rental</a></li>
               </ul>
             </div>
