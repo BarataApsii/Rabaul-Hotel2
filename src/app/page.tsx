@@ -504,7 +504,7 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="md:hidden absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+          <div className="md:hidden absolute inset-0 w-full h-full bg-black" style={{ zIndex: 1 }}>
             <Image
               src={mobileBannerImage}
               alt="Rabaul Hotel - Your Tropical Paradise"
@@ -513,8 +513,12 @@ export default function Home() {
               className="object-cover object-center"
               priority
               quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAGAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABQj/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAAH/2Q=="
+              onError={(e) => {
+                // Fallback to a solid color if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD1cImdcIiB4MT1cIjAlXCIgeTE9XCIwJVwiIHgyPVwiMTAwJVwiIHkyPVwiMTAwJVwiPjxzdG9wIG9mZnNldD1cIjAlXCIgc3RvcC1jb2xvcj1cIiMwMDdiMWZcIi8+PHN0b3Agb2Zmc2V0PVwiMTAwJVwiIHN0b3AtY29sb3I9XCIjMDA2ZGQ5XCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPVwiMTAwJVwiIGhlaWdodD1cIjEwMCVcIiBmaWxsPVwidXJsKCNnKVwiLz48L3N2Zz4=';
+              }}
             />
           </div>
           <div className="absolute inset-0 bg-black/30" style={{ zIndex: 1 }} />

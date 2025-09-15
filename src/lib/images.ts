@@ -29,4 +29,4 @@ export const amenityImages = {
 
 // Other Images
 export const logoImage = '/images/logo.png';
-export const mobileBannerImage = '/images/mobile-banner.png';
+export const mobileBannerImage = '/images/mobile-banner.PNG';
