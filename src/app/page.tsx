@@ -504,15 +504,21 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="md:hidden absolute inset-0 w-full h-full bg-black" style={{ zIndex: 1 }}>
+          <div className="md:hidden absolute inset-0 w-full h-full bg-black">
             <Image
-              src={mobileBannerImage}
+              src="/images/mobile-banner.PNG"
               alt="Rabaul Hotel - Your Tropical Paradise"
               fill
-              sizes="(max-width: 768px) 100vw, 0"
-              className="object-cover object-center"
               priority
-              quality={85}
+              className="object-cover object-center"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 1
+              }}
               onError={(e) => {
                 // Fallback to a solid color if image fails to load
                 const target = e.target as HTMLImageElement;
