@@ -9,10 +9,17 @@
 // For CPanel deployment, set this in your hosting control panel
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://your-cpanel-domain.com/api';
 
-interface RequestOptions extends RequestInit {
+interface RequestOptions extends Omit<RequestInit, 'headers'> {
   headers?: Record<string, string>;
   params?: Record<string, string | number | boolean>;
 }
+
+// Define a generic response type for better type safety
+type ApiResponse<T = unknown> = T & {
+  success: boolean;
+  message?: string;
+  error?: string;
+};
 
 /**
  * Makes an API request
@@ -20,7 +27,7 @@ interface RequestOptions extends RequestInit {
  * @param options - Fetch options (method, headers, body, etc.)
  * @returns Promise with the response data
  */
-export async function apiRequest<T = any>(
+export async function apiRequest<T = unknown>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
@@ -67,16 +74,22 @@ export async function apiRequest<T = any>(
   }
 }
 
-// Example API functions
+// Define specific API types
+type Booking = {
+  id: string;
+  // Add other booking properties here
+};
+
+// API functions
 export const api = {
-  // Example: Fetch bookings
-  getBookings: async (): Promise<any> => {
-    return apiRequest('/bookings');
+  // Fetch bookings
+  getBookings: async (): Promise<ApiResponse<{ bookings: Booking[] }>> => {
+    return apiRequest<ApiResponse<{ bookings: Booking[] }>>('/bookings');
   },
 
-  // Example: Create a booking
-  createBooking: async (data: any): Promise<any> => {
-    return apiRequest('/bookings', {
+  // Create a booking
+  createBooking: async (data: Omit<Booking, 'id'>): Promise<ApiResponse<{ booking: Booking }>> => {
+    return apiRequest<ApiResponse<{ booking: Booking }>>('/bookings', {
       method: 'POST',
       body: JSON.stringify(data),
     });

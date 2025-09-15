@@ -1909,7 +1909,7 @@ export default function Home() {
                   </div>
                 </li>
                 <li className="text-green-300 mt-4">
-                  Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call our 24/7 front desk - we're happy to help!
+                  Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call our 24/7 front desk - we&apos;re happy to help!
                 </li>
               </ul>
             </div>
