@@ -1846,18 +1846,10 @@ export default function Home() {
         <div className="container max-w-7xl px-4 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Rabaul Hotel */}
-            <div>
+            <div className="lg:order-1">
               <h3 className="text-2xl font-bold mb-2">Rabaul Hotel</h3>
-              <div className="flex items-start mb-4">
-                <MapPin className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-green-300 block -mt-0.5">
-                  Mango Avenue<br />
-                  P.O Box 1<br />
-                  Rabaul, East New Britain Province<br />
-                  Papua New Guinea
-                </span>
-              </div>
-              <p className="text-green-300 mb-6">Experience luxury and comfort in the heart of Rabaul. Our hotel offers world-class amenities and breathtaking views of the surrounding landscape.</p>
+              <p className="text-green-300 mb-4">Experience luxury and comfort in the heart of Rabaul. Our hotel offers amenities and breathtaking views of the surrounding landscape.</p>
+              
               <div className="flex space-x-4">
                 <a href="#" className="text-green-300 hover:text-white transition-colors">
                   <span className="sr-only">Facebook</span>
@@ -1875,7 +1867,7 @@ export default function Home() {
             </div>
 
             {/* Quick Links */}
-            <div>
+            <div className="lg:order-4">
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-3">
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">Home</a></li>
@@ -1888,25 +1880,32 @@ export default function Home() {
             </div>
 
             {/* Contact Info */}
-            <div>
+            <div className="lg:order-2">
               <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 <li className="flex items-start space-x-3">
                   <Phone className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <a href="tel:+67571893571" className="block text-green-300 hover:text-white transition-colors">+675 7189 3571</a>
-                    <a href="tel:+6759821999" className="block text-green-300 hover:text-white transition-colors mt-1">+675 982 1999</a>
-                    <a href="tel:+67571749608" className="block text-green-300 hover:text-white transition-colors mt-1">+675 7174 9608</a>
+                  <div className="text-green-300">
+                    <a href="tel:+6759821999" className="block hover:text-white transition-colors">+675 982 1999 / 7189 3571</a>
                   </div>
                 </li>
-                <li className="text-green-300 mt-4">
-                  Don&apos;t see your question here? Contact our friendly team at <a href="mailto:info@rabaulhotel.com" className="text-white hover:underline">info@rabaulhotel.com</a> or call our 24/7 front desk - we&apos;re happy to help!
+                <li className="flex items-start space-x-3">
+                  <Mail className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <a href="mailto:info@rabaulhotel.com" className="text-green-300 hover:text-white transition-colors">info@rabaulhotel.com</a>
+                </li>
+                <li className="flex items-start space-x-3">
+                  <MapPin className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-green-300">
+                    Mango Avenue, P.O Box 1
+                    <br />Rabaul, East New Britain Province
+                    <br />Papua New Guinea
+                  </span>
                 </li>
               </ul>
             </div>
 
             {/* Our Services */}
-            <div>
+            <div className="lg:order-3">
               <h4 className="text-lg font-semibold mb-4">Our Services</h4>
               <ul className="space-y-3">
                 <li><a href="#" className="text-green-300 hover:text-white transition-colors">24/7 Room Service</a></li>
