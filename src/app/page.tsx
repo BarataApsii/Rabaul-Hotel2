@@ -1350,7 +1350,7 @@ export default function Home() {
       </section>
 
       {/* Our Amenities Section */}
-      <section ref={exploreRef} className="py-16 bg-white scroll-mt-16" id="explore">
+      <section ref={amenitiesRef} className="py-16 bg-white scroll-mt-16" id="amenities">
         <div className="container max-w-7xl px-4 mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Amenities</h2>
