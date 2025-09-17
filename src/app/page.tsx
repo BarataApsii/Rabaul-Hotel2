@@ -223,6 +223,10 @@ export default function Home() {
   const totalCost = roomCost + transportCost
   // Calculate total guests (removed unused variable)
 
+  // BasePath-aware URL for mobile banner so it works after deploy under subpaths
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+  const mobileBannerUrl = `${basePath}/images/mobile-banner.png`
+
   const validateBookingForm = () => {
     const newErrors: Record<string, string> = {}
     
@@ -532,33 +536,13 @@ export default function Home() {
             style={{
               // CSS fallback so the image shows even if Next.js Image optimizer fails in production
               backgroundImage:
-                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-banner.png')",
+                `linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url(${mobileBannerUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat'
             }}
           >
-            <Image
-              src="/images/mobile-banner.png"
-              alt="Rabaul Hotel - Your Tropical Paradise"
-              fill
-              unoptimized
-              priority
-              className="object-cover object-center"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 1
-              }}
-              onError={(e) => {
-                // Fallback to a solid color if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
+            {/* Image removed; using CSS background only so it always shows on mobile */}
           </div>
         </div>
         <div className="container max-w-7xl px-4 relative z-10 w-full pt-16 sm:pt-24 md:pt-32">
