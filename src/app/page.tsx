@@ -806,7 +806,7 @@ export default function Home() {
       <section 
         id="book" 
         ref={bookRef}
-        className="py-8 md:py-12 scroll-mt-16 relative bg-cover bg-center bg-no-repeat"
+        className="py-8 md:py-12 scroll-mt-16 relative bg-cover bg-center bg-no-repeat w-full flex justify-center"
         style={{ backgroundImage: "url('/images/booking-background.PNG')" }}
       >
         <div className="absolute inset-0 bg-black/40" />
@@ -814,7 +814,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center mb-12 text-white">
             <h2 className="text-3xl md:text-4xl font-bold text-white">Book Your Stay</h2>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             {/* Booking Form */}
             <div className="lg:col-span-2">
               <Card className="overflow-hidden text-white">
