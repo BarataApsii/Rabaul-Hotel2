@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
-import mobileBanner from 'public/images/mobile-banner.png';
 
 // Define attraction images with proper typing
 interface AttractionImage {
@@ -224,7 +223,7 @@ export default function Home() {
   const totalCost = roomCost + transportCost
   // Calculate total guests (removed unused variable)
 
-  // Use statically imported banner so Next emits a hashed asset URL that exists after deploy
+  // Use public path for mobile banner
 
   const validateBookingForm = () => {
     const newErrors: Record<string, string> = {}
@@ -533,9 +532,9 @@ export default function Home() {
           <div
             className="md:hidden absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 to-green-900"
             style={{
-              // CSS fallback so the image shows even if Next.js Image optimizer fails in production
+              // CSS background from public/ so it works on Vercel
               backgroundImage:
-                `linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url(${(mobileBanner as any).src ?? mobileBanner})`,
+                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-banner.png')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat'
