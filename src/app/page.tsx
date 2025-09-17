@@ -527,11 +527,22 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="md:hidden absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 to-green-900">
+          <div
+            className="md:hidden absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 to-green-900"
+            style={{
+              // CSS fallback so the image shows even if Next.js Image optimizer fails in production
+              backgroundImage:
+                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-banner.png')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          >
             <Image
               src="/images/mobile-banner.png"
               alt="Rabaul Hotel - Your Tropical Paradise"
               fill
+              unoptimized
               priority
               className="object-cover object-center"
               style={{
