@@ -534,7 +534,7 @@ export default function Home() {
             style={{
               // CSS background from public/ so it works on Vercel
               backgroundImage:
-                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-banner.png')",
+                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-hero.png')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat'
