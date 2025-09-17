@@ -1799,7 +1799,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Rabaul Museum</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Rabaul Museum</h3>
                 <p className="text-sm text-gray-600">Discover the region&apos;s volcanic history, local culture, and wartime heritage.</p>
               </div>
             </div>
@@ -1816,7 +1816,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Bitapaka War Cemetery</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Bitapaka War Cemetery</h3>
                 <p className="text-sm text-gray-600">A peaceful memorial honoring those who perished in World Wars I and II.</p>
               </div>
             </div>
@@ -1833,7 +1833,7 @@ export default function Home() {
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">Rabaul Market</h3>
+                <h3 className="text-lg font-semibold mb-2 text-green-700">Rabaul Market</h3>
                 <p className="text-sm text-gray-600">Immerse yourself in local life with fresh seafood, tropical fruits, and traditional crafts.</p>
               </div>
             </div>
