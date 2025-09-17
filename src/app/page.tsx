@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
+import mobileBanner from 'public/images/mobile-banner.png';
 
 // Define attraction images with proper typing
 interface AttractionImage {
@@ -223,9 +224,7 @@ export default function Home() {
   const totalCost = roomCost + transportCost
   // Calculate total guests (removed unused variable)
 
-  // BasePath-aware URL for mobile banner so it works after deploy under subpaths
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
-  const mobileBannerUrl = `${basePath}/images/mobile-banner.png`
+  // Use statically imported banner so Next emits a hashed asset URL that exists after deploy
 
   const validateBookingForm = () => {
     const newErrors: Record<string, string> = {}
@@ -536,7 +535,7 @@ export default function Home() {
             style={{
               // CSS fallback so the image shows even if Next.js Image optimizer fails in production
               backgroundImage:
-                `linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url(${mobileBannerUrl})`,
+                `linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url(${(mobileBanner as any).src ?? mobileBanner})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat'
