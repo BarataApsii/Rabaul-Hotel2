@@ -412,7 +412,7 @@ export default function Home() {
           </div>
           <Button 
             variant="ghost"
-            className="md:hidden text-white hover:bg-white/10 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 rounded-full p-2 transition-colors w-12 h-12 flex items-center justify-center"
+            className="md:hidden text-white hover:bg-white/10 rounded-full p-2 transition-colors w-12 h-12 flex items-center justify-center focus:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle menu"
