@@ -65,8 +65,9 @@ export default function Home() {
   const [contactMessage, setContactMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
-  const [prevScrollPos, setPrevScrollPos] = useState(0)
-  const [visible, setVisible] = useState(true)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [isAtTop, setIsAtTop] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -133,19 +134,19 @@ export default function Home() {
   const amenitiesRef = useRef<HTMLElement>(null)
   const contactRef = useRef<HTMLElement>(null)
   
-  // Handle scroll events for navbar visibility
+  // Handle scroll events for navbar visibility and position
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset
-      const isVisible = prevScrollPos > currentScrollPos || currentScrollPos < 10
-      
-      setVisible(isVisible)
-      setPrevScrollPos(currentScrollPos)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [prevScrollPos, visible])
+      const currentScrollY = window.scrollY;
+      setVisible(currentScrollY < lastScrollY || currentScrollY < 10);
+      setIsAtTop(currentScrollY < 50); // Consider top if scrolled less than 50px
+      lastScrollY = currentScrollY;
+    };
+    
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Show/hide scroll to top button
   useEffect(() => {
@@ -351,10 +352,15 @@ export default function Home() {
         </div>
       )}
       {/* Navbar */}
-      <nav className={`bg-[#1a5f2c] sticky top-0 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
-        visible ? 'translate-y-0' : '-translate-y-full'
-      }`} style={{ zIndex: 1000, position: 'fixed', width: '100%' }}>
-        <div className="w-full flex h-20 items-center justify-between px-8">
+      <nav 
+        className={`sticky top-0 w-full shadow-sm transition-all duration-300 ${
+          isAtTop ? 'bg-black/50' : 'bg-green-800/90'
+        } ${
+          visible ? 'translate-y-0' : '-translate-y-full'
+        }`}
+        style={{ zIndex: 1000, position: 'fixed', width: '100%' }}
+      >
+        <div className="w-full flex h-24 items-center justify-between px-8">
           <div className="flex items-center pl-12">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
               <div className="relative h-20 w-48">
