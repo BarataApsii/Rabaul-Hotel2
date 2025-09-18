@@ -651,7 +651,7 @@ export default function Home() {
             <div className="md:w-1/2">
               <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-2xl">
                 <Image 
-                  src="/images/rabaul-hotel.PNG" 
+                  src="/images/rabaul-hotel.png" 
                   alt="Rabaul Hotel"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
