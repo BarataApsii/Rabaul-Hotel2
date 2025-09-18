@@ -194,9 +194,14 @@ export default function Home() {
     }
   }, [])
   
-  // Smooth scroll function
+  // Smooth scroll function with offset for fixed header
   const scrollToSection = (ref: React.RefObject<HTMLElement | null>) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth' })
+    if (ref.current) {
+      window.scrollTo({
+        top: ref.current.offsetTop - 80, // Adjust for fixed header
+        behavior: 'smooth'
+      })
+    }
   }
 
   const roomRates = {
@@ -349,10 +354,10 @@ export default function Home() {
       <nav className={`bg-[#1a5f2c] sticky top-0 w-full border-b border-green-700 shadow-sm transition-transform duration-300 ${
         visible ? 'translate-y-0' : '-translate-y-full'
       }`} style={{ zIndex: 1000, position: 'fixed', width: '100%' }}>
-        <div className="container flex h-20 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center space-x-3">
+        <div className="w-full flex h-20 items-center justify-between px-8">
+          <div className="flex items-center pl-12">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <div className="relative h-20 w-48 ml-4">
+              <div className="relative h-20 w-48">
                 <Image 
                   src={logoImage}
                   alt="Rabaul Hotel Logo"
@@ -364,50 +369,49 @@ export default function Home() {
                 />
               </div>
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-green-100 bg-clip-text text-transparent"></h1>
           </div>
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-2 mr-4">
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(homeRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
               Home
             </Button>
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(roomsRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
               Rooms
             </Button>
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(bookRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
               Booking
             </Button>
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(exploreRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
               Explore
             </Button>
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(amenitiesRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
               Amenities
             </Button>
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(contactRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95"
+              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
             >
-              Contact
+              Contact Us
             </Button>
           </div>
           <Button 
@@ -491,7 +495,7 @@ export default function Home() {
                   activeSection === 'contact' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
-                Contact
+                Contact Us
               </button>
               <button 
                 className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
