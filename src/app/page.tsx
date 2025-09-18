@@ -65,7 +65,6 @@ export default function Home() {
   const [contactMessage, setContactMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
-  const [isScrolled, setIsScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const [isAtTop, setIsAtTop] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -641,7 +640,7 @@ export default function Home() {
               <h2 className="text-4xl font-bold mb-6">About Rabaul Hotel</h2>
               <div className="w-20 h-1 bg-yellow-400 mb-6"></div>
               <p className="text-lg leading-relaxed mb-6">
-                The iconic Rabaul Hotel has been hosting visitors since 1952. Previously the "Ascot" & then the "Hamamas" Hotel, the Rabaul Hotel is famous for its genuine 'home away from home' style of hospitality.
+                The iconic Rabaul Hotel has been hosting visitors since 1952. Previously the &quot;Ascot&quot; &amp; then the &quot;Hamamas&quot; Hotel, the Rabaul Hotel is famous for its genuine &apos;home away from home&apos; style of hospitality.
               </p>
               <p className="text-lg leading-relaxed">
                 Boasting visitors such as Prime Ministers, Sporting Stars and even HRH Prince Andrew Duke of York, the Rabaul Hotel takes great pride in ensuring our Guests have an enjoyable and comfortable stay while discovering the SPIRIT of Volcano Town.
