@@ -632,6 +632,39 @@ export default function Home() {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section className="py-20 bg-green-950 text-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex flex-col md:flex-row items-center">
+            {/* Text Content */}
+            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+              <h2 className="text-4xl font-bold mb-6">About Rabaul Hotel</h2>
+              <div className="w-20 h-1 bg-yellow-400 mb-6"></div>
+              <p className="text-lg leading-relaxed mb-6">
+                The iconic Rabaul Hotel has been hosting visitors since 1952. Previously the "Ascot" & then the "Hamamas" Hotel, the Rabaul Hotel is famous for its genuine 'home away from home' style of hospitality.
+              </p>
+              <p className="text-lg leading-relaxed">
+                Boasting visitors such as Prime Ministers, Sporting Stars and even HRH Prince Andrew Duke of York, the Rabaul Hotel takes great pride in ensuring our Guests have an enjoyable and comfortable stay while discovering the SPIRIT of Volcano Town.
+              </p>
+            </div>
+            
+            {/* Image */}
+            <div className="md:w-1/2">
+              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-2xl">
+                <Image 
+                  src="/images/rabaul-hotel.PNG" 
+                  alt="Rabaul Hotel"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Our Rooms Section */}
       <section id="rooms" ref={roomsRef} className="py-16 bg-gray-50 scroll-mt-16">
         <div className="container mx-auto px-4 max-w-7xl">
