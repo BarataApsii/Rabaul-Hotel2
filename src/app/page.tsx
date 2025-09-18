@@ -844,6 +844,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Hotel Reception Section */}
+      <section className="py-16 bg-gray-100">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex flex-col md:flex-row items-center">
+            {/* Text Content */}
+            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+              <div className="flex items-center mb-6">
+                <div className="bg-[#1a5f2c] p-3 rounded-full mr-4">
+                  <Clock className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800">Hotel Reception</h2>
+              </div>
+              <div className="w-20 h-1 bg-[#1a5f2c] mb-6"></div>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                Rabaul Hotel is happy to offer Guests Room Upgrades if available on Check In. Rabaul Hotel is happy to offer Guests late Check Out if available. Please advise Reception on Check In, otherwise late Check Out without authority from the Management, may incur a surcharge.
+              </p>
+            </div>
+            
+            {/* Image */}
+            <div className="md:w-1/2">
+              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-2xl">
+                <Image 
+                  src="/images/amenities/hotel-reception.PNG" 
+                  alt="Hotel Reception"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Book Your Stay Section */}
       <section 
         id="book" 
