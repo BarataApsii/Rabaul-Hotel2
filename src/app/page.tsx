@@ -2342,7 +2342,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1a5f2c] text-white py-12">
+      <footer className="bg-green-950 text-white py-12">
         <div className="container max-w-7xl px-4 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Rabaul Hotel */}
