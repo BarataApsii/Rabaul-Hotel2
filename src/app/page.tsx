@@ -432,7 +432,7 @@ export default function Home() {
       {/* Navbar */}
       <nav 
         className={`sticky top-0 w-full shadow-sm transition-all duration-300 ${
-          isAtTop ? 'bg-black/50' : 'bg-green-800/90'
+          isAtTop ? 'bg-black/50' : 'bg-gray-800/90'
         } ${
           visible ? 'translate-y-0' : '-translate-y-full'
         }`}
