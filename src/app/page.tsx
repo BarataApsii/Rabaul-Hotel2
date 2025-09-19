@@ -905,7 +905,7 @@ export default function Home() {
             <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-64 overflow-hidden group">
                 <Image 
-                  src="/images/amenities/conference-room.png" 
+                  src="/images/amenities/conference-room.PNG" 
                   alt="Conference Room"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
