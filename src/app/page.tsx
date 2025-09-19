@@ -886,26 +886,25 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
       {/* About Us Section */}
-      <section ref={aboutRef} className="py-20 bg-green-950 text-white">
+      <section ref={aboutRef} className="py-16 md:py-20 bg-green-950 text-white">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-center">
-            {/* Text Content */}
-            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-              <h2 className="text-4xl font-bold mb-6">About Rabaul Hotel</h2>
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* Text Content - First on mobile, left on desktop */}
+            <div className="w-full md:w-1/2">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">About Rabaul Hotel</h2>
               <div className="w-20 h-1 bg-yellow-400 mb-6"></div>
-              <p className="text-lg leading-relaxed mb-6">
+              <p className="text-base md:text-lg leading-relaxed mb-6">
                 The iconic Rabaul Hotel has been hosting visitors since 1952. Previously the &quot;Ascot&quot; &amp; then the &quot;Hamamas&quot; Hotel, the Rabaul Hotel is famous for its genuine &apos;home away from home&apos; style of hospitality.
               </p>
-              <p className="text-lg leading-relaxed">
+              <p className="text-base md:text-lg leading-relaxed">
                 Boasting visitors such as Prime Ministers, Sporting Stars and even HRH Prince Andrew Duke of York, the Rabaul Hotel takes great pride in ensuring our Guests have an enjoyable and comfortable stay while discovering the SPIRIT of Volcano Town.
               </p>
             </div>
             
-            {/* Image */}
-            <div className="md:w-1/2">
-              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-2xl">
+            {/* Image - Second on mobile, right on desktop */}
+            <div className="w-full md:w-1/2">
+              <div className="relative h-64 md:h-96 w-full rounded-lg overflow-hidden shadow-2xl">
                 <Image 
                   src="/images/rabaul-hotel.png" 
                   alt="Rabaul Hotel"
@@ -1220,9 +1219,9 @@ export default function Home() {
             
             {/* Image - Below text on mobile, right on desktop */}
             <div className="w-full md:w-1/2">
-              <div className="relative h-64 sm:h-80 w-full rounded-lg overflow-hidden shadow-2xl">
+              <div className="relative h-64 md:h-96 w-full rounded-lg overflow-hidden shadow-2xl">
                 <Image 
-                  src="/images/amenities/hotel-reception-mobile.png" 
+                  src="/images/amenities/hotel-reception.PNG" 
                   alt="Hotel Reception"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
