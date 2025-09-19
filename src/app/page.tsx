@@ -635,13 +635,21 @@ export default function Home() {
               {/* Services Dropdown */}
               <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
                 <button 
-                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const content = e.currentTarget.nextElementSibling as HTMLElement;
+                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                  }}
+                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
                     ['transport', 'dining', 'tour'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
                   }`}
                 >
-                  Services
+                  <span>Services</span>
+                  <svg className="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
-                <div className="pl-4">
+                <div className="pl-4 hidden">
                   <button 
                     onClick={() => {
                       scrollToSection(transportRef)
@@ -684,13 +692,21 @@ export default function Home() {
               {/* Categories Dropdown */}
               <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
                 <button 
-                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const content = e.currentTarget.nextElementSibling as HTMLElement;
+                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                  }}
+                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
                     ['rooms', 'explore', 'amenities'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
                   }`}
                 >
-                  Categories
+                  <span>Categories</span>
+                  <svg className="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
-                <div className="pl-4">
+                <div className="pl-4 hidden">
                   <button 
                     onClick={() => {
                       scrollToSection(roomsRef)
