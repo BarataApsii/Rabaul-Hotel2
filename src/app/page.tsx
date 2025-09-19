@@ -1201,13 +1201,11 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Hotel Reception Section */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-12 md:py-16 bg-gray-100">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-center">
-            {/* Text Content */}
-            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* Text Content - Always on top on mobile, left on desktop */}
+            <div className="w-full md:w-1/2">
               <div className="flex items-center mb-6">
                 <div className="bg-[#1a5f2c] p-3 rounded-full mr-4">
                   <Clock className="w-8 h-8 text-white" />
@@ -1220,11 +1218,11 @@ export default function Home() {
               </p>
             </div>
             
-            {/* Image */}
-            <div className="md:w-1/2">
-              <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-2xl">
+            {/* Image - Below text on mobile, right on desktop */}
+            <div className="w-full md:w-1/2">
+              <div className="relative h-64 sm:h-80 w-full rounded-lg overflow-hidden shadow-2xl">
                 <Image 
-                  src="/images/amenities/hotel-reception.PNG" 
+                  src="/images/amenities/hotel-reception-mobile.png" 
                   alt="Hotel Reception"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
