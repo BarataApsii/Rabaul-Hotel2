@@ -695,7 +695,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
                     <h3 className="text-2xl font-bold mb-2">Budget Room</h3>
-                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K200</span> per night</p>
                   </div>
                 </div>
                 <div className="absolute top-4 right-4 bg-[#1a5f2c] text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -752,7 +751,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
                     <h3 className="text-2xl font-bold mb-2">Standard Room</h3>
-                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K300</span> per night</p>
                   </div>
                 </div>
               </div>
@@ -806,7 +804,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
                     <h3 className="text-2xl font-bold mb-2">Executive Room</h3>
-                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K450</span> per night</p>
                   </div>
                 </div>
                 <div className="absolute top-4 right-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -861,7 +858,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
                     <h3 className="text-2xl font-bold mb-2">Family Suite</h3>
-                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K600</span> per night</p>
                   </div>
                 </div>
               </div>
@@ -916,7 +912,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                   <div className="text-white">
                     <h3 className="text-2xl font-bold mb-2">Conference Room</h3>
-                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K800</span> per day</p>
                   </div>
                 </div>
               </div>
