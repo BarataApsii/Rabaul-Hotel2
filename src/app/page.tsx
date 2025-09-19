@@ -63,6 +63,8 @@ export default function Home() {
   const [contactName, setContactName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
   const [contactMessage, setContactMessage] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [subject, setSubject] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [visible, setVisible] = useState(true);
@@ -135,6 +137,7 @@ export default function Home() {
   
   // Handle scroll events for navbar visibility and position
   useEffect(() => {
+    let lastScrollY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setVisible(currentScrollY < lastScrollY || currentScrollY < 10);
@@ -142,7 +145,6 @@ export default function Home() {
       lastScrollY = currentScrollY;
     };
     
-    let lastScrollY = window.scrollY;
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -205,11 +207,12 @@ export default function Home() {
   }
 
   const roomRates = {
-    'select': 0, // Default selection
-    budget: 150,
-    standard: 200,
-    executive: 300,
-    conference: 450 // per day for conference area
+    'select': 0,
+    budget: 200,
+    standard: 300,
+    executive: 450,
+    family: 600,
+    conference: 800
   }
 
   // Calculate number of nights - handle undefined dates during SSR
@@ -298,6 +301,8 @@ export default function Home() {
       newErrors.contactEmail = 'Email is invalid'
     }
     if (!contactMessage.trim()) newErrors.contactMessage = 'Message is required'
+    if (!lastName.trim()) newErrors.lastName = 'Last name is required'
+    if (!subject.trim()) newErrors.subject = 'Subject is required'
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -311,7 +316,7 @@ export default function Home() {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log('Contact form submitted:', { contactName, contactEmail, contactMessage })
+      console.log('Contact form submitted:', { contactName, lastName, contactEmail, subject, contactMessage })
       
       // Show success toast
       showToast('Thank you for your message! We will get back to you soon.', 'success')
@@ -895,6 +900,58 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            
+            {/* Conference Room */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-64 overflow-hidden group">
+                <Image 
+                  src="/images/amenities/conference-room.png" 
+                  alt="Conference Room"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  quality={95}
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-2xl font-bold mb-2">Conference Room</h3>
+                    <p className="text-gray-200">Starting from <span className="text-white font-bold">K800</span> per day</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <span className="flex items-center mr-4">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                    Full Day Rental
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                    AV Equipment
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">Conference Room</h4>
+                    <p className="text-gray-500 text-sm">Capacity: 20 people</p>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      setRoomType('conference');
+                      scrollToSection(bookRef);
+                    }}
+                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
+                  >
+                    Book Now
+                  </Button>
+                </div>
+                </div>
+          </div>
           </div>
         </div>
       </section>
@@ -1022,6 +1079,7 @@ export default function Home() {
                           <SelectItem value="budget">Budget Room</SelectItem>
                           <SelectItem value="standard">Standard Room</SelectItem>
                           <SelectItem value="executive">Executive Room</SelectItem>
+                          <SelectItem value="family">Family Suite</SelectItem>
                           <SelectItem value="conference">Conference Room</SelectItem>
                         </SelectContent>
                       </Select>
@@ -1756,7 +1814,12 @@ export default function Home() {
                       type="text"
                       className="w-full"
                       placeholder="Enter your last name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                     />
+                    {errors.lastName && (
+                      <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -1780,7 +1843,12 @@ export default function Home() {
                     type="text"
                     className="w-full"
                     placeholder="Enter subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
                   />
+                  {errors.subject && (
+                    <p className="text-xs text-red-500 mt-1">{errors.subject}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-gray-700">Message</Label>
