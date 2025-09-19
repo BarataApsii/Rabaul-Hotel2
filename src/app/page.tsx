@@ -131,9 +131,13 @@ export default function Home() {
   const homeRef = useRef<HTMLElement>(null)
   const roomsRef = useRef<HTMLElement>(null)
   const bookRef = useRef<HTMLElement>(null)
+  const aboutRef = useRef<HTMLElement>(null)
   const exploreRef = useRef<HTMLElement>(null)
   const amenitiesRef = useRef<HTMLElement>(null)
   const contactRef = useRef<HTMLElement>(null)
+  const transportRef = useRef<HTMLElement>(null)
+  const diningRef = useRef<HTMLElement>(null)
+  const tourRef = useRef<HTMLElement>(null)
   
   // Handle scroll events for navbar visibility and position
   useEffect(() => {
@@ -184,7 +188,33 @@ export default function Home() {
       { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
     )
     
-    const sections = [homeRef.current, roomsRef.current, bookRef.current, exploreRef.current, amenitiesRef.current, contactRef.current].filter(Boolean)
+    // Add all section refs to the observer
+    const sections = [
+      homeRef.current, 
+      roomsRef.current, 
+      bookRef.current, 
+      aboutRef.current,
+      exploreRef.current, 
+      amenitiesRef.current, 
+      contactRef.current,
+      transportRef.current,
+      diningRef.current,
+      tourRef.current
+    ].filter(Boolean)
+    
+    // Assign IDs to each section element
+    if (homeRef.current) homeRef.current.id = 'home';
+    if (roomsRef.current) roomsRef.current.id = 'rooms';
+    if (bookRef.current) bookRef.current.id = 'booking';
+    if (aboutRef.current) aboutRef.current.id = 'about';
+    if (exploreRef.current) exploreRef.current.id = 'explore';
+    if (amenitiesRef.current) amenitiesRef.current.id = 'amenities';
+    if (contactRef.current) contactRef.current.id = 'contact';
+    if (transportRef.current) transportRef.current.id = 'transport';
+    if (diningRef.current) diningRef.current.id = 'dining';
+    if (tourRef.current) tourRef.current.id = 'tour';
+    
+    // Observe all sections
     sections.forEach((section) => {
       if (section) observer.observe(section)
     })
@@ -380,46 +410,130 @@ export default function Home() {
               </div>
             </button>
           </div>
-          <div className="hidden md:flex items-center space-x-2 mr-4">
+          <div className="hidden md:flex items-center space-x-4 mr-6">
+            {/* Home */}
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(homeRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center"
             >
               Home
             </Button>
+            
+            {/* About Us */}
             <Button 
               variant="ghost"
-              onClick={() => scrollToSection(roomsRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
+              onClick={() => scrollToSection(aboutRef)}
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center ${
+                activeSection === 'about' ? 'bg-white/20' : ''
+              }`}
             >
-              Rooms
+              About Us
             </Button>
-            <Button 
-              variant="ghost"
-              onClick={() => scrollToSection(bookRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
-            >
-              Booking
-            </Button>
-            <Button 
-              variant="ghost"
-              onClick={() => scrollToSection(exploreRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
-            >
-              Explore
-            </Button>
-            <Button 
-              variant="ghost"
-              onClick={() => scrollToSection(amenitiesRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
-            >
-              Amenities
-            </Button>
+            
+            {/* Services */}
+            <div className="relative group">
+              <Button 
+                variant="ghost"
+                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center"
+              >
+                Services
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Button>
+              <div className="absolute left-0 mt-1 w-48 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+                <button 
+                  onClick={() => {
+                    scrollToSection(transportRef);
+                    setActiveSection('transport');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'transport' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Transport Services
+                </button>
+                <button 
+                  onClick={() => {
+                    scrollToSection(diningRef);
+                    setActiveSection('dining');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'dining' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Dining
+                </button>
+                <button 
+                  onClick={() => {
+                    scrollToSection(tourRef);
+                    setActiveSection('tour');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'tour' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Tours
+                </button>
+              </div>
+            </div>
+            
+            {/* Categories */}
+            <div className="relative group">
+              <Button 
+                variant="ghost"
+                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center"
+              >
+                Categories
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Button>
+              <div className="absolute left-0 mt-1 w-48 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+                <button 
+                  onClick={() => {
+                    scrollToSection(roomsRef);
+                    setActiveSection('rooms');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'rooms' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Rooms
+                </button>
+                <button 
+                  onClick={() => {
+                    scrollToSection(exploreRef);
+                    setActiveSection('explore');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'explore' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Explore Rabaul
+                </button>
+                <button 
+                  onClick={() => {
+                    scrollToSection(amenitiesRef);
+                    setActiveSection('amenities');
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                    activeSection === 'amenities' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
+                  }`}
+                >
+                  Amenities
+                </button>
+              </div>
+            </div>
+            
+            {/* Contact Us */}
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(contactRef)}
-              className="text-white hover:bg-green-600 hover:text-white transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-4 py-2"
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center ${
+                activeSection === 'contact' ? 'bg-white/20' : ''
+              }`}
             >
               Contact Us
             </Button>
@@ -451,57 +565,138 @@ export default function Home() {
               mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             } md:hidden`}
           >
-            <div className="flex flex-col space-y-1 w-64 bg-gray-800/90 backdrop-blur-sm py-4 px-4 text-lg rounded-r-lg">
+            <div className="flex flex-col space-y-2 w-72 bg-gray-800/90 backdrop-blur-sm py-4 px-4 text-lg rounded-r-lg">
+              {/* Home */}
               <button 
                 onClick={() => {
-                  scrollToSection(roomsRef)
+                  scrollToSection(homeRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
-                  activeSection === 'rooms' ? 'bg-white/20 font-medium' : ''
+                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                  activeSection === 'home' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
-                Rooms
+                Home
               </button>
+              
+              {/* About Us */}
               <button 
                 onClick={() => {
-                  scrollToSection(bookRef)
+                  scrollToSection(aboutRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
-                  activeSection === 'book' ? 'bg-white/20 font-medium' : ''
+                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                  activeSection === 'about' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
-                Booking
+                About Us
               </button>
-              <button 
-                onClick={() => {
-                  scrollToSection(exploreRef)
-                  setMobileMenuOpen(false)
-                }}
-                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
-                  activeSection === 'explore' ? 'bg-white/20 font-medium' : ''
-                }`}
-              >
-                Explore
-              </button>
-              <button 
-                onClick={() => {
-                  scrollToSection(amenitiesRef)
-                  setMobileMenuOpen(false)
-                }}
-                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
-                  activeSection === 'amenities' ? 'bg-white/20 font-medium' : ''
-                }`}
-              >
-                Amenities
-              </button>
+              
+              {/* Services Dropdown */}
+              <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
+                <button 
+                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                    ['transport', 'dining', 'tour'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
+                  }`}
+                >
+                  Services
+                </button>
+                <div className="pl-4">
+                  <button 
+                    onClick={() => {
+                      scrollToSection(transportRef)
+                      setActiveSection('transport')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'transport' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Transport Services
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection(diningRef)
+                      setActiveSection('dining')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'dining' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Dining
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection(tourRef)
+                      setActiveSection('tour')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'tour' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Tours
+                  </button>
+                </div>
+              </div>
+              
+              {/* Categories Dropdown */}
+              <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
+                <button 
+                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                    ['rooms', 'explore', 'amenities'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
+                  }`}
+                >
+                  Categories
+                </button>
+                <div className="pl-4">
+                  <button 
+                    onClick={() => {
+                      scrollToSection(roomsRef)
+                      setActiveSection('rooms')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'rooms' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Rooms
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection(exploreRef)
+                      setActiveSection('explore')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'explore' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Explore Rabaul
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection(amenitiesRef)
+                      setActiveSection('amenities')
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
+                      activeSection === 'amenities' ? 'font-medium' : ''
+                    }`}
+                  >
+                    Amenities
+                  </button>
+                </div>
+              </div>
+              
+              {/* Contact Us */}
               <button 
                 onClick={() => {
                   scrollToSection(contactRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-4 w-full text-left text-white hover:bg-white/10 transition-colors ${
+                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
                   activeSection === 'contact' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
@@ -637,7 +832,7 @@ export default function Home() {
       </section>
 
       {/* About Us Section */}
-      <section className="py-20 bg-green-950 text-white">
+      <section ref={aboutRef} className="py-20 bg-green-950 text-white">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center">
             {/* Text Content */}
