@@ -2347,19 +2347,19 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Rabaul Hotel */}
             <div className="lg:order-1">
-              <h3 className="text-2xl font-bold mb-2">Rabaul Hotel</h3>
-              <p className="text-green-300 mb-4">Experience luxury and comfort in the heart of Rabaul. Our hotel offers amenities and breathtaking views of the surrounding landscape.</p>
+              <h3 className="text-2xl font-bold mb-2 text-yellow-400">Rabaul Hotel</h3>
+              <p className="text-white mb-4">Experience luxury and comfort in the heart of Rabaul. Our hotel offers amenities and breathtaking views of the surrounding landscape.</p>
               
               <div className="flex space-x-4">
-                <a href="#" className="text-green-300 hover:text-white transition-colors">
+                <a href="#" className="text-white hover:opacity-80 transition-opacity">
                   <span className="sr-only">Facebook</span>
                   <Facebook className="h-6 w-6" />
                 </a>
-                <a href="#" className="text-green-300 hover:text-white transition-colors">
+                <a href="#" className="text-white hover:opacity-80 transition-opacity">
                   <span className="sr-only">Twitter</span>
                   <Twitter className="h-6 w-6" />
                 </a>
-                <a href="#" className="text-green-300 hover:text-white transition-colors">
+                <a href="#" className="text-white hover:opacity-80 transition-opacity">
                   <span className="sr-only">Instagram</span>
                   <Instagram className="h-6 w-6" />
                 </a>
@@ -2368,34 +2368,34 @@ export default function Home() {
 
             {/* Quick Links */}
             <div className="lg:order-4">
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+              <h4 className="text-lg font-semibold mb-4 text-yellow-400">Quick Links</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Home</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Rooms & Suites</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Dining</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Facilities</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Gallery</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Home</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Rooms & Suites</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Dining</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Facilities</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Gallery</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Contact Us</a></li>
               </ul>
             </div>
 
             {/* Contact Info */}
             <div className="lg:order-2">
-              <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
+              <h4 className="text-lg font-semibold mb-4 text-yellow-400">Contact Info</h4>
               <ul className="space-y-4">
                 <li className="flex items-start space-x-3">
-                  <Phone className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <div className="text-green-300">
-                    <a href="tel:+6759821999" className="block hover:text-white transition-colors">+675 982 1999 / 7189 3571</a>
+                  <Phone className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <div className="text-white">
+                    <a href="tel:+6759821999" className="block hover:text-yellow-400 transition-colors">+675 982 1999 / 7189 3571</a>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <a href="mailto:info@rabaulhotel.com" className="text-green-300 hover:text-white transition-colors">info@rabaulhotel.com</a>
+                  <Mail className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <a href="mailto:info@rabaulhotel.com" className="text-white hover:text-yellow-400 transition-colors">info@rabaulhotel.com</a>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-green-300">
+                  <MapPin className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">
                     Mango Avenue, P.O Box 1
                     <br />Rabaul, East New Britain Province
                     <br />Papua New Guinea
@@ -2406,12 +2406,12 @@ export default function Home() {
 
             {/* Our Services */}
             <div className="lg:order-3">
-              <h4 className="text-lg font-semibold mb-4">Our Services</h4>
+              <h4 className="text-lg font-semibold mb-4 text-yellow-400">Our Services</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">24/7 Room Service</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Airport Transfer</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Laundry Service</a></li>
-                <li><a href="#" className="text-green-300 hover:text-white transition-colors">Car Rental</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">24/7 Room Service</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Airport Transfer</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Laundry Service</a></li>
+                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Car Rental</a></li>
               </ul>
             </div>
 
@@ -2419,10 +2419,10 @@ export default function Home() {
 
           <div className="border-t border-green-800 pt-8">
             <div className="flex flex-wrap justify-center items-center gap-6">
-              <span className="text-green-300 text-sm">&copy; {new Date().getFullYear()} Rabaul Hotel. All rights reserved.</span>
-              <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Privacy Policy</a>
-              <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Terms of Service</a>
-              <a href="#" className="text-green-300 hover:text-white text-sm transition-colors">Sitemap</a>
+              <span className="text-white text-sm">&copy; {new Date().getFullYear()} Rabaul Hotel. All rights reserved.</span>
+              <a href="#" className="text-white hover:text-yellow-400 text-sm transition-colors">Privacy Policy</a>
+              <a href="#" className="text-white hover:text-yellow-400 text-sm transition-colors">Terms of Service</a>
+              <a href="#" className="text-white hover:text-yellow-400 text-sm transition-colors">Sitemap</a>
             </div>
           </div>
         </div>
