@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import ReCAPTCHA from 'react-google-recaptcha'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
 
@@ -66,6 +67,7 @@ export default function Home() {
   const [lastName, setLastName] = useState('')
   const [subject, setSubject] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState('home')
   const [visible, setVisible] = useState(true);
   const [isAtTop, setIsAtTop] = useState(true);
@@ -283,41 +285,81 @@ export default function Home() {
   }
   
   const handleBookingConfirm = async () => {
+    // First validate the form
     if (!validateBookingForm()) return
     
-    setIsLoading(true)
+    // Check if reCAPTCHA is completed
+    if (!recaptchaToken) {
+      setErrors(prev => ({ ...prev, recaptcha: 'Please complete the reCAPTCHA' }));
+      return;
+    }
+    
+    setIsLoading(true);
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log('Booking confirmed:', { checkIn, checkOut, roomType, adults, children, fullName, phone, email, country, specialRequest })
+      // Verify reCAPTCHA token with our API
+      const recaptchaResponse = await fetch('/api/verify-recaptcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: recaptchaToken }),
+      });
+
+      const recaptchaData = await recaptchaResponse.json();
+
+      if (!recaptchaData.success) {
+        throw new Error('reCAPTCHA verification failed');
+      }
+
+      // Simulate API call for booking
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Booking confirmed:', { 
+        checkIn, 
+        checkOut, 
+        roomType, 
+        adults, 
+        children, 
+        fullName, 
+        phone, 
+        email, 
+        country, 
+        specialRequest 
+      });
       
       // Show success toast
-      showToast('Reservation confirmed! We have sent a confirmation to your email.', 'success')
+      showToast('Reservation confirmed! We have sent a confirmation to your email.', 'success');
       
       // Reset form and booking summary with default dates
-      const today = new Date()
-      const tomorrow = new Date(today)
-      tomorrow.setDate(tomorrow.getDate() + 1)
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
       
-      setCheckIn(today)
-      setCheckOut(tomorrow)
-      setRoomType(undefined) // Reset to show 'Select Room' by default
-      setAdults(1)
-      setChildren(0)
-      setFullName('')
-      setPhone('')
-      setEmail('')
-      setCountry('')
-      setSpecialRequest('')
-      setErrors({})
-      setBookingDetails(null)
-      setIsBookingConfirmed(false)
+      setCheckIn(today);
+      setCheckOut(tomorrow);
+      setRoomType(undefined); // Reset to show 'Select Room' by default
+      setAdults(1);
+      setChildren(0);
+      setFullName('');
+      setPhone('');
+      setEmail('');
+      setCountry('');
+      setSpecialRequest('');
+      setErrors({});
+      setBookingDetails(null);
+      setIsBookingConfirmed(false);
+      setRecaptchaToken(null); // Reset reCAPTCHA
       
     } catch (error) {
-      console.error('Booking failed:', error)
-      showToast('Failed to process your booking. Please try again.', 'error')
+      console.error('Booking failed:', error);
+      showToast(
+        error instanceof Error && error.message === 'reCAPTCHA verification failed'
+          ? 'Security verification failed. Please try again.'
+          : 'Failed to process your booking. Please try again.', 
+        'error'
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -363,6 +405,8 @@ export default function Home() {
     } finally {
       setIsLoading(false)
     }
+
+    const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
   }
 
   return (
@@ -1619,7 +1663,7 @@ export default function Home() {
                           placeholder="Any special requirements?"
                           value={specialRequest}
                           onChange={(e) => setSpecialRequest(e.target.value)}
-                          className="min-h-[80px] text-sm border-white/30"
+                          className="min-h-[80px] text-sm border-white/30 mb-4"
                         />
                       </div>
                     </div>
@@ -1682,6 +1726,36 @@ export default function Home() {
                     <div>Payment: {paymentMethod === 'credit-card' ? 'Credit Card' : paymentMethod === 'bank-transfer' ? 'Bank Transfer' : 'Cash on Arrival'}</div>
                   </div>
                 </div>
+                <div className="mt-4">
+                    <style jsx global>{`
+                      .recaptcha-container > div {
+                        width: 100% !important;
+                        transform: scale(0.85);
+                        transform-origin: 0 0;
+                        margin: 0 auto;
+                        max-width: 300px;
+                      }
+                      .g-recaptcha {
+                        display: flex;
+                        justify-content: center;
+                      }
+                    `}</style>
+                    <div className="flex justify-center">
+                      <ReCAPTCHA
+                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'your-site-key'}
+                        onChange={(token: string | null) => setRecaptchaToken(token)}
+                        onExpired={() => setRecaptchaToken(null)}
+                        onErrored={() => setRecaptchaToken(null)}
+                        theme="dark"
+                        className="recaptcha-container"
+                      />
+                    </div>
+                    {errors.recaptcha && (
+                      <p className="mt-2 text-sm text-red-400 text-center">{errors.recaptcha}</p>
+                    )}
+                  </div>
+
+
                 <Button 
                   onClick={handleBookingConfirm} 
                   className="w-full mt-4 py-4 text-base font-semibold bg-[#1a5f2c] hover:bg-[#2a7d3c] text-white shadow-lg transform transition-all duration-200"
@@ -2041,12 +2115,39 @@ export default function Home() {
                   <Textarea
                     id="message"
                     className="min-h-[120px]"
-                    placeholder="Enter your message"
+                    placeholder="Type your message here..."
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                   />
                   {errors.contactMessage && (
                     <p className="text-xs text-red-500 mt-1">{errors.contactMessage}</p>
+                  )}
+                </div>
+                <div className="mt-4">
+                  <style jsx global>{`
+                    .contact-recaptcha > div {
+                      width: 100% !important;
+                      transform: scale(0.9);
+                      transform-origin: 0 0;
+                      margin: 0 auto;
+                    }
+                    .g-recaptcha {
+                      display: flex;
+                      justify-content: center;
+                    }
+                  `}</style>
+                  <div className="flex justify-center">
+                    <ReCAPTCHA
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'your-site-key'}
+                      onChange={(token: string | null) => setRecaptchaToken(token)}
+                      onExpired={() => setRecaptchaToken(null)}
+                      onErrored={() => setRecaptchaToken(null)}
+                      theme="light"
+                      className="contact-recaptcha"
+                    />
+                  </div>
+                  {errors.recaptcha && (
+                    <p className="mt-2 text-sm text-red-500 text-center">{errors.recaptcha}</p>
                   )}
                 </div>
                 <Button
