@@ -202,7 +202,7 @@ export default function Home() {
       tourRef.current
     ].filter(Boolean)
     
-    // Assign IDs to each section element
+    // Assign IDs to each section element 
     if (homeRef.current) homeRef.current.id = 'home';
     if (roomsRef.current) roomsRef.current.id = 'rooms';
     if (bookRef.current) bookRef.current.id = 'booking';
@@ -424,9 +424,7 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(aboutRef)}
-              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center ${
-                activeSection === 'about' ? 'bg-white/20' : ''
-              }`}
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center"
             >
               About Us
             </Button>
@@ -585,9 +583,7 @@ export default function Home() {
                   scrollToSection(aboutRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
-                  activeSection === 'about' ? 'bg-white/20 font-medium' : ''
-                }`}
+                className="px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1"
               >
                 About Us
               </button>
