@@ -728,27 +728,31 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 sm:mb-4 md:mb-6 leading-tight">
-                  Welcome to <span className="text-yellow-300">Rabaul Hotel</span>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-white mb-3 tracking-wider uppercase" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  WELCOME TO
+                </h3>
+                <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4 leading-tight tracking-tight" style={{fontFamily: "'Playfair Display', serif", textShadow: "2px 2px 4px rgba(0,0,0,0.3)"}}>
+                  <span className="text-green-400 drop-shadow-lg">Rabaul Hotel</span>
                 </h1>
-                <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 md:mb-12 mx-auto">
-                  Where the Road Ends & The Adventure Begins!
-                </p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-white tracking-wider uppercase" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  RESORT & TOURS
+                </h3>
               </motion.div>
               <div className="md:hidden space-y-2">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-4xl font-bold"
+                  className="text-2xl font-light text-white tracking-wider uppercase"
+                  style={{fontFamily: "'Montserrat', sans-serif"}}
                 >
-                  Welcome to
+                  WELCOME TO
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-5xl font-bold text-yellow-300 mb-3"
+                  className="text-6xl font-bold text-green-400 mb-3 tracking-tight"
                 >
                   Rabaul Hotel
                 </motion.div>
@@ -756,17 +760,10 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="text-xl font-medium text-white/90 italic"
+                  className="text-2xl font-light text-white tracking-wider uppercase"
+                  style={{fontFamily: "'Montserrat', sans-serif"}}
                 >
-                  Where the Road Ends
-                </motion.div>
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-xl font-medium text-white/90 italic"
-                >
-                  & The Adventure Begins
+                  RESORT & TOURS
                 </motion.div>
               </div>
             </div>
