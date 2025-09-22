@@ -2274,12 +2274,11 @@ export default function Home() {
             <div className="lg:order-4">
               <h4 className="text-lg font-semibold mb-4 text-yellow-400">Quick Links</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Home</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Rooms & Suites</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Dining</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Facilities</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Gallery</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Contact Us</a></li>
+                <li><a href="#home" className="text-white hover:text-yellow-400 transition-colors">Home</a></li>
+                <li><a href="#rooms" className="text-white hover:text-yellow-400 transition-colors">Rooms & Suites</a></li>
+                <li><a href="#explore" className="text-white hover:text-yellow-400 transition-colors">Dining</a></li>
+                <li><a href="#amenities" className="text-white hover:text-yellow-400 transition-colors">Facilities</a></li>
+                <li><a href="#contact" className="text-white hover:text-yellow-400 transition-colors">Contact Us</a></li>
               </ul>
             </div>
 
@@ -2312,10 +2311,10 @@ export default function Home() {
             <div className="lg:order-3">
               <h4 className="text-lg font-semibold mb-4 text-yellow-400">Our Services</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">24/7 Room Service</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Airport Transfer</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Laundry Service</a></li>
-                <li><a href="#" className="text-white hover:text-yellow-400 transition-colors">Car Rental</a></li>
+                <li><a href="#amenities" className="text-white hover:text-yellow-400 transition-colors">24/7 Room Service</a></li>
+                <li><a href="#amenities" className="text-white hover:text-yellow-400 transition-colors">Airport Transfer</a></li>
+                <li><a href="#amenities" className="text-white hover:text-yellow-400 transition-colors">Laundry Service</a></li>
+                <li><a href="#amenities" className="text-white hover:text-yellow-400 transition-colors">Car Rental</a></li>
               </ul>
             </div>
 
