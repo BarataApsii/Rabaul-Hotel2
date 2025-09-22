@@ -490,20 +490,16 @@ export default function Home() {
                     scrollToSection(diningRef);
                     setActiveSection('dining');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
-                    activeSection === 'dining' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
                 >
                   Dining
                 </button>
                 <button 
                   onClick={() => {
-                    scrollToSection(tourRef);
-                    setActiveSection('tour');
+                    scrollToSection(exploreRef);
+                    setActiveSection('explore');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
-                    activeSection === 'tour' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
                 >
                   Tours
                 </button>
@@ -512,9 +508,7 @@ export default function Home() {
                     scrollToSection(roomsRef);
                     setActiveSection('rooms');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
-                    activeSection === 'rooms' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
                 >
                   Accommodation
                 </button>
@@ -604,7 +598,7 @@ export default function Home() {
                     content.style.display = content.style.display === 'none' ? 'block' : 'none';
                   }}
                   className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
-                    ['dining', 'tour', 'rooms'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
+                    ['dining', 'explore', 'rooms'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
                   }`}
                 >
                   <span>Services</span>
@@ -619,21 +613,17 @@ export default function Home() {
                       setActiveSection('dining')
                       setMobileMenuOpen(false)
                     }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'dining' ? 'font-medium' : ''
-                    }`}
+                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
                   >
                     Dining
                   </button>
                   <button 
                     onClick={() => {
-                      scrollToSection(tourRef)
-                      setActiveSection('tour')
+                      scrollToSection(exploreRef)
+                      setActiveSection('explore')
                       setMobileMenuOpen(false)
                     }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'tour' ? 'font-medium' : ''
-                    }`}
+                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
                   >
                     Tours
                   </button>
@@ -643,9 +633,7 @@ export default function Home() {
                       setActiveSection('rooms')
                       setMobileMenuOpen(false)
                     }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'rooms' ? 'font-medium' : ''
-                    }`}
+                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
                   >
                     Accommodation
                   </button>
