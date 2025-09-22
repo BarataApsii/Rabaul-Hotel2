@@ -459,7 +459,7 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(homeRef)}
-              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center"
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer"
             >
               Home
             </Button>
@@ -468,7 +468,7 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(aboutRef)}
-              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center"
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer"
             >
               About Us
             </Button>
@@ -477,7 +477,7 @@ export default function Home() {
             <div className="relative group">
               <Button 
                 variant="ghost"
-                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center"
+                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center cursor-pointer"
               >
                 Services
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -487,21 +487,10 @@ export default function Home() {
               <div className="absolute left-0 mt-1 w-48 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
                 <button 
                   onClick={() => {
-                    scrollToSection(transportRef);
-                    setActiveSection('transport');
-                  }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
-                    activeSection === 'transport' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
-                >
-                  Transport Services
-                </button>
-                <button 
-                  onClick={() => {
                     scrollToSection(diningRef);
                     setActiveSection('dining');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
                     activeSection === 'dining' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
                   }`}
                 >
@@ -512,68 +501,42 @@ export default function Home() {
                     scrollToSection(tourRef);
                     setActiveSection('tour');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
                     activeSection === 'tour' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
                   }`}
                 >
                   Tours
                 </button>
-              </div>
-            </div>
-            
-            {/* Categories */}
-            <div className="relative group">
-              <Button 
-                variant="ghost"
-                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center"
-              >
-                Categories
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </Button>
-              <div className="absolute left-0 mt-1 w-48 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
                 <button 
                   onClick={() => {
                     scrollToSection(roomsRef);
                     setActiveSection('rooms');
                   }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer ${
                     activeSection === 'rooms' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
                   }`}
                 >
-                  Rooms
-                </button>
-                <button 
-                  onClick={() => {
-                    scrollToSection(exploreRef);
-                    setActiveSection('explore');
-                  }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
-                    activeSection === 'explore' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
-                >
-                  Explore Rabaul
-                </button>
-                <button 
-                  onClick={() => {
-                    scrollToSection(amenitiesRef);
-                    setActiveSection('amenities');
-                  }}
-                  className={`w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors ${
-                    activeSection === 'amenities' ? 'bg-gray-100/60 font-medium' : 'text-gray-800'
-                  }`}
-                >
-                  Amenities
+                  Accommodation
                 </button>
               </div>
             </div>
+            
+            {/* Reservations */}
+            <Button 
+              variant="ghost"
+              onClick={() => scrollToSection(bookRef)}
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer ${
+                activeSection === 'booking' ? 'bg-white/20' : ''
+              }`}
+            >
+              Reservations
+            </Button>
             
             {/* Contact Us */}
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(contactRef)}
-              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center ${
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer ${
                 activeSection === 'contact' ? 'bg-white/20' : ''
               }`}
             >
@@ -641,7 +604,7 @@ export default function Home() {
                     content.style.display = content.style.display === 'none' ? 'block' : 'none';
                   }}
                   className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
-                    ['transport', 'dining', 'tour'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
+                    ['dining', 'tour', 'rooms'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
                   }`}
                 >
                   <span>Services</span>
@@ -650,18 +613,6 @@ export default function Home() {
                   </svg>
                 </button>
                 <div className="pl-4 hidden">
-                  <button 
-                    onClick={() => {
-                      scrollToSection(transportRef)
-                      setActiveSection('transport')
-                      setMobileMenuOpen(false)
-                    }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'transport' ? 'font-medium' : ''
-                    }`}
-                  >
-                    Transport Services
-                  </button>
                   <button 
                     onClick={() => {
                       scrollToSection(diningRef)
@@ -686,27 +637,6 @@ export default function Home() {
                   >
                     Tours
                   </button>
-                </div>
-              </div>
-              
-              {/* Categories Dropdown */}
-              <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const content = e.currentTarget.nextElementSibling as HTMLElement;
-                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                  }}
-                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
-                    ['rooms', 'explore', 'amenities'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
-                  }`}
-                >
-                  <span>Categories</span>
-                  <svg className="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div className="pl-4 hidden">
                   <button 
                     onClick={() => {
                       scrollToSection(roomsRef)
@@ -717,34 +647,23 @@ export default function Home() {
                       activeSection === 'rooms' ? 'font-medium' : ''
                     }`}
                   >
-                    Rooms
-                  </button>
-                  <button 
-                    onClick={() => {
-                      scrollToSection(exploreRef)
-                      setActiveSection('explore')
-                      setMobileMenuOpen(false)
-                    }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'explore' ? 'font-medium' : ''
-                    }`}
-                  >
-                    Explore Rabaul
-                  </button>
-                  <button 
-                    onClick={() => {
-                      scrollToSection(amenitiesRef)
-                      setActiveSection('amenities')
-                      setMobileMenuOpen(false)
-                    }}
-                    className={`px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors ${
-                      activeSection === 'amenities' ? 'font-medium' : ''
-                    }`}
-                  >
-                    Amenities
+                    Accommodation
                   </button>
                 </div>
               </div>
+              
+              {/* Reservations */}
+              <button 
+                onClick={() => {
+                  scrollToSection(bookRef)
+                  setMobileMenuOpen(false)
+                }}
+                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                  activeSection === 'booking' ? 'bg-white/20 font-medium' : ''
+                }`}
+              >
+                Reservations
+              </button>
               
               {/* Contact Us */}
               <button 
