@@ -1,32 +1,42 @@
-// Room Images
-export const roomImages = {
-  budget: '/images/rooms/budget-room.PNG',
-  standard: '/images/rooms/standard-room.PNG',
-  executive: '/images/rooms/executive-room.PNG',
-  conference: '/images/rooms/conference-room.PNG',
+/**
+ * Image utilities
+ * 
+ * This file provides fallback images and helper functions
+ * for working with WordPress media fields.
+ */
+
+// Fallback images (in case WordPress doesn't return any)
+export const fallbackImages = {
+  room: "/images/rooms/default-room.png",
+  amenity: "/images/amenities/default-amenity.png",
+  explore: "/images/cards/default-attraction.png",
+  logo: "/images/logo.png",
+  banner: "/images/mobile-banner.png",
 };
 
-// Attraction Images
-export const attractionImages = {
-  tavurvur: '/images/cards/mt-tavurvur.PNG',
-  simpsonHarbour: '/images/cards/simpson-harbour-at-sunset.jpg',
-  matupitIsland: '/images/cards/matupit-island.PNG',
-  ww2Tunnels: '/images/cards/war-tunnel.PNG',
-  oldRabaul: '/images/cards/old-rabaul-ruins.PNG',
-  museum: '/images/cards/kokopo-war-museum.jpg',
-  warCemetery: '/images/cards/scenic-lookouts.PNG',
-  market: '/images/cards/rabaul-market.jpg',
-};
+/**
+ * Get featured image URL from WordPress post
+ */
+export function getFeaturedImage(post: any): string {
+  if (post?.better_featured_image?.source_url) {
+    return post.better_featured_image.source_url;
+  }
+  if (post?.acf?.gallery?.url) {
+    return post.acf.gallery.url;
+  }
+  return fallbackImages.room;
+}
 
-// Amenity Images
-export const amenityImages = {
-  swimmingPool: '/images/amenities/swimming-pool.PNG',
-  restaurant: '/images/amenities/phoenix.jpeg',
-  conferenceRoom: '/images/amenities/conference-room.PNG',
-  reception: '/images/amenities/hotel-reception.PNG',
-  parking: '/images/amenities/parking.PNG',
-};
-
-// Other Images
-export const logoImage = '/images/logo.png';
-export const mobileBannerImage = '/images/mobile-banner.PNG';
+/**
+ * Get gallery images from ACF (if any)
+ */
+export function getGalleryImages(post: any): string[] {
+  if (Array.isArray(post?.acf?.gallery)) {
+    return post.acf.gallery.map((img: any) => img.url);
+  }
+  if (post?.acf?.gallery?.url) {
+    // Single image
+    return [post.acf.gallery.url];
+  }
+  return [];
+}

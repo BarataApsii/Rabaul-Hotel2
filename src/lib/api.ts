@@ -1,40 +1,29 @@
 /**
- * API Utility Functions
+ * API Utility Functions for WordPress REST API
  * 
- * This file contains utility functions for making API requests to the backend.
- * Replace the API_BASE_URL with your actual API base URL.
+ * This file handles all requests to your WordPress backend.
  */
 
-// API Base URL - Set this in your environment variables
-// For CPanel deployment, set this in your hosting control panel
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://your-cpanel-domain.com/api';
+// Base URL for WordPress API
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "http://localhost/rabaul-hotel/wp-json/wp/v2";
 
-interface RequestOptions extends Omit<RequestInit, 'headers'> {
+interface RequestOptions extends Omit<RequestInit, "headers"> {
   headers?: Record<string, string>;
   params?: Record<string, string | number | boolean>;
 }
 
-// Define a generic response type for better type safety
-type ApiResponse<T = unknown> = T & {
-  success: boolean;
-  message?: string;
-  error?: string;
-};
-
 /**
- * Makes an API request
- * @param endpoint - The API endpoint (e.g., '/bookings')
- * @param options - Fetch options (method, headers, body, etc.)
- * @returns Promise with the response data
+ * Generic API Request function
  */
 export async function apiRequest<T = unknown>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  // Construct the full URL
   const url = new URL(`${API_BASE_URL}${endpoint}`);
 
-  // Add query parameters if provided
+  // Add query params
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -43,57 +32,49 @@ export async function apiRequest<T = unknown>(
     });
   }
 
-  // Set default headers
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...options.headers,
   };
 
-  try {
-    const response = await fetch(url.toString(), {
-      ...options,
-      headers,
-    });
+  const response = await fetch(url.toString(), {
+    ...options,
+    headers,
+    next: { revalidate: 60 }, // ISR caching (optional)
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `API request failed with status ${response.status}`
-      );
-    }
-
-    // For 204 No Content responses
-    if (response.status === 204) {
-      return null as T;
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('API Request Error:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
   }
+
+  return response.json();
 }
 
-// Define specific API types
-type Booking = {
-  id: string;
-  // Add other booking properties here
-};
+// --------------------
+// WordPress Data Types
+// --------------------
+export interface WPPost {
+  id: number;
+  date: string;
+  title: { rendered: string };
+  content: { rendered: string };
+  acf?: Record<string, any>; // ACF fields
+  [key: string]: any;
+}
 
-// API functions
+// --------------------
+// API Functions
+// --------------------
 export const api = {
-  // Fetch bookings
-  getBookings: async (): Promise<ApiResponse<{ bookings: Booking[] }>> => {
-    return apiRequest<ApiResponse<{ bookings: Booking[] }>>('/bookings');
+  getRooms: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>("/rooms");
   },
 
-  // Create a booking
-  createBooking: async (data: Omit<Booking, 'id'>): Promise<ApiResponse<{ booking: Booking }>> => {
-    return apiRequest<ApiResponse<{ booking: Booking }>>('/bookings', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+  getAmenities: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>("/amenities");
   },
 
-  // Add more API functions as needed
+  getExplore: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>("/explore");
+  },
 };
