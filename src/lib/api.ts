@@ -58,8 +58,17 @@ export interface WPPost {
   date: string;
   title: { rendered: string };
   content: { rendered: string };
-  acf?: Record<string, any>; // ACF fields
-  [key: string]: any;
+  excerpt?: { rendered: string };
+  featured_media?: number;
+  better_featured_image?: {
+    source_url: string;
+    [key: string]: unknown;
+  };
+  acf?: {
+    gallery?: Array<{ url: string; [key: string]: unknown }> | { url: string; [key: string]: unknown };
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
 }
 
 // --------------------

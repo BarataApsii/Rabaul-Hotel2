@@ -1,6 +1,6 @@
 /**
  * Image utilities
- * 
+ *
  * This file provides fallback images and helper functions
  * for working with WordPress media fields.
  */
@@ -15,13 +15,28 @@ export const fallbackImages = {
 };
 
 /**
+ * WordPress post interface for image functions
+ */
+interface WPPostForImages {
+  better_featured_image?: {
+    source_url: string;
+    [key: string]: unknown;
+  };
+  acf?: {
+    gallery?: Array<{ url: string; [key: string]: unknown }> | { url: string; [key: string]: unknown };
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+/**
  * Get featured image URL from WordPress post
  */
-export function getFeaturedImage(post: any): string {
+export function getFeaturedImage(post: WPPostForImages): string {
   if (post?.better_featured_image?.source_url) {
     return post.better_featured_image.source_url;
   }
-  if (post?.acf?.gallery?.url) {
+  if (post?.acf?.gallery && typeof post.acf.gallery === 'object' && 'url' in post.acf.gallery) {
     return post.acf.gallery.url;
   }
   return fallbackImages.room;
@@ -30,11 +45,16 @@ export function getFeaturedImage(post: any): string {
 /**
  * Get gallery images from ACF (if any)
  */
-export function getGalleryImages(post: any): string[] {
+export function getGalleryImages(post: WPPostForImages): string[] {
   if (Array.isArray(post?.acf?.gallery)) {
-    return post.acf.gallery.map((img: any) => img.url);
+    return post.acf.gallery.map((img) => {
+      if (typeof img === 'object' && img !== null && 'url' in img) {
+        return img.url;
+      }
+      return '';
+    }).filter(Boolean);
   }
-  if (post?.acf?.gallery?.url) {
+  if (post?.acf?.gallery && typeof post.acf.gallery === 'object' && 'url' in post.acf.gallery) {
     // Single image
     return [post.acf.gallery.url];
   }
