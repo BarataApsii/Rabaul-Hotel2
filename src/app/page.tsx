@@ -719,11 +719,11 @@ export default function Home() {
                   alt={`Rabaul Hotel Slide ${index + 1}`}
                   fill
                   sizes="100vw"
-                  className="object-cover"
+                  className="object-cover brightness-110 contrast-110"
                   priority={index === 0}
-                  quality={90}
+                  quality={100}
                 />
-                <div className="absolute inset-0 bg-black/30" />
+                <div className="absolute inset-0 bg-black/10" />
               </div>
             ))}
 
