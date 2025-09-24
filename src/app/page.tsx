@@ -689,15 +689,15 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section 
-        id="home" 
+      <section
+        id="home"
         ref={homeRef}
-        className="relative h-screen flex items-center justify-center text-white overflow-hidden"
+        className="relative min-h-[70vh] max-h-[80vh] flex items-center justify-center text-white overflow-hidden"
         style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
       >
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           {/* Image Slider */}
-          <div className="relative w-full h-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden rounded-lg shadow-2xl">
             {/* Slider Images */}
             {[
               '/images/wow-sliders/North-Wing.jpg',
