@@ -60,44 +60,54 @@ export default function Home() {
     pickupLocation: '',
     dropoffLocation: ''
   })
-  const [paymentMethod, setPaymentMethod] = useState('credit-card')
+  const [contactMessage, setContactMessage] = useState('')
+  const [subject, setSubject] = useState('')
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  const [visible, setVisible] = useState(true);
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
   const [contactName, setContactName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
-  const [contactMessage, setContactMessage] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [subject, setSubject] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
-  const [activeSection, setActiveSection] = useState('home')
-  const [visible, setVisible] = useState(true);
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [bookingDetails, setBookingDetails] = useState(null)
+  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
+  const [formKey, setFormKey] = useState(0)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAtTop, setIsAtTop] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
-  interface BookingDetails {
-    name: string;
-    email: string;
-    checkIn: string;
-    checkOut: string;
-    roomType?: string;
-    guests?: number;
-    specialRequests?: string;
+  const [activeSection, setActiveSection] = useState('home')
+  const [isLoading, setIsLoading] = useState(false)
+  const [lastName, setLastName] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('')
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % 9)
   }
 
-  const [, setBookingDetails] = useState<BookingDetails | null>({
-    name: '',
-    email: '',
-    checkIn: '',
-    checkOut: '',
-    roomType: '',
-    guests: 1,
-    specialRequests: ''
-  })
-  const [, setIsBookingConfirmed] = useState(false)
-  const [formKey, setFormKey] = useState(0) // Key to force remount of form components
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + 9) % 9)
+  }
 
-  // Reset all form data and booking summary when component mounts
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index)
+  }
+
+  const handleMouseEnter = () => {
+    // Add any hover effects here if needed
+  }
+
+  const handleMouseLeave = () => {
+    // Add any hover effects here if needed
+  }
+
+  // Auto-slide effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % 9)
+    }, 5000) // Change slide every 5 seconds
+
+    return () => clearInterval(timer)
+  }, [])
   useEffect(() => {
     const today = new Date()
     const tomorrow = new Date(today)
@@ -439,12 +449,12 @@ export default function Home() {
         <div className="w-full flex h-24 items-center justify-between px-8">
           <div className="flex items-center pl-12">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <div className="relative h-20 w-48">
+              <div className="relative h-28 w-64">
                 <Image 
                   src={logoImage}
                   alt="Rabaul Hotel Logo"
                   fill
-                  sizes="(max-width: 768px) 192px, 240px"
+                  sizes="(max-width: 768px) 256px, 320px"
                   className="object-contain hover:opacity-90 transition-opacity"
                   priority
                   quality={100}
@@ -686,30 +696,72 @@ export default function Home() {
         style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
       >
         <div className="absolute inset-0 z-0">
-          <div className="hidden md:block absolute inset-0">
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline 
-              className="w-full h-full object-cover"
+          {/* Image Slider */}
+          <div className="relative w-full h-full overflow-hidden">
+            {/* Slider Images */}
+            {[
+              '/images/wow-sliders/North-Wing.jpg',
+              '/images/wow-sliders/a004fromrvomay07.jpg',
+              '/images/wow-sliders/a057tubuans.jpg',
+              '/images/wow-sliders/dukeof_yorks.jpg',
+              '/images/wow-sliders/img2014111901091b.jpg',
+              '/images/wow-sliders/rabaul_market.jpg',
+              '/images/wow-sliders/rabaul_vulcan.jpg',
+              '/images/wow-sliders/rabaultavurvur3364.jpg',
+              '/images/wow-sliders/simpsonharbour2012.jpg'
+            ].map((src, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <Image
+                  src={src}
+                  alt={`Rabaul Hotel Slide ${index + 1}`}
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                  priority={index === 0}
+                  quality={90}
+                />
+                <div className="absolute inset-0 bg-black/30" />
+              </div>
+            ))}
+
+            {/* Navigation Dots */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+              {Array.from({ length: 9 }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/75'}`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 opacity-75 hover:opacity-100"
+              aria-label="Previous slide"
             >
-              <source src="/videos/beach.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <div
-            className="md:hidden absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 to-green-900"
-            style={{
-              // CSS background from public/ so it works on Vercel
-              backgroundImage:
-                "linear-gradient(to bottom right, rgba(30,58,138,0.6), rgba(6,95,70,0.6)), url('/images/mobile-hero.png')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          >
-            {/* Image removed; using CSS background only so it always shows on mobile */}
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={nextSlide}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 opacity-75 hover:opacity-100"
+              aria-label="Next slide"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
         <div className="container max-w-7xl px-4 relative z-10 w-full pt-16 sm:pt-24 md:pt-32">
