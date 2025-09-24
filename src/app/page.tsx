@@ -749,12 +749,8 @@ export default function Home() {
         style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
       >
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          {/* Image Slider with professional controls */}
-          <div
-            className="relative w-full h-full overflow-hidden rounded-lg shadow-2xl"
-            onMouseEnter={handleMouseEnterSlider}
-            onMouseLeave={handleMouseLeaveSlider}
-          >
+          {/* Image Slider with optimized sizing */}
+          <div className="relative w-full max-w-6xl mx-auto h-full overflow-hidden rounded-lg shadow-2xl">
             {/* Slider Images */}
             {[
               '/images/wow-sliders/North-Wing.jpg',
@@ -769,7 +765,7 @@ export default function Home() {
             ].map((src, index) => (
               <div
                 key={index}
-                className="absolute inset-0"
+                className="absolute inset-0 flex items-center justify-center"
                 style={{
                   opacity: index === currentSlide ? 1 : 0,
                   transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
@@ -781,8 +777,8 @@ export default function Home() {
                   src={src}
                   alt={`Rabaul Hotel Slide ${index + 1}`}
                   fill
-                  sizes="100vw"
-                  className="object-cover brightness-110 contrast-110"
+                  sizes="(max-width: 1536px) 100vw, 1536px"
+                  className="object-contain brightness-110 contrast-110"
                   priority={index === 0}
                   quality={100}
                 />
@@ -811,7 +807,7 @@ export default function Home() {
               onClick={prevSlide}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
               aria-label="Previous slide"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -822,7 +818,7 @@ export default function Home() {
               onClick={nextSlide}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
               aria-label="Next slide"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -885,23 +881,113 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="mt-12 sm:mt-16 md:mt-20">
-              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-transform duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  onClick={() => scrollToSection(bookRef)}
-                >
-                  Book Now
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="bg-transparent border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-white"
-                  onClick={() => scrollToSection(roomsRef)}
-                >
-                  View Rooms
-                </Button>
+            <div className="mt-16 sm:mt-20 md:mt-24">
+              {/* Inline Booking Form - 4 columns */}
+              <div className="max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                  {/* Arrival Date */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-white/90">Arrival</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-600" />
+                          {checkIn ? format(checkIn, "MMM dd") : <span className="text-gray-500">Check-in</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={checkIn}
+                          onSelect={setCheckIn}
+                          initialFocus
+                          disabled={(date) => date < new Date()}
+                          className="rounded-md border"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Departure Date */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-white/90">Departure</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-600" />
+                          {checkOut ? format(checkOut, "MMM dd") : <span className="text-gray-500">Check-out</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={checkOut}
+                          onSelect={setCheckOut}
+                          initialFocus
+                          disabled={(date) => !checkIn || date <= checkIn}
+                          className="rounded-md border"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Guests */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-white/90">Guests</Label>
+                    <Select
+                      value={adults.toString()}
+                      onValueChange={(value) => setAdults(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300">
+                        <SelectValue placeholder="Adults" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num} {num === 1 ? 'Adult' : 'Adults'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Children */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-white/90">Children</Label>
+                    <Select
+                      value={children.toString()}
+                      onValueChange={(value) => setChildren(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300">
+                        <SelectValue placeholder="Children" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[0, 1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num} {num === 1 ? 'Child' : 'Children'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Book Now Button - Far Right */}
+                  <div className="space-y-2 lg:col-span-1 flex items-end">
+                    <Button
+                      size="lg"
+                      className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                      onClick={() => scrollToSection(bookRef)}
+                    >
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
