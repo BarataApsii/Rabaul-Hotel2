@@ -100,14 +100,36 @@ export default function Home() {
     // Add any hover effects here if needed
   }
 
-  // Auto-slide effect
+  // Auto-slide effect with professional timing and pause on hover
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % 9)
-    }, 5000) // Change slide every 5 seconds
+    }, 5000) // 5 second intervals like their website
 
     return () => clearInterval(timer)
   }, [])
+
+  // Pause slideshow on hover
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseEnterSlider = () => {
+    setIsHovered(true)
+  }
+
+  const handleMouseLeaveSlider = () => {
+    setIsHovered(false)
+  }
+
+  // Auto-slide effect with pause on hover
+  useEffect(() => {
+    if (isHovered) return // Don't auto-advance when hovered
+
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % 9)
+    }, 5000)
+
+    return () => clearInterval(timer)
+  }, [isHovered])
   useEffect(() => {
     const today = new Date()
     const tomorrow = new Date(today)
@@ -417,6 +439,37 @@ export default function Home() {
     }
   }
 
+  // Professional transition effects matching Rabaul Hotel website
+  const getSlideTransition = (index: number) => {
+    const transitions = [
+      'scale(1.0) translateX(0px)', // Slide 0: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 1: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 2: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 3: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 4: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 5: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 6: Clean entrance
+      'scale(1.0) translateX(0px)', // Slide 7: Clean entrance
+      'scale(1.0) translateX(0px)'  // Slide 8: Clean entrance
+    ];
+    return transitions[index] || 'scale(1.0) translateX(0px)';
+  };
+
+  const getSlideExitTransition = (index: number) => {
+    const exitTransitions = [
+      'scale(0.95) translateX(-20px)', // Slide 0: Gentle zoom out with left slide
+      'scale(0.95) translateX(20px)',  // Slide 1: Gentle zoom out with right slide
+      'scale(0.95) translateX(-15px)', // Slide 2: Gentle zoom out with left slide
+      'scale(0.95) translateX(15px)',  // Slide 3: Gentle zoom out with right slide
+      'scale(0.95) translateX(-20px)', // Slide 4: Gentle zoom out with left slide
+      'scale(0.95) translateX(20px)',  // Slide 5: Gentle zoom out with right slide
+      'scale(0.95) translateX(-15px)', // Slide 6: Gentle zoom out with left slide
+      'scale(0.95) translateX(15px)',  // Slide 7: Gentle zoom out with right slide
+      'scale(0.95) translateX(-20px)'  // Slide 8: Gentle zoom out with left slide
+    ];
+    return exitTransitions[index] || 'scale(0.95) translateX(-20px)';
+  };
+
   return (
     <div className="relative">
       {/* Toast Notification */}
@@ -696,8 +749,12 @@ export default function Home() {
         style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
       >
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          {/* Image Slider */}
-          <div className="relative w-full h-full overflow-hidden rounded-lg shadow-2xl">
+          {/* Image Slider with professional controls */}
+          <div
+            className="relative w-full h-full overflow-hidden rounded-lg shadow-2xl"
+            onMouseEnter={handleMouseEnterSlider}
+            onMouseLeave={handleMouseLeaveSlider}
+          >
             {/* Slider Images */}
             {[
               '/images/wow-sliders/North-Wing.jpg',
@@ -712,7 +769,13 @@ export default function Home() {
             ].map((src, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+                className="absolute inset-0"
+                style={{
+                  opacity: index === currentSlide ? 1 : 0,
+                  transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
+                  transition: 'all 2s ease-in-out',
+                  zIndex: index === currentSlide ? 10 : 1
+                }}
               >
                 <Image
                   src={src}
@@ -727,39 +790,43 @@ export default function Home() {
               </div>
             ))}
 
-            {/* Navigation Dots */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+            {/* Professional Navigation Dots */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
               {Array.from({ length: 9 }, (_, index) => (
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/75'}`}
+                  className={`w-3 h-3 rounded-full transition-all duration-500 hover:scale-125 ${
+                    index === currentSlide
+                      ? 'bg-white scale-125 shadow-lg'
+                      : 'bg-white/60 hover:bg-white/90 shadow-md'
+                  }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Professional Navigation Arrows */}
             <button
               onClick={prevSlide}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 opacity-75 hover:opacity-100"
+              className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
               aria-label="Previous slide"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={nextSlide}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 opacity-75 hover:opacity-100"
+              className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
               aria-label="Next slide"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
