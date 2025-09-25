@@ -773,71 +773,8 @@ export default function Home() {
         <div className="container mx-auto px-4 py-2 relative z-10">
           {/* Slider and Booking Form Container */}
           <div className="flex flex-col lg:flex-row gap-4 items-start">
-            {/* Image Slider */}
-            <div className="w-full lg:w-[85%] lg:mr-4 h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
-              <div className="w-full h-full relative">
-                {[
-                  '/images/wow-sliders/North-Wing.jpg',
-                  '/images/wow-sliders/a004fromrvomay07.jpg',
-                  '/images/wow-sliders/a057tubuans.jpg',
-                  '/images/wow-sliders/dukeof_yorks.jpg',
-                  '/images/wow-sliders/img2014111901091b.jpg',
-                  '/images/wow-sliders/rabaul_market.jpg',
-                  '/images/wow-sliders/rabaul_vulcan.jpg',
-                  '/images/wow-sliders/rabaultavurvur3364.jpg',
-                  '/images/wow-sliders/simpsonharbour2012.jpg'
-                ].map((src, index) => (
-                  <div
-                    key={index}
-                    className="absolute inset-0 w-full h-full"
-                    style={{
-                      opacity: index === currentSlide ? 1 : 0,
-                      transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
-                      transition: 'all 2s ease-in-out',
-                      zIndex: index === currentSlide ? 10 : 1
-                    }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`Rabaul Hotel Slide ${index + 1}`}
-                      fill
-                      sizes="(max-width: 1536px) 100vw, 1536px"
-                      className="object-cover brightness-110 contrast-110"
-                      priority={index === 0}
-                      quality={100}
-                    />
-                    <div className="absolute inset-0 bg-black/10" />
-                  </div>
-                ))}
-
-                {/* Navigation Arrows */}
-                <button
-                  onClick={prevSlide}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-                  aria-label="Previous slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextSlide}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-                  aria-label="Next slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
             {/* Booking Form - Hidden on mobile, visible on desktop only */}
-            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0">
+            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0 lg:mr-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -912,6 +849,70 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Image Slider */}
+            <div className="w-full lg:w-[80%] h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
+              <div className="w-full h-full relative">
+                {[
+                  '/images/wow-sliders/North-Wing.jpg',
+                  '/images/wow-sliders/a004fromrvomay07.jpg',
+                  '/images/wow-sliders/a057tubuans.jpg',
+                  '/images/wow-sliders/dukeof_yorks.jpg',
+                  '/images/wow-sliders/img2014111901091b.jpg',
+                  '/images/wow-sliders/rabaul_market.jpg',
+                  '/images/wow-sliders/rabaul_vulcan.jpg',
+                  '/images/wow-sliders/rabaultavurvur3364.jpg',
+                  '/images/wow-sliders/simpsonharbour2012.jpg'
+                ].map((src, index) => (
+                  <div
+                    key={index}
+                    className="absolute inset-0 w-full h-full"
+                    style={{
+                      opacity: index === currentSlide ? 1 : 0,
+                      transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
+                      transition: 'all 2s ease-in-out',
+                      zIndex: index === currentSlide ? 10 : 1
+                    }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Rabaul Hotel Slide ${index + 1}`}
+                      fill
+                      sizes="(max-width: 1536px) 100vw, 1536px"
+                      className="object-cover brightness-110 contrast-110"
+                      priority={index === 0}
+                      quality={100}
+                    />
+                    <div className="absolute inset-0 bg-black/10" />
+                  </div>
+                ))}
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={prevSlide}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  aria-label="Previous slide"
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  aria-label="Next slide"
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
           </div>
 
       {/* Bottom content section */}
