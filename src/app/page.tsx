@@ -746,15 +746,23 @@ export default function Home() {
       <section
         id="home"
         ref={homeRef}
-        className="relative py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-        style={{ position: 'relative', zIndex: 1 }}
+        className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+        style={{ 
+          position: 'relative', 
+          zIndex: 10, 
+          marginTop: '6rem',
+          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('/images/home-bg.PNG')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 py-2">
           {/* Slider and Booking Form Container */}
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-start">
             {/* Image Slider */}
-            <div className="w-full lg:flex-1 h-[50vh] lg:h-[70vh] relative rounded-lg shadow-2xl overflow-hidden">
-              <div className="w-full h-full">
+            <div className="w-full lg:w-[85%] lg:mr-4 h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
+              <div className="w-full h-full relative">
                 {[
                   '/images/wow-sliders/North-Wing.jpg',
                   '/images/wow-sliders/a004fromrvomay07.jpg',
@@ -768,7 +776,7 @@ export default function Home() {
                 ].map((src, index) => (
                   <div
                     key={index}
-                    className="absolute inset-0 flex items-center justify-center"
+                    className="absolute inset-0 w-full h-full"
                     style={{
                       opacity: index === currentSlide ? 1 : 0,
                       transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
@@ -781,7 +789,7 @@ export default function Home() {
                       alt={`Rabaul Hotel Slide ${index + 1}`}
                       fill
                       sizes="(max-width: 1536px) 100vw, 1536px"
-                      className="object-contain brightness-110 contrast-110"
+                      className="object-cover brightness-110 contrast-110"
                       priority={index === 0}
                       quality={100}
                     />
@@ -789,31 +797,15 @@ export default function Home() {
                   </div>
                 ))}
 
-                {/* Navigation Dots */}
-                <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20">
-                  {Array.from({ length: 9 }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-500 hover:scale-125 ${
-                        index === currentSlide
-                          ? 'bg-white scale-125 shadow-lg'
-                          : 'bg-white/60 hover:bg-white/90 shadow-md'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
                 {/* Navigation Arrows */}
                 <button
                   onClick={prevSlide}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
-                  className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
                   aria-label="Previous slide"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
@@ -821,96 +813,97 @@ export default function Home() {
                   onClick={nextSlide}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
-                  className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
                   aria-label="Next slide"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
-            
+            </div>
+
             {/* Booking Form - Positioned below on mobile, to the right on desktop */}
-            <div className="w-full lg:w-96">
+            <div className="w-full lg:w-[20%] flex-shrink-0">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden"
+                className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-gray-200"
+                style={{ zIndex: 20 }}
               >
-            <div className="bg-[#1a5f2c] p-4">
-              <h3 className="text-xl font-bold text-white text-center">Book Your Stay With Us</h3>
-            </div>
-            <div className="p-4">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
-                      value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
-                      onChange={(e) => setCheckIn(new Date(e.target.value))}
-                      min={format(new Date(), 'yyyy-MM-dd')}
-                    />
+                <div className="bg-[#1a5f2c] p-4">
+                  <h3 className="text-xl font-bold text-white text-center">Book Your Stay With Us</h3>
+                </div>
+                <div className="p-4">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                          value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
+                          onChange={(e) => setCheckIn(new Date(e.target.value))}
+                          min={format(new Date(), 'yyyy-MM-dd')}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                          value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
+                          onChange={(e) => setCheckOut(new Date(e.target.value))}
+                          min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                      <select
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                        value={adults}
+                        onChange={(e) => setAdults(parseInt(e.target.value))}
+                      >
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <option key={num} value={num}>
+                            {num} {num === 1 ? 'Adult' : 'Adults'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
+                      <select
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                        value={roomType || ''}
+                        onChange={(e) => setRoomType(e.target.value || undefined)}
+                      >
+                        <option value="">Select Room Type</option>
+                        <option value="budget">Budget Room</option>
+                        <option value="standard">Standard Room</option>
+                        <option value="executive">Executive Room</option>
+                        <option value="family">Family Suite</option>
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => scrollToSection(bookRef)}
+                      className="w-full bg-[#1a5f2c] text-white py-2 px-4 rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
+                    >
+                      Check Availability
+                    </button>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
-                      value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
-                      onChange={(e) => setCheckOut(new Date(e.target.value))}
-                      min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
-                  <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
-                    value={adults}
-                    onChange={(e) => setAdults(parseInt(e.target.value))}
-                  >
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num} {num === 1 ? 'Adult' : 'Adults'}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
-                  <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
-                    value={roomType || ''}
-                    onChange={(e) => setRoomType(e.target.value || undefined)}
-                  >
-                    <option value="">Select Room Type</option>
-                    <option value="budget">Budget Room</option>
-                    <option value="standard">Standard Room</option>
-                    <option value="executive">Executive Room</option>
-                    <option value="family">Family Suite</option>
-                  </select>
-                </div>
-                <button
-                  onClick={() => scrollToSection(bookRef)}
-                  className="w-full bg-[#1a5f2c] text-white py-2 px-4 rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
-                >
-                  Check Availability
-                </button>
-              </div>
+              </motion.div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
+          </div>
 
       {/* Bottom content section */}
       <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent">
-        <div className="container max-w-7xl mx-auto px-4 pb-8 pt-4">
+        <div className="container max-w-7xl mx-auto px-4 py-1">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1007,7 +1000,7 @@ export default function Home() {
       </div>
     </section>
       {/* About Us Section */}
-      <section ref={aboutRef} className="py-16 md:py-20 bg-green-950 text-white">
+      <section ref={aboutRef} className="py-8 md:py-12 bg-green-950 text-white">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-start gap-8">
             {/* Text Content - First on mobile, left on desktop */}
