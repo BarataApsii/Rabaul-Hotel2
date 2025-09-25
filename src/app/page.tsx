@@ -493,22 +493,44 @@ export default function Home() {
       )}
       {/* Navbar */}
       <nav 
-        className={`sticky top-0 w-full shadow-sm transition-all duration-300 ${
-          isAtTop ? 'bg-black/50' : 'bg-gray-800/90'
+        className={`sticky top-0 w-full transition-all duration-300 ${
+          isAtTop ? 'bg-black/80' : 'bg-black/90'
         } ${
           visible ? 'translate-y-0' : '-translate-y-full'
         }`}
         style={{ zIndex: 1000, position: 'fixed', width: '100%' }}
       >
-        <div className="w-full flex h-24 items-center justify-between px-8">
-          <div className="flex items-center pl-12">
+        <div className="w-full flex h-24 items-center justify-between px-4 md:px-8">
+          {/* Mobile hamburger button - Left side */}
+          <Button 
+            variant="ghost"
+            className="md:hidden text-white hover:bg-white/10 rounded-full p-2 transition-colors w-10 h-10 flex items-center justify-center focus:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="!w-5 !h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="!w-5 !h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12"></line>
+                <line x1="4" x2="20" y1="6" y2="6"></line>
+                <line x1="4" x2="20" y1="18" y2="18"></line>
+              </svg>
+            )}
+          </Button>
+
+          <div className="flex items-center md:pl-12">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <div className="relative h-28 w-64">
+              <div className="relative h-16 w-40 md:h-28 md:w-64">
                 <Image 
                   src={logoImage}
                   alt="Rabaul Hotel Logo"
                   fill
-                  sizes="(max-width: 768px) 256px, 320px"
+                  sizes="(max-width: 768px) 160px, 320px"
                   className="object-contain hover:opacity-90 transition-opacity"
                   priority
                   quality={100}
@@ -599,26 +621,9 @@ export default function Home() {
               Contact Us
             </Button>
           </div>
-          <Button 
-            variant="ghost"
-            className="md:hidden text-white hover:bg-white/10 rounded-full p-2 transition-colors w-11 h-11 flex items-center justify-center focus:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="!w-7 !h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="!w-7 !h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="4" x2="20" y1="12" y2="12"></line>
-                <line x1="4" x2="20" y1="6" y2="6"></line>
-                <line x1="4" x2="20" y1="18" y2="18"></line>
-              </svg>
-            )}
-          </Button>
+          
+          {/* Spacer for mobile layout */}
+          <div className="md:hidden w-10"></div>
           
           {/* Mobile Menu */}
           <div 
@@ -626,14 +631,14 @@ export default function Home() {
               mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             } md:hidden`}
           >
-            <div className="flex flex-col space-y-2 w-72 bg-gray-800/90 backdrop-blur-sm py-4 px-4 text-lg rounded-r-lg">
+            <div className="flex flex-col space-y-1 w-56 bg-black/20 backdrop-blur-sm py-3 px-3 text-sm rounded-r-lg">
               {/* Home */}
               <button 
                 onClick={() => {
                   scrollToSection(homeRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                className={`px-3 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-md mx-1 my-0.5 text-sm ${
                   activeSection === 'home' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
@@ -646,36 +651,36 @@ export default function Home() {
                   scrollToSection(aboutRef)
                   setMobileMenuOpen(false)
                 }}
-                className="px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1"
+                className="px-3 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-md mx-1 my-0.5 text-sm"
               >
                 About Us
               </button>
               
               {/* Services Dropdown */}
-              <div className="border border-gray-300/30 rounded-lg mx-2 my-1 overflow-hidden">
+              <div className="border border-gray-300/30 rounded-md mx-1 my-0.5 overflow-hidden">
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     const content = e.currentTarget.nextElementSibling as HTMLElement;
                     content.style.display = content.style.display === 'none' ? 'block' : 'none';
                   }}
-                  className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center ${
+                  className={`px-3 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors flex justify-between items-center text-sm ${
                     ['dining', 'explore', 'rooms'].includes(activeSection) ? 'bg-white/20 font-medium' : ''
                   }`}
                 >
                   <span>Services</span>
-                  <svg className="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="pl-4 hidden">
+                <div className="pl-2 hidden">
                   <button 
                     onClick={() => {
                       scrollToSection(diningRef)
                       setActiveSection('dining')
                       setMobileMenuOpen(false)
                     }}
-                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
+                    className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
                   >
                     Dining
                   </button>
@@ -685,7 +690,7 @@ export default function Home() {
                       setActiveSection('explore')
                       setMobileMenuOpen(false)
                     }}
-                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
+                    className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
                   >
                     Tours
                   </button>
@@ -695,7 +700,7 @@ export default function Home() {
                       setActiveSection('rooms')
                       setMobileMenuOpen(false)
                     }}
-                    className="px-6 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors"
+                    className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
                   >
                     Accommodation
                   </button>
@@ -708,7 +713,7 @@ export default function Home() {
                   scrollToSection(bookRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                className={`px-3 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-md mx-1 my-0.5 text-sm ${
                   activeSection === 'booking' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
@@ -721,7 +726,7 @@ export default function Home() {
                   scrollToSection(contactRef)
                   setMobileMenuOpen(false)
                 }}
-                className={`px-6 py-3 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-lg mx-2 my-1 ${
+                className={`px-3 py-2 w-full text-left text-white hover:bg-gray-100/20 transition-colors border border-gray-300/30 rounded-md mx-1 my-0.5 text-sm ${
                   activeSection === 'contact' ? 'bg-white/20 font-medium' : ''
                 }`}
               >
@@ -831,8 +836,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Booking Form - Positioned below on mobile, to the right on desktop */}
-            <div className="w-full lg:w-[20%] flex-shrink-0">
+            {/* Booking Form - Hidden on mobile, visible on desktop only */}
+            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -918,89 +923,15 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="w-full text-center"
             >
-              {/* Compact Booking Form at bottom - Hidden on medium screens and up */}
-              <div className="max-w-3xl mx-auto md:hidden">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                  {/* Arrival Date */}
-                  <div className="space-y-1">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal h-11 sm:h-12 px-3 sm:px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm"
-                        >
-                          <CalendarIcon className="mr-1 sm:mr-2 h-4 w-4 text-gray-600" />
-                          <span className="truncate">{checkIn ? format(checkIn, "MMM dd") : "Check-in"}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={checkIn}
-                          onSelect={setCheckIn}
-                          initialFocus
-                          disabled={(date: Date) => isBefore(date, new Date()) && !isToday(date)}
-                          className="rounded-md border"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Departure Date */}
-                  <div className="space-y-1">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal h-11 sm:h-12 px-3 sm:px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm"
-                        >
-                          <CalendarIcon className="mr-1 sm:mr-2 h-4 w-4 text-gray-600" />
-                          <span className="truncate">{checkOut ? format(checkOut, "MMM dd") : "Check-out"}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={checkOut}
-                          onSelect={setCheckOut}
-                          initialFocus
-                          disabled={(date: Date) => !checkIn || isBefore(date, checkIn) || isEqual(date, checkIn)}
-                          className="rounded-md border"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Guests */}
-                  <div className="space-y-1">
-                    <Select
-                      value={adults.toString()}
-                      onValueChange={(value) => setAdults(parseInt(value))}
-                    >
-                      <SelectTrigger className="w-full h-11 sm:h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm">
-                        <SelectValue placeholder="Guests" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num} {num === 1 ? 'Guest' : 'Guests'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Book Now Button */}
-                  <div className="space-y-1">
-                    <Button
-                      size="lg"
-                      className="w-full h-11 sm:h-12 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-sm"
-                      onClick={() => scrollToSection(bookRef)}
-                    >
-                      Book Now
-                    </Button>
-                  </div>
-                </div>
+              {/* Mobile Book Now Button - Only visible on mobile */}
+              <div className="md:hidden">
+                <Button
+                  size="lg"
+                  className="bg-[#1a5f2c] hover:bg-[#144a22] text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-[#1a5f2c]"
+                  onClick={() => scrollToSection(bookRef)}
+                >
+                  Book Your Stay With Us
+                </Button>
               </div>
             </motion.div>
           </div>
