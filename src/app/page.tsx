@@ -774,7 +774,7 @@ export default function Home() {
           {/* Slider and Booking Form Container */}
           <div className="flex flex-col lg:flex-row gap-4 items-start">
             {/* Booking Form - Hidden on mobile, visible on desktop only */}
-            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0 lg:mr-4">
+            <div className="hidden md:block w-full lg:w-[15%] flex-shrink-0 lg:mr-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -782,17 +782,17 @@ export default function Home() {
                 className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-gray-200"
                 style={{ zIndex: 20 }}
               >
-                <div className="bg-[#1a5f2c] p-4">
-                  <h3 className="text-xl font-bold text-white text-center">Book Your Stay With Us</h3>
+                <div className="bg-[#1a5f2c] p-3">
+                  <h3 className="text-lg font-bold text-white text-center">Book Your Stay</h3>
                 </div>
-                <div className="p-4">
-                  <div className="space-y-4">
+                <div className="p-3">
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Check-in</label>
                       <div className="relative">
                         <input
                           type="date"
-                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                          className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                           value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
                           onChange={(e) => setCheckIn(new Date(e.target.value))}
                           min={format(new Date(), 'yyyy-MM-dd')}
@@ -800,11 +800,11 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Check-out</label>
                       <div className="relative">
                         <input
                           type="date"
-                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                          className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                           value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
                           onChange={(e) => setCheckOut(new Date(e.target.value))}
                           min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
@@ -812,9 +812,9 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Guests</label>
                       <select
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                        className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                         value={adults}
                         onChange={(e) => setAdults(parseInt(e.target.value))}
                       >
@@ -826,9 +826,9 @@ export default function Home() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Room Type</label>
                       <select
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                        className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                         value={roomType || ''}
                         onChange={(e) => setRoomType(e.target.value || undefined)}
                       >
@@ -841,7 +841,7 @@ export default function Home() {
                     </div>
                     <button
                       onClick={() => scrollToSection(bookRef)}
-                      className="w-full bg-[#1a5f2c] text-white py-2 px-4 rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
+                      className="w-full bg-[#1a5f2c] text-white py-2 px-3 text-sm rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
                     >
                       Check Availability
                     </button>
@@ -851,19 +851,19 @@ export default function Home() {
             </div>
 
             {/* Image Slider */}
-            <div className="w-full lg:w-[80%] h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
+            <div className="w-full lg:w-[85%] h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
               <div className="w-full h-full relative">
                 {[
-                  '/images/wow-sliders/North-Wing.jpg',
-                  '/images/wow-sliders/a004fromrvomay07.jpg',
-                  '/images/wow-sliders/a057tubuans.jpg',
-                  '/images/wow-sliders/dukeof_yorks.jpg',
-                  '/images/wow-sliders/img2014111901091b.jpg',
-                  '/images/wow-sliders/rabaul_market.jpg',
-                  '/images/wow-sliders/rabaul_vulcan.jpg',
-                  '/images/wow-sliders/rabaultavurvur3364.jpg',
-                  '/images/wow-sliders/simpsonharbour2012.jpg'
-                ].map((src, index) => (
+                  { src: '/images/wow-sliders/North-Wing.jpg', caption: 'North Wing Accommodation' },
+                  { src: '/images/wow-sliders/a004fromrvomay07.jpg', caption: 'Scenic Rabaul Views' },
+                  { src: '/images/wow-sliders/a057tubuans.jpg', caption: 'Traditional Tubuan Culture' },
+                  { src: '/images/wow-sliders/dukeof_yorks.jpg', caption: 'Duke of York Islands' },
+                  { src: '/images/wow-sliders/img2014111901091b.jpg', caption: 'Historic Rabaul Heritage' },
+                  { src: '/images/wow-sliders/rabaul_market.jpg', caption: 'Vibrant Local Market' },
+                  { src: '/images/wow-sliders/rabaul_vulcan.jpg', caption: 'Majestic Vulcan Volcano' },
+                  { src: '/images/wow-sliders/rabaultavurvur3364.jpg', caption: 'Tavurvur Volcanic Activity' },
+                  { src: '/images/wow-sliders/simpsonharbour2012.jpg', caption: 'Beautiful Simpson Harbour' }
+                ].map((slide, index) => (
                   <div
                     key={index}
                     className="absolute inset-0 w-full h-full"
@@ -875,8 +875,8 @@ export default function Home() {
                     }}
                   >
                     <Image
-                      src={src}
-                      alt={`Rabaul Hotel Slide ${index + 1}`}
+                      src={slide.src}
+                      alt={`Rabaul Hotel - ${slide.caption}`}
                       fill
                       sizes="(max-width: 1536px) 100vw, 1536px"
                       className="object-cover brightness-110 contrast-110"
@@ -884,6 +884,14 @@ export default function Home() {
                       quality={100}
                     />
                     <div className="absolute inset-0 bg-black/10" />
+                    
+                    {/* Caption Overlay */}
+                    <div className="absolute bottom-4 left-4 z-20">
+                      <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
+                        <h3 className="text-white font-bold text-lg mb-1">Rabaul Hotel</h3>
+                        <p className="text-white/90 text-sm">{slide.caption}</p>
+                      </div>
+                    </div>
                   </div>
                 ))}
 
