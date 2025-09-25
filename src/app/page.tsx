@@ -34,13 +34,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { format } from 'date-fns'
+import { format, isAfter, isBefore, isToday, isEqual } from 'date-fns'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
+  
+  // Refs for scrolling to sections
   const [roomType, setRoomType] = useState<string | undefined>(undefined)
   const [adults, setAdults] = useState(2)
   const [children, setChildren] = useState(0)
@@ -162,16 +164,16 @@ export default function Home() {
   }
   
   // Refs for sections
-  const homeRef = useRef<HTMLElement>(null)
-  const roomsRef = useRef<HTMLElement>(null)
-  const bookRef = useRef<HTMLElement>(null)
-  const aboutRef = useRef<HTMLElement>(null)
-  const exploreRef = useRef<HTMLElement>(null)
-  const amenitiesRef = useRef<HTMLElement>(null)
-  const contactRef = useRef<HTMLElement>(null)
-  const transportRef = useRef<HTMLElement>(null)
-  const diningRef = useRef<HTMLElement>(null)
-  const tourRef = useRef<HTMLElement>(null)
+  const homeRef = useRef<HTMLDivElement>(null)
+  const roomsRef = useRef<HTMLDivElement>(null)
+  const bookRef = useRef<HTMLDivElement>(null)
+  const aboutRef = useRef<HTMLDivElement>(null)
+  const exploreRef = useRef<HTMLDivElement>(null)
+  const amenitiesRef = useRef<HTMLDivElement>(null)
+  const contactRef = useRef<HTMLDivElement>(null)
+  const transportRef = useRef<HTMLDivElement>(null)
+  const diningRef = useRef<HTMLDivElement>(null)
+  const tourRef = useRef<HTMLDivElement>(null)
   
   // Handle scroll events for navbar visibility and position
   useEffect(() => {
@@ -234,7 +236,7 @@ export default function Home() {
       transportRef.current,
       diningRef.current,
       tourRef.current
-    ].filter(Boolean)
+    ].filter(Boolean) as HTMLElement[];
     
     // Assign IDs to each section element 
     if (homeRef.current) homeRef.current.id = 'home';
@@ -255,21 +257,20 @@ export default function Home() {
     
     return () => {
       sections.forEach((section) => {
-        if (section) observer.unobserve(section)
+        if (section) observer.observe(section)
       })
     }
   }, [])
-  
-  // Smooth scroll function with offset for fixed header
-  const scrollToSection = (ref: React.RefObject<HTMLElement | null>) => {
-    if (ref.current) {
+
+  // Scroll to section function with proper type checking
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (ref?.current) {
       window.scrollTo({
         top: ref.current.offsetTop - 80, // Adjust for fixed header
         behavior: 'smooth'
       })
     }
   }
-
   const roomRates = {
     'select': 0,
     budget: 200,
@@ -745,157 +746,190 @@ export default function Home() {
       <section
         id="home"
         ref={homeRef}
-        className="relative min-h-[70vh] max-h-[80vh] flex items-center justify-center text-white overflow-hidden"
-        style={{ position: 'relative', paddingTop: '80px', zIndex: 1 }}
+        className="relative py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+        style={{ position: 'relative', zIndex: 1 }}
       >
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          {/* Image Slider with optimized sizing */}
-          <div className="relative w-full max-w-6xl mx-auto h-full overflow-hidden rounded-lg shadow-2xl">
-            {/* Slider Images */}
-            {[
-              '/images/wow-sliders/North-Wing.jpg',
-              '/images/wow-sliders/a004fromrvomay07.jpg',
-              '/images/wow-sliders/a057tubuans.jpg',
-              '/images/wow-sliders/dukeof_yorks.jpg',
-              '/images/wow-sliders/img2014111901091b.jpg',
-              '/images/wow-sliders/rabaul_market.jpg',
-              '/images/wow-sliders/rabaul_vulcan.jpg',
-              '/images/wow-sliders/rabaultavurvur3364.jpg',
-              '/images/wow-sliders/simpsonharbour2012.jpg'
-            ].map((src, index) => (
-              <div
-                key={index}
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  opacity: index === currentSlide ? 1 : 0,
-                  transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
-                  transition: 'all 2s ease-in-out',
-                  zIndex: index === currentSlide ? 10 : 1
-                }}
-              >
-                <Image
-                  src={src}
-                  alt={`Rabaul Hotel Slide ${index + 1}`}
-                  fill
-                  sizes="(max-width: 1536px) 100vw, 1536px"
-                  className="object-contain brightness-110 contrast-110"
-                  priority={index === 0}
-                  quality={100}
-                />
-                <div className="absolute inset-0 bg-black/10" />
-              </div>
-            ))}
+        <div className="container mx-auto px-4">
+          {/* Slider and Booking Form Container */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Image Slider */}
+            <div className="w-full lg:flex-1 h-[50vh] lg:h-[70vh] relative rounded-lg shadow-2xl overflow-hidden">
+              <div className="w-full h-full">
+                {[
+                  '/images/wow-sliders/North-Wing.jpg',
+                  '/images/wow-sliders/a004fromrvomay07.jpg',
+                  '/images/wow-sliders/a057tubuans.jpg',
+                  '/images/wow-sliders/dukeof_yorks.jpg',
+                  '/images/wow-sliders/img2014111901091b.jpg',
+                  '/images/wow-sliders/rabaul_market.jpg',
+                  '/images/wow-sliders/rabaul_vulcan.jpg',
+                  '/images/wow-sliders/rabaultavurvur3364.jpg',
+                  '/images/wow-sliders/simpsonharbour2012.jpg'
+                ].map((src, index) => (
+                  <div
+                    key={index}
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{
+                      opacity: index === currentSlide ? 1 : 0,
+                      transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
+                      transition: 'all 2s ease-in-out',
+                      zIndex: index === currentSlide ? 10 : 1
+                    }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Rabaul Hotel Slide ${index + 1}`}
+                      fill
+                      sizes="(max-width: 1536px) 100vw, 1536px"
+                      className="object-contain brightness-110 contrast-110"
+                      priority={index === 0}
+                      quality={100}
+                    />
+                    <div className="absolute inset-0 bg-black/10" />
+                  </div>
+                ))}
 
-            {/* Professional Navigation Dots */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
-              {Array.from({ length: 9 }, (_, index) => (
+                {/* Navigation Dots */}
+                <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20">
+                  {Array.from({ length: 9 }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-500 hover:scale-125 ${
+                        index === currentSlide
+                          ? 'bg-white scale-125 shadow-lg'
+                          : 'bg-white/60 hover:bg-white/90 shadow-md'
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Navigation Arrows */}
                 <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-500 hover:scale-125 ${
-                    index === currentSlide
-                      ? 'bg-white scale-125 shadow-lg'
-                      : 'bg-white/60 hover:bg-white/90 shadow-md'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
+                  onClick={prevSlide}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  aria-label="Previous slide"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                  aria-label="Next slide"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            
+            {/* Booking Form - Positioned below on mobile, to the right on desktop */}
+            <div className="w-full lg:w-96">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden"
+              >
+            <div className="bg-[#1a5f2c] p-4">
+              <h3 className="text-xl font-bold text-white text-center">Book Your Stay With Us</h3>
             </div>
-
-            {/* Professional Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-              aria-label="Previous slide"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={nextSlide}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-              aria-label="Next slide"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+            <div className="p-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
+                      value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setCheckIn(new Date(e.target.value))}
+                      min={format(new Date(), 'yyyy-MM-dd')}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
+                      value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setCheckOut(new Date(e.target.value))}
+                      min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                  <select
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
+                    value={adults}
+                    onChange={(e) => setAdults(parseInt(e.target.value))}
+                  >
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <option key={num} value={num}>
+                        {num} {num === 1 ? 'Adult' : 'Adults'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
+                  <select
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent"
+                    value={roomType || ''}
+                    onChange={(e) => setRoomType(e.target.value || undefined)}
+                  >
+                    <option value="">Select Room Type</option>
+                    <option value="budget">Budget Room</option>
+                    <option value="standard">Standard Room</option>
+                    <option value="executive">Executive Room</option>
+                    <option value="family">Family Suite</option>
+                  </select>
+                </div>
+                <button
+                  onClick={() => scrollToSection(bookRef)}
+                  className="w-full bg-[#1a5f2c] text-white py-2 px-4 rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
+                >
+                  Check Availability
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
-        <div className="container max-w-7xl px-4 relative z-10 w-full pt-16 sm:pt-24 md:pt-32">
+      </div>
+    </div>
+
+      {/* Bottom content section */}
+      <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent">
+        <div className="container max-w-7xl mx-auto px-4 pb-8 pt-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto px-4 w-full text-center"
-          >
-            <div className="space-y-2 sm:space-y-3 md:space-y-4">
-              <motion.div
-                className="hidden md:block"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-white mb-3 tracking-wider uppercase" style={{fontFamily: "'Montserrat', sans-serif"}}>
-                  WELCOME TO
-                </h3>
-                <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-4 leading-tight tracking-tight" style={{fontFamily: "'Playfair Display', serif", textShadow: "2px 2px 4px rgba(0,0,0,0.3)"}}>
-                  <span className="text-green-400 drop-shadow-lg">Rabaul Hotel</span>
-                </h1>
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-white tracking-wider uppercase" style={{fontFamily: "'Montserrat', sans-serif"}}>
-                  RESORT & TOURS
-                </h3>
-              </motion.div>
-              <div className="md:hidden space-y-2">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-2xl font-light text-white tracking-wider uppercase"
-                  style={{fontFamily: "'Montserrat', sans-serif"}}
-                >
-                  WELCOME TO
-                </motion.div>
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-6xl font-bold text-green-400 mb-3 tracking-tight"
-                >
-                  Rabaul Hotel
-                </motion.div>
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="text-2xl font-light text-white tracking-wider uppercase"
-                  style={{fontFamily: "'Montserrat', sans-serif"}}
-                >
-                  RESORT & TOURS
-                </motion.div>
-              </div>
-            </div>
-            
-            <div className="mt-16 sm:mt-20 md:mt-24">
-              {/* Inline Booking Form - 4 columns */}
-              <div className="max-w-5xl mx-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+              transition={{ duration: 0.8 }}
+              className="w-full text-center"
+            >
+              {/* Compact Booking Form at bottom - Hidden on medium screens and up */}
+              <div className="max-w-3xl mx-auto md:hidden">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                   {/* Arrival Date */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/90">Arrival</Label>
+                  <div className="space-y-1">
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
+                          className="w-full justify-start text-left font-normal h-11 sm:h-12 px-3 sm:px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm"
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-600" />
-                          {checkIn ? format(checkIn, "MMM dd") : <span className="text-gray-500">Check-in</span>}
+                          <CalendarIcon className="mr-1 sm:mr-2 h-4 w-4 text-gray-600" />
+                          <span className="truncate">{checkIn ? format(checkIn, "MMM dd") : "Check-in"}</span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -904,7 +938,7 @@ export default function Home() {
                           selected={checkIn}
                           onSelect={setCheckIn}
                           initialFocus
-                          disabled={(date) => date < new Date()}
+                          disabled={(date: Date) => isBefore(date, new Date()) && !isToday(date)}
                           className="rounded-md border"
                         />
                       </PopoverContent>
@@ -912,16 +946,15 @@ export default function Home() {
                   </div>
 
                   {/* Departure Date */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/90">Departure</Label>
+                  <div className="space-y-1">
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-12 px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
+                          className="w-full justify-start text-left font-normal h-11 sm:h-12 px-3 sm:px-4 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm"
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-600" />
-                          {checkOut ? format(checkOut, "MMM dd") : <span className="text-gray-500">Check-out</span>}
+                          <CalendarIcon className="mr-1 sm:mr-2 h-4 w-4 text-gray-600" />
+                          <span className="truncate">{checkOut ? format(checkOut, "MMM dd") : "Check-out"}</span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -930,7 +963,7 @@ export default function Home() {
                           selected={checkOut}
                           onSelect={setCheckOut}
                           initialFocus
-                          disabled={(date) => !checkIn || date <= checkIn}
+                          disabled={(date: Date) => !checkIn || isBefore(date, checkIn) || isEqual(date, checkIn)}
                           className="rounded-md border"
                         />
                       </PopoverContent>
@@ -938,50 +971,29 @@ export default function Home() {
                   </div>
 
                   {/* Guests */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/90">Guests</Label>
+                  <div className="space-y-1">
                     <Select
                       value={adults.toString()}
                       onValueChange={(value) => setAdults(parseInt(value))}
                     >
-                      <SelectTrigger className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300">
-                        <SelectValue placeholder="Adults" />
+                      <SelectTrigger className="w-full h-11 sm:h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300 text-sm">
+                        <SelectValue placeholder="Guests" />
                       </SelectTrigger>
                       <SelectContent>
                         {[1, 2, 3, 4, 5].map((num) => (
                           <SelectItem key={num} value={num.toString()}>
-                            {num} {num === 1 ? 'Adult' : 'Adults'}
+                            {num} {num === 1 ? 'Guest' : 'Guests'}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  {/* Children */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/90">Children</Label>
-                    <Select
-                      value={children.toString()}
-                      onValueChange={(value) => setChildren(parseInt(value))}
-                    >
-                      <SelectTrigger className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-gray-300">
-                        <SelectValue placeholder="Children" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[0, 1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num} {num === 1 ? 'Child' : 'Children'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Book Now Button - Far Right */}
-                  <div className="space-y-2 lg:col-span-1 flex items-end">
+                  {/* Book Now Button */}
+                  <div className="space-y-1">
                     <Button
                       size="lg"
-                      className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                      className="w-full h-11 sm:h-12 bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-sm"
                       onClick={() => scrollToSection(bookRef)}
                     >
                       Book Now
@@ -989,10 +1001,11 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
       {/* About Us Section */}
       <section ref={aboutRef} className="py-16 md:py-20 bg-green-950 text-white">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -1381,7 +1394,7 @@ export default function Home() {
                             selected={checkIn}
                             onSelect={setCheckIn}
                             initialFocus
-                            disabled={(date) => date < new Date()}
+                            disabled={(date: Date) => isBefore(date, new Date()) && !isToday(date)}
                             className="rounded-md border"
                             key={`calendar-in-${formKey}`}
                           />
@@ -1409,7 +1422,7 @@ export default function Home() {
                             selected={checkOut}
                             onSelect={setCheckOut}
                             initialFocus
-                            disabled={(date) => !checkIn || date <= checkIn}
+                            disabled={(date: Date) => !checkIn || isBefore(date, checkIn) || isEqual(date, checkIn)}
                             className="rounded-md border"
                           />
                         </PopoverContent>
@@ -1630,7 +1643,7 @@ export default function Home() {
                           
                           {transportServices.needsTransport && (
                             <div className="ml-6 space-y-3 border-l-2 border-white/20 pl-4">
-                              <div className="space-y-2">
+                              <div className="space-y-1 sm:space-y-2">
                                 <Label className="text-sm font-medium text-white">Transport Type</Label>
                                 <div className="flex flex-wrap items-center gap-6">
                                   <label className="inline-flex items-center space-x-2">
@@ -1669,7 +1682,7 @@ export default function Home() {
                               <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-2">
+                                    <div className="space-y-1 sm:space-y-2">
                                       <div className="space-y-1">
                                         <Label className="text-sm font-medium text-white">Pick Up Location</Label>
                                         <input
@@ -1693,7 +1706,7 @@ export default function Home() {
                                   )}
                                   
                                   {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-2">
+                                    <div className="space-y-1 sm:space-y-2">
                                       <div className="space-y-1">
                                         <Label className="text-sm font-medium text-white">
                                           {transportServices.transportType === 'both' ? 'Drop Off' : 'Drop Off'} Location
@@ -1737,7 +1750,7 @@ export default function Home() {
                         </div>
                       )}
 
-                      <div className="space-y-2">
+                      <div className="space-y-1 sm:space-y-2">
                         <Label className="text-sm font-medium text-white">Payment Method</Label>
                         <div className="flex items-center space-x-6">
                           <label className="inline-flex items-center space-x-2 cursor-pointer">
@@ -2173,7 +2186,7 @@ export default function Home() {
               <p className="text-gray-600 mb-8">We&apos;ll get back to you within 24 hours</p>
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
                     <Input
                       id="firstName"
@@ -2187,7 +2200,7 @@ export default function Home() {
                       <p className="text-xs text-red-500 mt-1">{errors.contactName}</p>
                     )}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="lastName" className="text-gray-700">Last Name</Label>
                     <Input
                       id="lastName"
