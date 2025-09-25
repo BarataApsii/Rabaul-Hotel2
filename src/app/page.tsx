@@ -494,13 +494,13 @@ export default function Home() {
       {/* Navbar */}
       <nav 
         className={`sticky top-0 w-full transition-all duration-300 ${
-          isAtTop ? 'bg-black/80' : 'bg-black/90'
+          isAtTop ? 'bg-transparent' : 'bg-black/20'
         } ${
           visible ? 'translate-y-0' : '-translate-y-full'
         }`}
         style={{ zIndex: 1000, position: 'fixed', width: '100%' }}
       >
-        <div className="w-full flex h-24 items-center justify-between px-4 md:px-8">
+        <div className="w-full flex h-20 items-center justify-between px-4 md:px-8">
           {/* Mobile hamburger button - Left side */}
           <Button 
             variant="ghost"
@@ -523,14 +523,15 @@ export default function Home() {
             )}
           </Button>
 
-          <div className="flex items-center md:pl-12">
+          {/* Logo - Left side (moved towards center) */}
+          <div className="flex items-center md:pl-24">
             <button onClick={() => scrollToSection(homeRef)} className="focus:outline-none">
-              <div className="relative h-16 w-40 md:h-28 md:w-64">
+              <div className="relative h-20 w-52 md:h-28 md:w-72">
                 <Image 
                   src={logoImage}
                   alt="Rabaul Hotel Logo"
                   fill
-                  sizes="(max-width: 768px) 160px, 320px"
+                  sizes="(max-width: 768px) 208px, 288px"
                   className="object-contain hover:opacity-90 transition-opacity"
                   priority
                   quality={100}
@@ -538,12 +539,14 @@ export default function Home() {
               </div>
             </button>
           </div>
-          <div className="hidden md:flex items-center space-x-4 mr-6">
+
+          {/* Center - Navigation Buttons (Desktop only) */}
+          <div className="hidden md:flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
             {/* Home */}
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(homeRef)}
-              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer"
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center cursor-pointer w-32 h-10"
             >
               Home
             </Button>
@@ -552,29 +555,29 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(aboutRef)}
-              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer"
+              className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center cursor-pointer w-32 h-10"
             >
-              About Us
+              About
             </Button>
             
             {/* Services */}
             <div className="relative group">
               <Button 
                 variant="ghost"
-                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-32 text-center flex items-center justify-center cursor-pointer"
+                className="text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center flex items-center justify-center cursor-pointer w-32 h-10"
               >
                 Services
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </Button>
-              <div className="absolute left-0 mt-1 w-48 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
+              <div className="absolute left-0 mt-1 w-40 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
                 <button 
                   onClick={() => {
                     scrollToSection(diningRef);
                     setActiveSection('dining');
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
+                  className="w-full text-left px-3 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800 text-sm"
                 >
                   Dining
                 </button>
@@ -583,7 +586,7 @@ export default function Home() {
                     scrollToSection(exploreRef);
                     setActiveSection('explore');
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
+                  className="w-full text-left px-3 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800 text-sm"
                 >
                   Tours
                 </button>
@@ -592,7 +595,7 @@ export default function Home() {
                     scrollToSection(roomsRef);
                     setActiveSection('rooms');
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800"
+                  className="w-full text-left px-3 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800 text-sm"
                 >
                   Accommodation
                 </button>
@@ -603,7 +606,7 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(bookRef)}
-              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer ${
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center cursor-pointer w-32 h-10 ${
                 activeSection === 'booking' ? 'bg-white/20' : ''
               }`}
             >
@@ -614,12 +617,24 @@ export default function Home() {
             <Button 
               variant="ghost"
               onClick={() => scrollToSection(contactRef)}
-              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2 border border-gray-300/30 rounded-lg w-28 text-center cursor-pointer ${
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center cursor-pointer w-32 h-10 ${
                 activeSection === 'contact' ? 'bg-white/20' : ''
               }`}
             >
-              Contact Us
+              Contact
             </Button>
+          </div>
+          
+          {/* Right side - Contact Info (Desktop only) */}
+          <div className="hidden md:flex items-center space-x-6 flex-shrink-0 mr-4">
+            <div className="flex items-center space-x-2 text-white text-sm">
+              <Mail className="w-4 h-4" />
+              <span>info@rabaulhotel.com</span>
+            </div>
+            <div className="flex items-center space-x-2 text-white text-sm">
+              <Phone className="w-4 h-4" />
+              <span>+675 982 1111</span>
+            </div>
           </div>
           
           {/* Spacer for mobile layout */}
@@ -755,7 +770,8 @@ export default function Home() {
         style={{ 
           position: 'relative', 
           zIndex: 10, 
-          marginTop: '6rem'
+          marginTop: '0',
+          paddingTop: '6rem'
         }}
       >
         {/* Background Image using Next.js Image for better reliability */}
@@ -774,21 +790,21 @@ export default function Home() {
           {/* Slider and Booking Form Container */}
           <div className="flex flex-col lg:flex-row gap-4 items-start">
             {/* Booking Form - Hidden on mobile, visible on desktop only */}
-            <div className="hidden md:block w-full lg:w-[15%] flex-shrink-0 lg:mr-6">
+            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0 lg:mr-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-gray-200"
+                className="bg-black/40 backdrop-blur-sm rounded-lg p-4"
                 style={{ zIndex: 20 }}
               >
-                <div className="bg-[#1a5f2c] p-3">
+                <div className="mb-4">
                   <h3 className="text-lg font-bold text-white text-center">Book Your Stay</h3>
                 </div>
-                <div className="p-3">
+                <div>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Check-in</label>
+                      <label className="block text-xs font-medium text-white mb-1">Check-in</label>
                       <div className="relative">
                         <input
                           type="date"
@@ -800,7 +816,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Check-out</label>
+                      <label className="block text-xs font-medium text-white mb-1">Check-out</label>
                       <div className="relative">
                         <input
                           type="date"
@@ -812,7 +828,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Guests</label>
+                      <label className="block text-xs font-medium text-white mb-1">Guests</label>
                       <select
                         className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                         value={adults}
@@ -826,7 +842,7 @@ export default function Home() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Room Type</label>
+                      <label className="block text-xs font-medium text-white mb-1">Room Type</label>
                       <select
                         className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                         value={roomType || ''}
