@@ -751,7 +751,7 @@ export default function Home() {
           position: 'relative', 
           zIndex: 10, 
           marginTop: '6rem',
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('/images/home-bg.PNG')",
+          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://raw.githubusercontent.com/BarataApsii/rabaul-hotel/main/public/images/home-bg.PNG')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
