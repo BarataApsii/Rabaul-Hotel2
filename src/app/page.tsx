@@ -750,14 +750,22 @@ export default function Home() {
         style={{ 
           position: 'relative', 
           zIndex: 10, 
-          marginTop: '6rem',
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://raw.githubusercontent.com/BarataApsii/rabaul-hotel/main/public/images/home-bg.PNG')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          marginTop: '6rem'
         }}
       >
-        <div className="container mx-auto px-4 py-2">
+        {/* Background Image using Next.js Image for better reliability */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/home-bg.png"
+            alt="Hotel Background"
+            fill
+            className="object-cover opacity-100"
+            priority
+            quality={85}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+        </div>
+        <div className="container mx-auto px-4 py-2 relative z-10">
           {/* Slider and Booking Form Container */}
           <div className="flex flex-col lg:flex-row gap-4 items-start">
             {/* Image Slider */}
