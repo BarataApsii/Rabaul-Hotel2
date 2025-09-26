@@ -469,7 +469,9 @@ export default function Home() {
       {/* Navbar */}
       <nav 
         className={`sticky top-0 w-full transition-all duration-300 ${
-          isAtTop ? 'bg-transparent' : 'bg-gray-900/60 backdrop-blur-sm shadow-md'
+          isAtTop 
+            ? 'bg-transparent md:bg-transparent' 
+            : 'bg-gray-800/80 md:bg-gray-900/60 backdrop-blur-sm shadow-md'
         } ${
           visible ? 'translate-y-0' : '-translate-y-full'
         }`}
@@ -599,13 +601,13 @@ export default function Home() {
           
           {/* Right side - Contact Info (Desktop only) */}
           <div className="hidden md:flex items-center space-x-6 flex-shrink-0 mr-4">
-            <div className="flex items-center space-x-2 text-white text-sm">
+            <div className="flex items-center space-x-2 text-sm">
               <Mail className="w-4 h-4" />
-              <span>reservations@rabaulhotel.com.pg</span>
+              <span className='text-yellow-400'>reservations@rabaulhotel.com.pg</span>
             </div>
-            <div className="flex items-center space-x-2 text-white text-sm">
+            <div className="flex items-center space-x-2 text-sm">
               <Phone className="w-4 h-4" />
-              <span>+675 7189 3571</span>
+              <span className='text-yellow-400'>+675 7189 3571</span>
             </div>
           </div>
           
@@ -618,7 +620,7 @@ export default function Home() {
               mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             } md:hidden`}
           >
-            <div className="flex flex-col space-y-1 w-56 bg-black/20 backdrop-blur-sm py-3 px-3 text-sm rounded-r-lg">
+            <div className="flex flex-col space-y-1 w-48 bg-black/80 backdrop-blur-sm py-3 px-3 text-sm rounded-r-lg">
               {/* Home */}
               <button 
                 onClick={() => {
