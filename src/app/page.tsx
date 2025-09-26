@@ -36,7 +36,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { format, isAfter, isBefore, isToday, isEqual } from 'date-fns'
+import { format, isBefore, isToday, isEqual } from 'date-fns'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
 
 export default function Home() {
@@ -69,8 +69,8 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [contactName, setContactName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
-  const [bookingDetails, setBookingDetails] = useState(null)
-  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false)
+  const [, setBookingDetails] = useState(null)
+  const [, setIsBookingConfirmed] = useState(false)
   const [formKey, setFormKey] = useState(0)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isAtTop, setIsAtTop] = useState(false)
@@ -88,9 +88,6 @@ export default function Home() {
     setCurrentSlide((prev) => (prev - 1 + 9) % 9)
   }
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-  }
 
   const handleMouseEnter = () => {
     // Add any hover effects here if needed
@@ -112,13 +109,6 @@ export default function Home() {
   // Pause slideshow on hover
   const [isHovered, setIsHovered] = useState(false)
 
-  const handleMouseEnterSlider = () => {
-    setIsHovered(true)
-  }
-
-  const handleMouseLeaveSlider = () => {
-    setIsHovered(false)
-  }
 
   // Auto-slide effect with pause on hover
   useEffect(() => {
@@ -1597,7 +1587,7 @@ export default function Home() {
                                 onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, pickupLocation: '', pickupTime: '' }))}
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
-                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
+                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don&apos;t need transport services</Label>
                             </div>
                             
                             <div className="flex items-center space-x-2">

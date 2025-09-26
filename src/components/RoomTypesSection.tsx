@@ -16,12 +16,6 @@ const RoomTypesSection = () => {
     }
   ];
   
-  // These will be added to the booking form only
-  const additionalRooms = [
-    'Deluxe Room',
-    'Executive King Room'
-  ];
-
   return (
     <section className="py-12 md:py-16 bg-white text-gray-800">
       <div className="container mx-auto px-4 max-w-7xl">
