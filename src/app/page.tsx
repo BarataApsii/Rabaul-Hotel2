@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import ReCAPTCHA from 'react-google-recaptcha'
+import LotsToDoSection from '@/components/LotsToDoSection'
+import RoomTypesSection from '@/components/RoomTypesSection'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
 
@@ -55,12 +57,8 @@ export default function Home() {
   const [specialRequest, setSpecialRequest] = useState('')
   const [transportServices, setTransportServices] = useState({
     needsTransport: false,
-    noTransport: true,
-    transportType: '',
     pickupTime: '',
-    dropoffTime: '',
-    pickupLocation: '',
-    dropoffLocation: ''
+    pickupLocation: ''
   })
   const [contactMessage, setContactMessage] = useState('')
   const [subject, setSubject] = useState('')
@@ -271,13 +269,16 @@ export default function Home() {
       })
     }
   }
+
+  // Room rates configuration
   const roomRates = {
     'select': 0,
-    budget: 200,
-    standard: 300,
-    executive: 450,
-    family: 600,
-    conference: 800
+    'budget': 200,
+    'standard': 300,
+    'deluxe': 450,
+    'executive': 600,
+    'family': 500,
+    'conference': 1000
   }
 
   // Calculate number of nights - handle undefined dates during SSR
@@ -786,88 +787,11 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
         </div>
-        <div className="container mx-auto px-4 py-2 relative z-10">
-          {/* Slider and Booking Form Container */}
-          <div className="flex flex-col lg:flex-row gap-4 items-start">
-            {/* Booking Form - Hidden on mobile, visible on desktop only */}
-            <div className="hidden md:block w-full lg:w-[20%] flex-shrink-0 lg:mr-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-black/40 backdrop-blur-sm rounded-lg p-4"
-                style={{ zIndex: 20 }}
-              >
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-white text-center">Book Your Stay</h3>
-                </div>
-                <div>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-medium text-white mb-1">Check-in</label>
-                      <div className="relative">
-                        <input
-                          type="date"
-                          className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                          value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
-                          onChange={(e) => setCheckIn(new Date(e.target.value))}
-                          min={format(new Date(), 'yyyy-MM-dd')}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-white mb-1">Check-out</label>
-                      <div className="relative">
-                        <input
-                          type="date"
-                          className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                          value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
-                          onChange={(e) => setCheckOut(new Date(e.target.value))}
-                          min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-white mb-1">Guests</label>
-                      <select
-                        className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                        value={adults}
-                        onChange={(e) => setAdults(parseInt(e.target.value))}
-                      >
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <option key={num} value={num}>
-                            {num} {num === 1 ? 'Adult' : 'Adults'}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-white mb-1">Room Type</label>
-                      <select
-                        className="w-full p-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                        value={roomType || ''}
-                        onChange={(e) => setRoomType(e.target.value || undefined)}
-                      >
-                        <option value="">Select Room Type</option>
-                        <option value="budget">Budget Room</option>
-                        <option value="standard">Standard Room</option>
-                        <option value="executive">Executive Room</option>
-                        <option value="family">Family Suite</option>
-                      </select>
-                    </div>
-                    <button
-                      onClick={() => scrollToSection(bookRef)}
-                      className="w-full bg-[#1a5f2c] text-white py-2 px-3 text-sm rounded-md hover:bg-[#144a22] transition-colors duration-200 font-medium"
-                    >
-                      Check Availability
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
+        <div className="container mx-auto px-4 py-2 relative z-10 flex flex-col items-center">
+          {/* Slider Container */}
+          <div className="w-full max-w-[1800px]">
             {/* Image Slider */}
-            <div className="w-full lg:w-[85%] h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
+            <div className="w-full h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
               <div className="w-full h-full relative">
                 {[
                   { src: '/images/wow-sliders/North-Wing.jpg', caption: 'North Wing Accommodation' },
@@ -939,25 +863,104 @@ export default function Home() {
 
           </div>
 
+          {/* Horizontal Booking Form - Hidden on mobile */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden md:block w-full max-w-[1800px] mt-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+              {/* Check-in */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium text-gray-700">Check-in</Label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                    value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => setCheckIn(new Date(e.target.value))}
+                    min={format(new Date(), 'yyyy-MM-dd')}
+                  />
+                </div>
+              </div>
+              
+              {/* Check-out */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium text-gray-700">Check-out</Label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                    value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => setCheckOut(new Date(e.target.value))}
+                    min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                  />
+                </div>
+              </div>
+              
+              {/* Guests */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium text-gray-700">Guests</Label>
+                <select
+                  className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                  value={adults}
+                  onChange={(e) => setAdults(parseInt(e.target.value))}
+                >
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <option key={num} value={num}>
+                      {num} {num === 1 ? 'Adult' : 'Adults'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Room Type */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium text-gray-700">Room Type</Label>
+                <select
+                  className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                  value={roomType || ''}
+                  onChange={(e) => setRoomType(e.target.value || undefined)}
+                >
+                  <option value="">All Room Types</option>
+                  <option value="budget">Budget Room</option>
+                  <option value="standard">Standard Room</option>
+                  <option value="deluxe">Deluxe Room</option>
+                  <option value="executive">Executive Room</option>
+                  <option value="family">Family Suite</option>
+                </select>
+              </div>
+              
+              {/* Check Availability Button */}
+              <Button
+                onClick={() => scrollToSection(bookRef)}
+                className="bg-[#1a5f2c] hover:bg-[#144a22] text-white py-2 h-10 text-sm md:text-base font-medium rounded-md transition-colors duration-200"
+              >
+                Check Availability
+              </Button>
+            </div>
+          </motion.div>
+
       {/* Bottom content section */}
-      <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent">
+      <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent mt-6">
         <div className="container max-w-7xl mx-auto px-4 py-1">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="w-full text-center"
-            >
-              {/* Mobile Book Now Button - Only visible on mobile */}
-              <div className="md:hidden">
-                <Button
-                  size="lg"
-                  className="bg-[#1a5f2c] hover:bg-[#144a22] text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-[#1a5f2c]"
-                  onClick={() => scrollToSection(bookRef)}
-                >
-                  Book Your Stay With Us
-                </Button>
-              </div>
+            transition={{ duration: 0.8 }}
+            className="w-full text-center"
+          >
+            {/* Mobile Book Now Button - Only visible on mobile */}
+            <div className="md:hidden">
+              <Button
+                size="lg"
+                className="bg-[#1a5f2c] hover:bg-[#144a22] text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-[#1a5f2c]"
+                onClick={() => scrollToSection(bookRef)}
+              >
+                Book Your Stay With Us
+              </Button>
+            </div>
             </motion.div>
           </div>
         </div>
@@ -974,9 +977,20 @@ export default function Home() {
               <p className="text-base md:text-lg leading-relaxed mb-6">
                 The iconic Rabaul Hotel has been hosting visitors since 1952. Previously the &quot;Ascot&quot; &amp; then the &quot;Hamamas&quot; Hotel, the Rabaul Hotel is famous for its genuine &apos;home away from home&apos; style of hospitality.
               </p>
-              <p className="text-base md:text-lg leading-relaxed">
+              <p className="text-base md:text-lg leading-relaxed mb-6">
                 Boasting visitors such as Prime Ministers, Sporting Stars and even HRH Prince Andrew Duke of York, the Rabaul Hotel takes great pride in ensuring our Guests have an enjoyable and comfortable stay while discovering the SPIRIT of Volcano Town.
               </p>
+              <a 
+                href="/images/RABAUL_MAP.jpg" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-yellow-400 hover:text-yellow-300 font-medium transition-colors mt-4"
+              >
+                See Map of Rabaul
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
+                </svg>
+              </a>
             </div>
             
             {/* Image - Second on mobile, right on desktop */}
@@ -1396,11 +1410,12 @@ export default function Home() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="select">Select Room</SelectItem>
-                          <SelectItem value="budget">Budget Room</SelectItem>
-                          <SelectItem value="standard">Standard Room</SelectItem>
-                          <SelectItem value="executive">Executive Room</SelectItem>
-                          <SelectItem value="family">Family Suite</SelectItem>
-                          <SelectItem value="conference">Conference Room</SelectItem>
+                          <SelectItem value="budget">Budget Room - K200/night</SelectItem>
+                          <SelectItem value="standard">Standard Room - K300/night</SelectItem>
+                          <SelectItem value="deluxe">Deluxe Room - K450/night</SelectItem>
+                          <SelectItem value="executive">Executive King Room - K600/night</SelectItem>
+                          <SelectItem value="family">Family Suite - K500/night</SelectItem>
+                          <SelectItem value="conference">Conference Room - K1,000/day</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1578,11 +1593,11 @@ export default function Home() {
                                 type="radio"
                                 id="no-transport"
                                 name="transport-option"
-                                checked={transportServices.noTransport}
-                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, noTransport: true, transportType: '' }))}
+                                checked={!transportServices.needsTransport}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: false, pickupLocation: '', pickupTime: '' }))}
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
-                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don&apos;t need transport services</Label>
+                              <Label htmlFor="no-transport" className="text-sm font-normal text-white">I don't need transport services</Label>
                             </div>
                             
                             <div className="flex items-center space-x-2">
@@ -1591,7 +1606,7 @@ export default function Home() {
                                 id="needs-transport"
                                 name="transport-option"
                                 checked={transportServices.needsTransport}
-                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true, noTransport: false }))}
+                                onChange={() => setTransportServices(prev => ({ ...prev, needsTransport: true }))}
                                 className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
                               />
                               <Label htmlFor="needs-transport" className="text-sm font-normal text-white">I need transport services</Label>
@@ -1599,101 +1614,36 @@ export default function Home() {
                           </div>
                           
                           {transportServices.needsTransport && (
-                            <div className="ml-6 space-y-3 border-l-2 border-white/20 pl-4">
-                              <div className="space-y-1 sm:space-y-2">
-                                <Label className="text-sm font-medium text-white">Transport Type</Label>
-                                <div className="flex flex-wrap items-center gap-6">
-                                  <label className="inline-flex items-center space-x-2">
-                                    <input
-                                      type="radio"
-                                      name="transport-type"
-                                      checked={transportServices.transportType === 'pickup'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'pickup' }))}
-                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                                    />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up Only</span>
-                                  </label>
-                                  <label className="inline-flex items-center space-x-2">
-                                    <input
-                                      type="radio"
-                                      name="transport-type"
-                                      checked={transportServices.transportType === 'dropoff'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'dropoff' }))}
-                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                                    />
-                                    <span className="text-sm text-white whitespace-nowrap">Drop Off Only</span>
-                                  </label>
-                                  <label className="inline-flex items-center space-x-2">
-                                    <input
-                                      type="radio"
-                                      name="transport-type"
-                                      checked={transportServices.transportType === 'both'}
-                                      onChange={() => setTransportServices(prev => ({ ...prev, transportType: 'both' }))}
-                                      className="h-4 w-4 border-gray-300 text-[#1a5f2c] focus:ring-[#1a5f2c]"
-                                    />
-                                    <span className="text-sm text-white whitespace-nowrap">Pick Up & Drop Off</span>
-                                  </label>
-                                </div>
-                              </div>
-                              
+                            <div className="ml-6 space-y-3 border-l-2 border-white/20 pl-4 mt-2">
                               <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  {(transportServices.transportType === 'pickup' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1 sm:space-y-2">
-                                      <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-white">Pick Up Location</Label>
-                                        <input
-                                          type="text"
-                                          placeholder="Enter pick-up address"
-                                          value={transportServices.pickupLocation}
-                                          onChange={(e) => setTransportServices(prev => ({ ...prev, pickupLocation: e.target.value }))}
-                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                        />
-                                      </div>
-                                      <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-white">Pick Up Time</Label>
-                                        <input
-                                          type="time"
-                                          value={transportServices.pickupTime}
-                                          onChange={(e) => setTransportServices(prev => ({ ...prev, pickupTime: e.target.value }))}
-                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                        />
-                                      </div>
+                                  <div className="space-y-1 sm:space-y-2">
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Pick Up Location</Label>
+                                      <input
+                                        type="text"
+                                        placeholder="Enter pick-up address"
+                                        value={transportServices.pickupLocation}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupLocation: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
                                     </div>
-                                  )}
-                                  
-                                  {(transportServices.transportType === 'dropoff' || transportServices.transportType === 'both') && (
-                                    <div className="space-y-1 sm:space-y-2">
-                                      <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-white">
-                                          {transportServices.transportType === 'both' ? 'Drop Off' : 'Drop Off'} Location
-                                        </Label>
-                                        <input
-                                          type="text"
-                                          placeholder="Enter drop-off address"
-                                          value={transportServices.dropoffLocation}
-                                          onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffLocation: e.target.value }))}
-                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                        />
-                                      </div>
-                                      <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-white">
-                                          {transportServices.transportType === 'both' ? 'Drop Off' : 'Drop Off'} Time
-                                        </Label>
-                                        <input
-                                          type="time"
-                                          value={transportServices.dropoffTime}
-                                          onChange={(e) => setTransportServices(prev => ({ ...prev, dropoffTime: e.target.value }))}
-                                          className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
-                                        />
-                                      </div>
+                                  </div>
+                                  <div className="space-y-1 sm:space-y-2">
+                                    <div className="space-y-1">
+                                      <Label className="text-sm font-medium text-white">Pick Up Time</Label>
+                                      <input
+                                        type="time"
+                                        value={transportServices.pickupTime}
+                                        onChange={(e) => setTransportServices(prev => ({ ...prev, pickupTime: e.target.value }))}
+                                        className="w-full h-9 px-3 py-2 text-sm bg-white/10 border border-white/30 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-[#1a5f2c]"
+                                      />
                                     </div>
-                                  )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           )}
-                          
                         </div>
                       </div>
 
@@ -1701,7 +1651,7 @@ export default function Home() {
                         <div className="pt-2 border-t border-white/20">
                           <div className="text-sm font-medium mb-1">Transport Services:</div>
                           <div className="flex justify-between text-sm">
-                            <span className="pl-2">• Transport Service</span>
+                            <span className="pl-2">• Airport Transfer</span>
                             <span>K 100</span>
                           </div>
                         </div>
@@ -1786,14 +1736,9 @@ export default function Home() {
                     <div className="pt-2 border-t border-white/20">
                       <div className="text-sm font-medium mb-1">Transport Services:</div>
                       <div className="text-sm space-y-1">
-                        <div className="pl-2">• {transportServices.transportType === 'pickup' && 'Pick Up'}
-                                              {transportServices.transportType === 'dropoff' && 'Drop Off'}
-                                              {transportServices.transportType === 'both' && 'Pick Up & Drop Off'}</div>
+                        <div className="pl-2">• Airport Transfer</div>
                         {transportServices.pickupLocation && (
-                          <div className="pl-4 text-white/80">From: {transportServices.pickupLocation}</div>
-                        )}
-                        {transportServices.dropoffLocation && (
-                          <div className="pl-4 text-white/80">To: {transportServices.dropoffLocation}</div>
+                          <div className="pl-4 text-white/80">Pickup: {transportServices.pickupLocation}</div>
                         )}
                         {transportServices.pickupTime && (
                           <div className="pl-4 text-white/80">Time: {transportServices.pickupTime}</div>
