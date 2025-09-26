@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import ReCAPTCHA from 'react-google-recaptcha'
@@ -37,7 +38,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp, UtensilsCrossed } from 'lucide-react'
+import DiningCard from '@/components/dining/DiningCard'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -485,7 +487,7 @@ export default function Home() {
       {/* Navbar */}
       <nav 
         className={`sticky top-0 w-full transition-all duration-300 ${
-          isAtTop ? 'bg-transparent' : 'bg-black/20'
+          isAtTop ? 'bg-transparent' : 'bg-gray-900/60 backdrop-blur-sm shadow-md'
         } ${
           visible ? 'translate-y-0' : '-translate-y-full'
         }`}
@@ -563,15 +565,12 @@ export default function Home() {
                 </svg>
               </Button>
               <div className="absolute left-0 mt-1 w-40 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0">
-                <button 
-                  onClick={() => {
-                    scrollToSection(diningRef);
-                    setActiveSection('dining');
-                  }}
-                  className="w-full text-left px-3 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800 text-sm"
+                <Link 
+                  href="/dining"
+                  className="block w-full text-left px-3 py-2 hover:bg-gray-100/80 transition-colors cursor-pointer text-gray-800 text-sm"
                 >
                   Dining
-                </button>
+                </Link>
                 <button 
                   onClick={() => {
                     scrollToSection(exploreRef);
@@ -620,11 +619,11 @@ export default function Home() {
           <div className="hidden md:flex items-center space-x-6 flex-shrink-0 mr-4">
             <div className="flex items-center space-x-2 text-white text-sm">
               <Mail className="w-4 h-4" />
-              <span>info@rabaulhotel.com</span>
+              <span>reservations@rabaulhotel.com.pg</span>
             </div>
             <div className="flex items-center space-x-2 text-white text-sm">
               <Phone className="w-4 h-4" />
-              <span>+675 982 1111</span>
+              <span>+675 7189 3571</span>
             </div>
           </div>
           
@@ -680,16 +679,13 @@ export default function Home() {
                   </svg>
                 </button>
                 <div className="pl-2 hidden">
-                  <button 
-                    onClick={() => {
-                      scrollToSection(diningRef)
-                      setActiveSection('dining')
-                      setMobileMenuOpen(false)
-                    }}
-                    className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
+                  <Link 
+                    href="/dining"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
                   >
                     Dining
-                  </button>
+                  </Link>
                   <button 
                     onClick={() => {
                       scrollToSection(exploreRef)
@@ -1963,7 +1959,7 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="pt-8 pb-12 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
+        className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
       >
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -1971,14 +1967,10 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         
         <div className="container max-w-6xl px-4 mx-auto relative z-10">
-          <div className="text-center mb-6">
-            <span className="inline-block px-4 py-1.5 text-sm font-semibold text-green-700 bg-green-100 rounded-full mb-4">Get In Touch</span>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto mb-6"></div>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Have questions or need assistance? Our team is here to help you plan your perfect stay in Rabaul.</p>
+          <div className="text-center mb-4">
+            <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
           </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Contact Info */}
             <div className="space-y-8">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
@@ -1990,9 +1982,9 @@ export default function Home() {
                 </h3>
                 
                 <div className="space-y-6">
-                  <div className="flex items-start space-x-5 group">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
-                      <MapPin className="h-6 w-6" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
+                      <MapPin className="h-5 w-5" />
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-1">Our Location</h4>
@@ -2003,41 +1995,35 @@ export default function Home() {
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-5 group">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                      <Phone className="h-6 w-6" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                      <Phone className="h-5 w-5" />
                     </div>
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Numbers</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Number</h4>
                       <div className="space-y-1">
                         <a href="tel:+67571893571" className="block text-gray-600 hover:text-blue-600 transition-colors">
                           +675 7189 3571
-                        </a>
-                        <a href="tel:+6759821999" className="block text-gray-600 hover:text-blue-600 transition-colors">
-                          +675 982 1999
-                        </a>
-                        <a href="tel:+67571749608" className="block text-gray-600 hover:text-blue-600 transition-colors">
-                          +675 7174 9608
                         </a>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-5 group">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
-                      <Mail className="h-6 w-6" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                      <Mail className="h-5 w-5" />
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-1">Email Address</h4>
-                      <a href="mailto:info@rabaulhotel.com" className="text-blue-600 hover:underline">
-                        info@rabaulhotel.com
+                      <a href="mailto:reservations@rabaulhotel.com.pg" className="text-blue-600 hover:underline">
+                        reservations@rabaulhotel.com.pg
                       </a>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-5 group">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
-                      <Clock className="h-6 w-6" />
+                  <div className="flex items-start space-x-4 group">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+                      <Clock className="h-5 w-5" />
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-1">Working Hours</h4>
@@ -2048,9 +2034,9 @@ export default function Home() {
                 </div>
                 
                 {/* Social Media Links */}
-                <div className="mt-10">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Follow Us</h4>
-                  <div className="flex space-x-4">
+                <div className="mt-6">
+                  <h4 className="text-base font-semibold text-gray-900 mb-3">Follow Us</h4>
+                  <div className="flex space-x-3">
                     {[
                       { icon: Facebook, color: 'bg-blue-500 hover:bg-blue-600', label: 'Facebook' },
                       { icon: Instagram, color: 'bg-pink-500 hover:bg-pink-600', label: 'Instagram' },
@@ -2060,7 +2046,7 @@ export default function Home() {
                       <a 
                         key={index}
                         href="#" 
-                        className={`w-10 h-10 rounded-full ${social.color} text-white flex items-center justify-center transition-colors duration-300 transform hover:-translate-y-1`}
+                        className={`w-9 h-9 rounded-full ${social.color} text-white flex items-center justify-center transition-colors duration-300 transform hover:-translate-y-1`}
                         aria-label={social.label}
                       >
                         <social.icon className="h-5 w-5" />
@@ -2073,11 +2059,11 @@ export default function Home() {
             </div>
             
             {/* Right Column - Contact Form */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Send us a Message</h3>
-              <p className="text-gray-600 mb-8">We&apos;ll get back to you within 24 hours</p>
-              <form onSubmit={handleContactSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
+              <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
+              <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
+              <form onSubmit={handleContactSubmit} className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1 sm:space-y-2">
                     <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
                     <Input
@@ -2135,11 +2121,11 @@ export default function Home() {
                     <p className="text-xs text-red-500 mt-1">{errors.subject}</p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="message" className="text-gray-700">Message</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="message" className="text-gray-700 text-sm">Message</Label>
                   <Textarea
                     id="message"
-                    className="min-h-[120px]"
+                    className="min-h-[80px] text-sm"
                     placeholder="Type your message here..."
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
@@ -2148,11 +2134,11 @@ export default function Home() {
                     <p className="text-xs text-red-500 mt-1">{errors.contactMessage}</p>
                   )}
                 </div>
-                <div className="mt-4">
+                <div className="mt-3">
                   <style jsx global>{`
                     .contact-recaptcha > div {
                       width: 100% !important;
-                      transform: scale(0.9);
+                      transform: scale(0.85);
                       transform-origin: 0 0;
                       margin: 0 auto;
                     }
