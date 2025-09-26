@@ -52,7 +52,7 @@ export default function DiningPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
               <div className="space-y-6 text-gray-700">
                 <p>
-                  After Rabaul Hotel suffered a devastating fire in 1984 the McGrade family aptly re-named the restaurant, "The Phoenix Room" never suspecting the Restaurant would once again be devastated by ash!
+                  After Rabaul Hotel suffered a devastating fire in 1984 the McGrade family aptly re-named the restaurant, &ldquo;The Phoenix Room&rdquo; never suspecting the Restaurant would once again be devastated by ash!
                 </p>
                 <p>
                   On the 9th September 1994, the overwhelming ash fallout from the twin volcanic eruptions caused mass destruction to Rabaul Town. Rabaul Hotel chose not to close their doors but once again rose from the ashes like the Phoenix!
@@ -73,7 +73,7 @@ export default function DiningPage() {
 
                 <h3 className="text-2xl font-semibold text-gray-900 mt-8">A Unique Dining Experience</h3>
                 <p>
-                  The Restaurant interior is a collection of pieces from Taiwan, Hong Kong, China and Papua New Guinea. Pieces collected over the years from family travels. The cathedral like ceiling features the largest "Tabu" wheel in Papua New Guinea. This is traditional shell money and is still used as currency in the islands region today. It is a museum piece.
+                  The Restaurant interior is a collection of pieces from Taiwan, Hong Kong, China and Papua New Guinea. Pieces collected over the years from family travels. The cathedral like ceiling features the largest &ldquo;Tabu&rdquo; wheel in Papua New Guinea. This is traditional shell money and is still used as currency in the islands region today. It is a museum piece.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-8 my-8">
@@ -111,7 +111,7 @@ export default function DiningPage() {
 
                 <div className="bg-gray-50 p-6 rounded-lg my-8 text-center">
                   <p className="text-gray-700 italic">
-                    "Our most famous dining patron was HRH Prince Andrew who devoured the Chocolate Profiteroles!"
+                    &ldquo;Our most famous dining patron was HRH Prince Andrew who devoured the Chocolate Profiteroles!&rdquo;
                   </p>
                 </div>
 

@@ -4,8 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import ReCAPTCHA from 'react-google-recaptcha'
-import LotsToDoSection from '@/components/LotsToDoSection'
-import RoomTypesSection from '@/components/RoomTypesSection'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
 
@@ -38,8 +36,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp, UtensilsCrossed } from 'lucide-react'
-import DiningCard from '@/components/dining/DiningCard'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -99,7 +96,7 @@ export default function Home() {
     // Add any hover effects here if needed
   }
 
-  // Auto-slide effect with professional timing and pause on hover
+  // Auto-slide effect with professional timing
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % 9)
@@ -107,21 +104,6 @@ export default function Home() {
 
     return () => clearInterval(timer)
   }, [])
-
-  // Pause slideshow on hover
-  const [isHovered, setIsHovered] = useState(false)
-
-
-  // Auto-slide effect with pause on hover
-  useEffect(() => {
-    if (isHovered) return // Don't auto-advance when hovered
-
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 9)
-    }, 5000)
-
-    return () => clearInterval(timer)
-  }, [isHovered])
   useEffect(() => {
     const today = new Date()
     const tomorrow = new Date(today)
