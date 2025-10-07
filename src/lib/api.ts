@@ -64,26 +64,55 @@ export interface WPPost {
     source_url: string;
     [key: string]: unknown;
   };
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      id: number;
+      source_url: string;
+      media_details: {
+        sizes: {
+          thumbnail?: { source_url: string };
+          medium?: { source_url: string };
+          medium_large?: { source_url: string };
+          large?: { source_url: string };
+          full?: { source_url: string };
+          [key: string]: any;
+        };
+      };
+      [key: string]: any;
+    }>;
+    [key: string]: any;
+  };
   acf?: {
     gallery?: Array<{ url: string; [key: string]: unknown }> | { url: string; [key: string]: unknown };
+    features?: string[];
     [key: string]: unknown;
   };
-  [key: string]: unknown;
+  [key: string]: any;
 }
+
+// Default parameters for all requests
+const defaultParams = {
+  _embed: 'wp:featuredmedia',
+  per_page: 100,
+};
 
 // --------------------
 // API Functions
 // --------------------
 export const api = {
-  getRooms: async (): Promise<WPPost[]> => {
-    return apiRequest<WPPost[]>("/rooms");
-  },
-
-  getAmenities: async (): Promise<WPPost[]> => {
-    return apiRequest<WPPost[]>("/amenities");
-  },
-
-  getExplore: async (): Promise<WPPost[]> => {
-    return apiRequest<WPPost[]>("/explore");
-  },
+  getRooms: (): Promise<WPPost[]> => 
+    apiRequest<WPPost[]>('/rooms', { params: defaultParams }),
+  
+  getAmenities: (): Promise<WPPost[]> => 
+    apiRequest<WPPost[]>('/amenities', { 
+      params: { 
+        ...defaultParams,
+        // Add any specific params for amenities if needed
+      } 
+    }),
+    
+  getExplore: (): Promise<WPPost[]> => 
+    apiRequest<WPPost[]>('/explore', { 
+      params: defaultParams 
+    }),
 };
