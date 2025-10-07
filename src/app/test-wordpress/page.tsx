@@ -89,7 +89,7 @@ export default function TestWordPress() {
           <ul className="list-disc pl-5 space-y-2 text-gray-700">
             <li>Make sure your WordPress site is running at <code className="bg-gray-100 px-1.5 py-0.5 rounded">http://localhost/rabaul-hotel</code></li>
             <li>Verify that the WordPress REST API is enabled</li>
-            <li>Check that the WordPress site is using the correct permalink structure (Settings → Permalinks)</li>
+            <li>Check that the WordPress site is using the correct permalink structure (Settings &rarr; Permalinks)</li>
             <li>Make sure any required plugins (like JWT Authentication) are properly installed and configured</li>
             <li>Check your browser's developer console for any CORS errors</li>
           </ul>

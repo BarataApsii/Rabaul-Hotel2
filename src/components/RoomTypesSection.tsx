@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { api, WPPost } from '@/lib/api';
 
@@ -37,22 +37,29 @@ interface Room extends Omit<WPPost, 'acf'> {
           medium_large?: { source_url: string };
           medium?: { source_url: string };
           thumbnail?: { source_url: string };
-          [key: string]: any;
+          [key: string]: {
+            source_url: string;
+            width?: number;
+            height?: number;
+            mime_type?: string;
+            [key: string]: unknown;
+          } | undefined;
         };
       };
     }>;
   };
 }
+
 const RoomTypesSection = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Normalize room data to ensure consistent types
-  const normalizedRooms = useMemo(() => {
-    if (!rooms || !Array.isArray(rooms)) return [];
+  
+  // Function to normalize room data
+  const getNormalizedRooms = useCallback((roomList: Room[]): Room[] => {
+    if (!roomList || !Array.isArray(roomList)) return [];
     
-    return rooms.map(room => {
+    return roomList.map(room => {
       if (!room.acf) return room;
       
       // Normalize gallery to always be an array of GalleryItem
@@ -72,7 +79,10 @@ const RoomTypesSection = () => {
         },
       };
     });
-  }, [rooms]);
+  }, []);
+  
+  // Get normalized rooms for display
+  const displayRooms = useMemo(() => getNormalizedRooms(rooms), [getNormalizedRooms, rooms]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -176,16 +186,15 @@ const RoomTypesSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-2">Our Room Types</h2>
           <div className="w-20 h-1 bg-yellow-500 mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Choose from our selection of comfortable and well-appointed rooms designed for your perfect stay in Rabaul.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {rooms.map((room) => {
+          {displayRooms.map((room) => {
             const imageUrl = getImageUrl(room);
             
             return (
-              <div key={room.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+              <div key={`room-${room.id}`} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                 <div className="relative h-64 w-full">
                   <Image
                     src={imageUrl}
@@ -209,7 +218,7 @@ const RoomTypesSection = () => {
                   </div>
                   {room.acf?.features && room.acf.features.length > 0 && (
                     <ul className="space-y-2 mb-4">
-                      {room.acf?.features?.slice(0, 3).map((feature, i) => (
+                      {room.acf?.features?.slice(0, 3).map((feature: string, i: number) => (
                         <li key={i} className="flex items-center">
                           <span className="text-yellow-500 mr-2">✓</span>
                           <span className="text-sm">{feature}</span>

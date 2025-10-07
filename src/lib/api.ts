@@ -136,7 +136,7 @@ export interface WPPost {
     features?: string[];
     [key: string]: unknown;
   };
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Default parameters for all requests
