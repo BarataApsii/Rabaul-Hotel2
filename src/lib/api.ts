@@ -69,18 +69,67 @@ export interface WPPost {
       id: number;
       source_url: string;
       media_details: {
+        width: number;
+        height: number;
+        file: string;
+        filesize: number;
         sizes: {
-          thumbnail?: { source_url: string };
-          medium?: { source_url: string };
-          medium_large?: { source_url: string };
-          large?: { source_url: string };
-          full?: { source_url: string };
-          [key: string]: any;
+          thumbnail?: { 
+            source_url: string;
+            width: number;
+            height: number;
+            mime_type: string;
+          };
+          medium?: { 
+            source_url: string;
+            width: number;
+            height: number;
+            mime_type: string;
+          };
+          medium_large?: { 
+            source_url: string;
+            width: number;
+            height: number;
+            mime_type: string;
+          };
+          large?: { 
+            source_url: string;
+            width: number;
+            height: number;
+            mime_type: string;
+          };
+          full?: { 
+            source_url: string;
+            width: number;
+            height: number;
+            mime_type: string;
+          };
+          [key: string]: {
+            source_url: string;
+            width?: number;
+            height?: number;
+            mime_type?: string;
+            [key: string]: unknown;
+          } | undefined;
+        };
+        image_meta: {
+          aperture: string;
+          credit: string;
+          camera: string;
+          caption: string;
+          created_timestamp: string;
+          copyright: string;
+          focal_length: string;
+          iso: string;
+          shutter_speed: string;
+          title: string;
+          orientation: string;
+          keywords: string[];
         };
       };
-      [key: string]: any;
+      [key: string]: unknown;
     }>;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   acf?: {
     gallery?: Array<{ url: string; [key: string]: unknown }> | { url: string; [key: string]: unknown };

@@ -1,30 +1,86 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { api, WPPost } from '@/lib/api';
 
-interface Room extends WPPost {
-  // You can extend the WPPost interface here if needed
-  // For example, if you have custom fields specific to rooms
-  acf?: {
-    features?: string[];
-    [key: string]: any;
-  };
+interface GalleryItem {
+  url: string;
+  [key: string]: unknown;
 }
 
+interface RoomACFFields {
+  features?: string[];
+  price_per_night?: string | number;
+  max_guests?: string | number;
+  size?: string;
+  gallery?: GalleryItem[] | GalleryItem;
+  [key: string]: unknown;
+}
+
+interface Room extends Omit<WPPost, 'acf'> {
+  acf?: RoomACFFields;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+  better_featured_image?: {
+    source_url: string;
+  };
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      media_details?: {
+        sizes?: {
+          large?: { source_url: string };
+          medium_large?: { source_url: string };
+          medium?: { source_url: string };
+          thumbnail?: { source_url: string };
+          [key: string]: any;
+        };
+      };
+    }>;
+  };
+}
 const RoomTypesSection = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Normalize room data to ensure consistent types
+  const normalizedRooms = useMemo(() => {
+    if (!rooms || !Array.isArray(rooms)) return [];
+    
+    return rooms.map(room => {
+      if (!room.acf) return room;
+      
+      // Normalize gallery to always be an array of GalleryItem
+      const gallery: GalleryItem[] = [];
+      
+      if (Array.isArray(room.acf.gallery)) {
+        gallery.push(...room.acf.gallery);
+      } else if (room.acf.gallery && typeof room.acf.gallery === 'object' && 'url' in room.acf.gallery) {
+        gallery.push(room.acf.gallery as GalleryItem);
+      }
+          
+      return {
+        ...room,
+        acf: {
+          ...room.acf,
+          gallery,
+        },
+      };
+    });
+  }, [rooms]);
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        setError(null);
         const data = await api.getRooms();
+        setRooms(data as Room[]);
         console.log('Fetched rooms:', data);
-        setRooms(data);
       } catch (err) {
         console.error('Error fetching rooms:', err);
         setError('Failed to load rooms. Please try again later.');
@@ -37,24 +93,33 @@ const RoomTypesSection = () => {
   }, []);
 
   const getImageUrl = (room: Room): string => {
-    // Try different image sources in order of preference
+    // Default image path
+    const defaultImage = '/images/rooms/default-room.png';
+    
+    // Try better_featured_image first
     if (room.better_featured_image?.source_url) {
       return room.better_featured_image.source_url;
     }
     
     // Check embedded media
     const featuredMedia = room._embedded?.['wp:featuredmedia']?.[0];
-    if (!featuredMedia) return '/images/rooms/default-room.png';
+    if (!featuredMedia) return defaultImage;
     
     // Try different sizes in order of preference
     const sizes = featuredMedia.media_details?.sizes;
-    if (sizes?.large?.source_url) return sizes.large.source_url;
-    if (sizes?.medium_large?.source_url) return sizes.medium_large.source_url;
-    if (sizes?.medium?.source_url) return sizes.medium.source_url;
-    if (sizes?.thumbnail?.source_url) return sizes.thumbnail.source_url;
-    if (featuredMedia.source_url) return featuredMedia.source_url;
+    if (sizes) {
+      if (sizes.large?.source_url) return sizes.large.source_url;
+      if (sizes.medium_large?.source_url) return sizes.medium_large.source_url;
+      if (sizes.medium?.source_url) return sizes.medium.source_url;
+      if (sizes.thumbnail?.source_url) return sizes.thumbnail.source_url;
+    }
     
-    return '/images/rooms/default-room.png';
+    // Fallback to featured media source URL
+    if (featuredMedia.source_url) {
+      return featuredMedia.source_url;
+    }
+    
+    return defaultImage;
   };
 
   if (loading) {
@@ -136,17 +201,15 @@ const RoomTypesSection = () => {
                     className="text-xl font-semibold mb-2"
                     dangerouslySetInnerHTML={{ __html: room.title.rendered || 'Room' }}
                   />
-                  <div 
-                    className="text-gray-600 mb-4 line-clamp-3 flex-grow"
-                    dangerouslySetInnerHTML={{ 
-                      __html: room.content.rendered 
-                        ? room.content.rendered.replace(/<[^>]*>/g, '').substring(0, 150) + '...' 
-                        : 'No description available.'
-                    }}
-                  />
+                  <div className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+                    {room.content?.rendered 
+                      ? <div dangerouslySetInnerHTML={{ __html: room.content.rendered.replace(/<[^>]*>/g, '').substring(0, 150) + '...' }} />
+                      : 'No description available.'
+                    }
+                  </div>
                   {room.acf?.features && room.acf.features.length > 0 && (
                     <ul className="space-y-2 mb-4">
-                      {room.acf?.features?.slice(0, 3).map((feature: string, i: number) => (
+                      {room.acf?.features?.slice(0, 3).map((feature, i) => (
                         <li key={i} className="flex items-center">
                           <span className="text-yellow-500 mr-2">✓</span>
                           <span className="text-sm">{feature}</span>

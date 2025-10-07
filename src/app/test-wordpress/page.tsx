@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import { api, WPPost } from '@/lib/api';
 
 export default function TestWordPress() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<WPPost[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +84,8 @@ export default function TestWordPress() {
         </div>
 
         <div className="mt-8 bg-white shadow overflow-hidden sm:rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Troubleshooting</h2>
+          <h1 className="text-2xl font-bold mb-4">WordPress Test Page</h1>
+          <p className="mb-6">This page tests the connection to your WordPress backend. If you&apos;re seeing this, the frontend is working!</p>
           <ul className="list-disc pl-5 space-y-2 text-gray-700">
             <li>Make sure your WordPress site is running at <code className="bg-gray-100 px-1.5 py-0.5 rounded">http://localhost/rabaul-hotel</code></li>
             <li>Verify that the WordPress REST API is enabled</li>
