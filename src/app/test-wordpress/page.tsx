@@ -91,7 +91,7 @@ export default function TestWordPress() {
             <li>Verify that the WordPress REST API is enabled</li>
             <li>Check that the WordPress site is using the correct permalink structure (Settings &rarr; Permalinks)</li>
             <li>Make sure any required plugins (like JWT Authentication) are properly installed and configured</li>
-            <li>Check your browser's developer console for any CORS errors</li>
+            <li>Check your browser&apos;s developer console for any CORS errors</li>
           </ul>
         </div>
       </div>
