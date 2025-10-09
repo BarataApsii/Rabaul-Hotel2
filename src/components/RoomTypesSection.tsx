@@ -183,7 +183,7 @@ const RoomTypesSection = () => {
     <section className="py-12 md:py-16 bg-white text-gray-800">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2">Our Room Types</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-2">Room Types</h2>
           <div className="w-20 h-1 bg-yellow-500 mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           </p>
