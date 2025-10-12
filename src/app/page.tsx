@@ -4,6 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import ReCAPTCHA from 'react-google-recaptcha'
+import ExploreSection from '@/components/sections/ExploreSection'
+import RoomsSection from '@/components/sections/RoomsSection'
+import AmenitiesSection from '@/components/sections/AmenitiesSection'
+
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
 
@@ -95,6 +99,55 @@ export default function Home() {
   const handleMouseLeave = () => {
     // Add any hover effects here if needed
   }
+
+  // Handle URL parameters for room type selection and scroll to booking section
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const roomTypeParam = params.get('roomType');
+    
+    if (roomTypeParam) {
+      // Map the room type from the URL to the corresponding value in the select
+      const roomTypeMap: Record<string, string> = {
+        'budget': 'budget',
+        'standard': 'standard',
+        'deluxe': 'deluxe',
+        'executive': 'executive',
+        'family': 'family',
+        'conference': 'conference'
+      };
+
+      const mappedRoomType = roomTypeMap[roomTypeParam.toLowerCase()];
+      
+      if (mappedRoomType) {
+        setRoomType(mappedRoomType);
+        
+        // Scroll to booking section after a short delay
+        setTimeout(() => {
+          const bookingSection = document.getElementById('booking');
+          if (bookingSection) {
+            bookingSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
+    }
+  }, []);
+
+  // Update URL when room type changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const url = new URL(window.location.href);
+    if (roomType) {
+      url.searchParams.set('roomType', roomType);
+    } else {
+      url.searchParams.delete('roomType');
+    }
+    window.history.replaceState({}, '', url.toString());
+  }, [roomType]);
+
 
   // Auto-slide effect with professional timing
   useEffect(() => {
@@ -981,319 +1034,7 @@ export default function Home() {
       </section>
 
       {/* Our Rooms Section */}
-      <section id="rooms" ref={roomsRef} className="py-16 bg-gray-50 scroll-mt-16">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Our Rooms & Suites</h2>
-            <div className="w-20 h-1 bg-[#1a5f2c] mx-auto mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">Experience comfort and luxury in our carefully designed rooms, each offering a perfect blend of style and functionality.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Budget Room */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 overflow-hidden group">
-                <Image 
-                  src="/images/rooms/budget-room.PNG" 
-                  alt="Budget Room"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  quality={95}
-                  priority
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-2">Budget Room</h3>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4 bg-[#1a5f2c] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Best Value
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span className="flex items-center mr-4">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    24/7 Check-in
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                    Free WiFi
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800">Budget Room</h4>
-                    <p className="text-gray-500 text-sm">Max guests: 2</p>
-                  </div>
-                  <Button 
-                    onClick={() => {
-                      setRoomType('budget');
-                      scrollToSection(bookRef);
-                    }}
-                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
-                  >
-                    Book Now
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Standard Room */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 overflow-hidden group">
-                <Image 
-                  src="/images/rooms/standard-room.PNG" 
-                  alt="Standard Room"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  quality={95}
-                  priority
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-2">Standard Room</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span className="flex items-center mr-4">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    24/7 Check-in
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                    Free WiFi
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800">Standard Room</h4>
-                    <p className="text-gray-500 text-sm">Max guests: 2</p>
-                  </div>
-                  <Button 
-                    onClick={() => {
-                      setRoomType('standard');
-                      scrollToSection(bookRef);
-                    }}
-                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
-                  >
-                    Book Now
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Executive Room */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 overflow-hidden group">
-                <Image 
-                  src="/images/rooms/executive-room.PNG" 
-                  alt="Executive Room"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  quality={95}
-                  priority
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7g5BTZCNl4xYlpNYs6P/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAgDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdAB//2Q=="
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-2">Executive Room</h3>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Popular
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span className="flex items-center mr-4">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    24/7 Check-in
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                    Free WiFi
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800">Executive Room</h4>
-                    <p className="text-gray-500 text-sm">Max guests: 3</p>
-                  </div>
-                  <Button 
-                    onClick={() => {
-                      setRoomType('executive');
-                      scrollToSection(bookRef);
-                    }}
-                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
-                  >
-                    Book Now
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Family Suite */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 overflow-hidden group">
-                <Image 
-                  src="/images/rooms/family-suite.png" 
-                  alt="Family Suite"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  quality={95}
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-2">Family Suite</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span className="flex items-center mr-4">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    24/7 Check-in
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                    Free WiFi
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800">Family Suite</h4>
-                    <p className="text-gray-500 text-sm">Max guests: 4</p>
-                  </div>
-                  <Button 
-                    onClick={() => {
-                      setRoomType('family');
-                      scrollToSection(bookRef);
-                    }}
-                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
-                  >
-                    Book Now
-                  </Button>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  Perfect blend of space and comfort for families
-                </p>
-              </div>
-            </div>
-            
-            {/* Conference Room */}
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 overflow-hidden group">
-                <Image 
-                  src="/images/amenities/conference-room.PNG" 
-                  alt="Conference Room"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  quality={95}
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-2">Conference Room</h3>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span className="flex items-center mr-4">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                    </svg>
-                    Full Day Rental
-                  </span>
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-[#1a5f2c]" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                    </svg>
-                    AV Equipment
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-800">Conference Room</h4>
-                    <p className="text-gray-500 text-sm">Capacity: 20 people</p>
-                  </div>
-                  <Button 
-                    onClick={() => {
-                      setRoomType('conference');
-                      scrollToSection(bookRef);
-                    }}
-                    className="bg-[#1a5f2c] hover:bg-[#144a22] text-white px-4 py-2 text-sm rounded-md transition-colors"
-                  >
-                    Book Now
-                  </Button>
-                </div>
-                </div>
-          </div>
-          </div>
-        </div>
-      </section>
-      <section className="py-12 md:py-16 bg-gray-100">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-start gap-8">
-            {/* Text Content - Always on top on mobile, left on desktop */}
-            <div className="w-full md:w-1/2">
-              <div className="flex items-center mb-6">
-                <div className="bg-[#1a5f2c] p-3 rounded-full mr-4">
-                  <Clock className="w-8 h-8 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-gray-800">Hotel Reception</h2>
-              </div>
-              <div className="w-20 h-1 bg-[#1a5f2c] mb-6"></div>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                Rabaul Hotel is happy to offer Guests Room Upgrades if available on Check In. Rabaul Hotel is happy to offer Guests late Check Out if available. Please advise Reception on Check In, otherwise late Check Out without authority from the Management, may incur a surcharge.
-              </p>
-            </div>
-            
-            {/* Image - Below text on mobile, right on desktop */}
-            <div className="w-full md:w-1/2">
-              <div className="relative h-64 md:h-96 w-full rounded-lg overflow-hidden shadow-2xl">
-                <Image 
-                  src="/images/amenities/hotel-reception.PNG" 
-                  alt="Hotel Reception"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <RoomsSection />
 
       {/* Book Your Stay Section */}
       <section 
@@ -1805,139 +1546,7 @@ export default function Home() {
       </section>
 
       {/* Our Amenities Section */}
-      <section ref={amenitiesRef} className="py-16 bg-white scroll-mt-16" id="amenities">
-        <div className="container max-w-7xl px-4 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Amenities</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Discover the natural beauty and rich history of Rabaul, where volcanic landscapes meet World War II relics and vibrant local culture.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* 23m Swimming Pool */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8 4m0 0L4 7m16 0l-8-4m8 4v10l-8 4m0-10L4 7m16 0v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/swimming-pool.PNG" 
-                  alt="Swimming Pool"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">23m Swimming Pool</h3>
-                <p className="text-green-700 text-sm">Relax and unwind in our beautiful 23-meter swimming pool surrounded by tropical gardens.</p>
-              </div>
-            </div>
-
-            {/* Phoenix Room Restaurant */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-amber-50 flex items-center justify-center">
-                  <Utensils className="h-16 w-16 text-amber-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/phoenix.jpeg" 
-                  alt="Restaurant"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-amber-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Phoenix Room Restaurant</h3>
-                <p className="text-green-700 text-sm">Savor a blend of Western, Asian, and Vegetarian cuisine in our renowned restaurant.</p>
-              </div>
-            </div>
-
-            {/* Conference Facilities */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-purple-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <Image 
-                  src="/images/amenities/conference-room.PNG" 
-                  alt="Conference Room"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-purple-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Conference Facilities</h3>
-                <p className="text-green-700 text-sm">Host your next event in our air-conditioned conference room with capacity for 150+ guests.</p>
-              </div>
-            </div>
-
-            {/* 24/7 Reception */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-green-50 flex items-center justify-center">
-                  <ConciergeBell className="h-16 w-16 text-green-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/hotel-reception.PNG" 
-                  alt="Hotel Reception"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-green-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">24/7 Reception</h3>
-                <p className="text-green-700 text-sm">Our friendly staff is available around the clock to assist you with any needs during your stay.</p>
-              </div>
-            </div>
-
-            {/* Free Secure Parking */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-blue-50 flex items-center justify-center">
-                  <Car className="h-16 w-16 text-blue-200" />
-                </div>
-                <Image 
-                  src="/images/amenities/parking.PNG" 
-                  alt="Parking"
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-blue-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-800">Free Secure Parking</h3>
-                <p className="text-green-700 text-sm">Park with peace of mind in our secure, on-site parking area available to all guests.</p>
-              </div>
-            </div>
-
-            {/* Room Service */}
-            <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-green-100">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-pink-50 flex items-center justify-center">
-                  <svg className="h-16 w-16 text-pink-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </div>
-                {/* Replace with actual image: /images/amenities/room-service.jpg */}
-                <div className="absolute inset-0 bg-pink-600/10 group-hover:opacity-0 transition-opacity duration-300"></div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-lg mb-2 text-gray-900">Room Service</h3>
-                <p className="text-green-700 text-sm">Enjoy the convenience of in-room dining with our room service menu.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AmenitiesSection />
 
       {/* Contact Us Section */}
       <section 
@@ -2174,154 +1783,7 @@ export default function Home() {
       </section>
 
       {/* Explore Rabaul Section */}
-      <section ref={exploreRef} className="py-16 bg-white scroll-mt-16" id="explore">
-        <div className="container max-w-7xl px-4 mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Explore Rabaul</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Discover the natural beauty and rich history of Rabaul, where volcanic landscapes meet World War II relics and vibrant local culture.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.tavurvur.src}
-                  alt={attractionImages.tavurvur.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Mt Tavurvur Volcano</h3>
-                <p className="text-sm text-gray-600">Witness the power of nature at this active volcano with dramatic crater views, especially stunning at sunrise.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.simpsonHarbour.src}
-                  alt={attractionImages.simpsonHarbour.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Simpson Harbour & Caldera</h3>
-                <p className="text-sm text-gray-600">Stunning flooded caldera surrounded by volcanoes, perfect for scenic walks and wildlife spotting.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.matupitIsland.src}
-                  alt={attractionImages.matupitIsland.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Matupit Island</h3>
-                <p className="text-sm text-gray-600">Experience traditional village life and enjoy excellent snorkeling in crystal clear waters.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.ww2Tunnels.src}
-                  alt={attractionImages.ww2Tunnels.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">WWII Relics & Tunnels</h3>
-                <p className="text-sm text-gray-600">Explore historic tunnels and bunkers from the Japanese occupation during World War II.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.oldRabaul.src}
-                  alt={attractionImages.oldRabaul.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Old Rabaul Ruins</h3>
-                <p className="text-sm text-gray-600">See the remnants of the old town, a powerful reminder of the 1994 volcanic eruptions.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.museum.src}
-                  alt={attractionImages.museum.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Rabaul Museum</h3>
-                <p className="text-sm text-gray-600">Discover the region&apos;s volcanic history, local culture, and wartime heritage.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.warCemetery.src}
-                  alt={attractionImages.warCemetery.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Bitapaka War Cemetery</h3>
-                <p className="text-sm text-gray-600">A peaceful memorial honoring those who perished in World Wars I and II.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={attractionImages.market.src}
-                  alt={attractionImages.market.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2 text-green-700">Rabaul Market</h3>
-                <p className="text-sm text-gray-600">Immerse yourself in local life with fresh seafood, tropical fruits, and traditional crafts.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ExploreSection />
 
       {/* Footer */}
       <footer className="bg-green-950 text-white py-12">
