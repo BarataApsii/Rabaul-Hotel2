@@ -78,7 +78,7 @@ const ExploreSection = () => {
               <div className="flex flex-col flex-grow p-6">
                 {item.title?.rendered && (
                   <CardHeader className="p-0 mb-4">
-                    <CardTitle className="text-xl">
+                    <CardTitle className="text-xl" style={{ color: '#1a5f2c' }}>
                       {item.title.rendered}
                     </CardTitle>
                   </CardHeader>

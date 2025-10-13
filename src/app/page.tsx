@@ -1561,7 +1561,7 @@ export default function Home() {
         
         <div className="container max-w-6xl px-4 mx-auto relative z-10">
           <div className="text-center mb-4">
-            <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
+            <h2 className="text-3xl font-bold text-green-900">Contact Us</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Contact Info */}

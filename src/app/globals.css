@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #1A5F2C; /* Dark green color */
   --focus-ring: 0 0 0 1px rgba(26, 95, 44, 0.5);
   --focus-ring-opacity: 0.5;
 }
@@ -68,3 +69,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Section title styling */
+.section-title {
+  color: #1A5F2C !important;
+}
+
+/* Add any additional global styles below this line */
