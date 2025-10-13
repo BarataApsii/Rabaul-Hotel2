@@ -1,3 +1,5 @@
+// src/lib/api.ts
+
 /**
  * API Utility Functions for WordPress REST API
  * 
@@ -60,6 +62,10 @@ export interface WPPost {
   content: { rendered: string };
   excerpt?: { rendered: string };
   featured_media?: number;
+  acf?: {
+    price?: number | string | null;
+    [key: string]: any; // For any other ACF fields
+  };
   better_featured_image?: {
     source_url: string;
     [key: string]: unknown;
@@ -98,70 +104,97 @@ export interface WPPost {
             height: number;
             mime_type: string;
           };
-          full?: { 
-            source_url: string;
-            width: number;
-            height: number;
-            mime_type: string;
-          };
-          [key: string]: {
-            source_url: string;
-            width?: number;
-            height?: number;
-            mime_type?: string;
-            [key: string]: unknown;
-          } | undefined;
-        };
-        image_meta: {
-          aperture: string;
-          credit: string;
-          camera: string;
-          caption: string;
-          created_timestamp: string;
-          copyright: string;
-          focal_length: string;
-          iso: string;
-          shutter_speed: string;
-          title: string;
-          orientation: string;
-          keywords: string[];
         };
       };
-      [key: string]: unknown;
     }>;
-    [key: string]: unknown;
   };
-  acf?: {
-    gallery?: Array<{ url: string; [key: string]: unknown }> | { url: string; [key: string]: unknown };
-    features?: string[];
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
+  [key: string]: any; // For any other fields
 }
 
 // Default parameters for all requests
 const defaultParams = {
   _embed: 'wp:featuredmedia',
   per_page: 100,
+  _fields: '*',
+  acf_format: 'standard',
 };
 
-// --------------------
-// API Functions
-// --------------------
-export const api = {
-  getRooms: (): Promise<WPPost[]> => 
-    apiRequest<WPPost[]>('/rooms', { params: defaultParams }),
-  
-  getAmenities: (): Promise<WPPost[]> => 
-    apiRequest<WPPost[]>('/amenities', { 
-      params: { 
-        ...defaultParams,
-        // Add any specific params for amenities if needed
-      } 
-    }),
-    
-  getExplore: (): Promise<WPPost[]> => 
-    apiRequest<WPPost[]>('/explore', { 
-      params: defaultParams 
-    }),
+// Add ACF support to the REST API
+const addAcfSupport = () => {
+  if (typeof window !== 'undefined') {
+    // This will be executed on the client side
+    // We'll add ACF support by default in our requests
+  }
 };
+
+// API methods
+export const api = {
+  // Get all rooms
+  getRooms: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>('/rooms', {
+      params: {
+        ...defaultParams,
+        _embed: 'wp:featuredmedia',
+        _fields: [
+          'id',
+          'title',
+          'content',
+          'excerpt',
+          'featured_media',
+          'acf',
+          'better_featured_image',
+          '_links',
+          '_embedded',
+        ].join(','),
+        acf_format: 'standard',
+      },
+    });
+  },
+
+  // Get all amenities
+  getAmenities: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>('/amenities', {
+      params: {
+        ...defaultParams,
+        _embed: 'wp:featuredmedia',
+        _fields: [
+          'id',
+          'title',
+          'content',
+          'excerpt',
+          'featured_media',
+          'acf',
+          'better_featured_image',
+          '_links',
+          '_embedded'
+        ].join(','),
+        acf_format: 'standard',
+      },
+    });
+  },
+
+  // Get all explore items
+  getExplore: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>('/explore', {
+      params: {
+        ...defaultParams,
+        _embed: 'wp:featuredmedia',
+        _fields: [
+          'id',
+          'title',
+          'content',
+          'excerpt',
+          'featured_media',
+          'acf',
+          'better_featured_image',
+          '_links',
+          '_embedded'
+        ].join(','),
+        acf_format: 'standard',
+      },
+    });
+  },
+};
+
+// Export types
+export type { WPPost as WPPostType };

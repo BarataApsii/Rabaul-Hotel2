@@ -56,26 +56,45 @@ const AmenitiesSection = () => {
         <h2 className="text-3xl font-bold text-center mb-8">Our Amenities</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {amenities.map((amenity) => (
-            <Card key={amenity.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              {amenity._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                <div className="relative h-48 w-full">
+            <Card key={amenity.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
+              {/* Featured Image */}
+              <div className="relative h-48 w-full">
+                {amenity._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
                   <Image
                     src={amenity._embedded['wp:featuredmedia'][0].source_url}
-                    alt={amenity.title.rendered}
+                    alt={amenity.title?.rendered || 'Amenity image'}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle className="text-xl">{amenity.title.rendered}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div 
-                  className="prose" 
-                  dangerouslySetInnerHTML={{ __html: amenity.excerpt?.rendered || '' }} 
-                />
-              </CardContent>
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-400">No image</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Content */}
+              <div className="flex flex-col flex-grow p-6">
+                {amenity.title?.rendered && (
+                  <CardHeader className="p-0 mb-4">
+                    <CardTitle className="text-xl">
+                      {amenity.title.rendered}
+                    </CardTitle>
+                  </CardHeader>
+                )}
+                
+                {(amenity.excerpt?.rendered || amenity.content?.rendered) && (
+                  <CardContent className="p-0 flex-grow">
+                    <div 
+                      className="prose text-gray-600"
+                      dangerouslySetInnerHTML={{ 
+                        __html: amenity.excerpt?.rendered || amenity.content?.rendered || '' 
+                      }} 
+                    />
+                  </CardContent>
+                )}
+              </div>
             </Card>
           ))}
         </div>
