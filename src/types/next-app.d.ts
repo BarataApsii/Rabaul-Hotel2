@@ -5,8 +5,8 @@ declare module 'next' {
    * Page props for App Router pages
    */
   export type PageProps<
-    TParams extends Record<string, string> = {},
-    TSearchParams extends Record<string, string | string[] | undefined> = {}
+    TParams extends Record<string, string> = Record<string, never>,
+    TSearchParams extends Record<string, string | string[]> = Record<string, never>
   > = {
     params: TParams;
     searchParams: TSearchParams;
@@ -15,7 +15,7 @@ declare module 'next' {
   /**
    * GenerateMetadata function type
    */
-  export type GenerateMetadataProps<TParams = {}> = {
+  export type GenerateMetadataProps<TParams = Record<string, never>> = {
     params: TParams;
     searchParams: { [key: string]: string | string[] | undefined };
   };
@@ -23,7 +23,7 @@ declare module 'next' {
   /**
    * GenerateStaticParams function return type
    */
-  export type GenerateStaticParams<TParams = {}> = Array<{
+  export type GenerateStaticParams<TParams = Record<string, never>> = Array<{
     params: TParams;
   }>;
 }
