@@ -45,7 +45,7 @@ export default function Home() {
     pickupLocation: ''
   })
   const [contactMessage, setContactMessage] = useState('')
-  const [subject, setSubject] = useState('')
+  const [subject] = useState('')
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [visible, setVisible] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -61,7 +61,7 @@ export default function Home() {
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [isLoading, setIsLoading] = useState(false)
-  const [lastName, setLastName] = useState('')
+  const [lastName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
 
@@ -89,6 +89,7 @@ export default function Home() {
       }, 500)
       return () => clearTimeout(timer)
     }
+    return () => {} // Return empty cleanup function when no roomId
   }, [])
 
   const nextSlide = () => {
@@ -337,16 +338,16 @@ export default function Home() {
   const validateBookingForm = () => {
     const newErrors: Record<string, string> = {}
     
-    if (!fullName.trim()) newErrors.fullName = 'Full name is required'
+    if (!fullName.trim()) newErrors['fullName'] = 'Full name is required'
     if (!email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors['email'] = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid'
+      newErrors['email'] = 'Email is invalid'
     }
     if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required'
+      newErrors['phone'] = 'Phone number is required'
     } else if (!/^[\d\s\-+()]*$/.test(phone)) {
-      newErrors.phone = 'Phone number is invalid'
+      newErrors['phone'] = 'Phone number is invalid'
     }
     
     setErrors(newErrors)
@@ -435,15 +436,15 @@ export default function Home() {
   const validateContactForm = () => {
     const newErrors: Record<string, string> = {}
     
-    if (!contactName.trim()) newErrors.contactName = 'Name is required'
+    if (!contactName.trim()) newErrors['contactName'] = 'Name is required'
     if (!contactEmail.trim()) {
-      newErrors.contactEmail = 'Email is required'
+      newErrors['contactEmail'] = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(contactEmail)) {
-      newErrors.contactEmail = 'Email is invalid'
+      newErrors['contactEmail'] = 'Email is invalid'
     }
-    if (!contactMessage.trim()) newErrors.contactMessage = 'Message is required'
-    if (!lastName.trim()) newErrors.lastName = 'Last name is required'
-    if (!subject.trim()) newErrors.subject = 'Subject is required'
+    if (!contactMessage.trim()) newErrors['contactMessage'] = 'Message is required'
+    if (!lastName.trim()) newErrors['lastName'] = 'Last name is required'
+    if (!subject.trim()) newErrors['subject'] = 'Subject is required'
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -1232,8 +1233,8 @@ export default function Home() {
                           className="h-9 text-sm flex-1 border-white/30"
                         />
                       </div>
-                      {errors.fullName && (
-                        <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
+                      {errors['fullName'] && (
+                        <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
                       )}
                     </div>
                     <div className="space-y-1">
@@ -1246,8 +1247,8 @@ export default function Home() {
                         onChange={(e) => setEmail(e.target.value)}
                         className="h-9 text-sm border-white/30"
                       />
-                      {errors.email && (
-                        <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                      {errors['email'] && (
+                        <p className="text-xs text-red-500 mt-1">{errors['email']}</p>
                       )}
                     </div>
                     <div className="space-y-1">
@@ -1321,8 +1322,8 @@ export default function Home() {
                           className="h-9 text-sm rounded-l-none flex-1 border-white/30"
                         />
                       </div>
-                      {errors.phone && (
-                        <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
+                      {errors['phone'] && (
+                        <p className="text-xs text-red-500 mt-1">{errors['phone']}</p>
                       )}
                     </div>
                     <div className="space-y-3 col-span-2">
@@ -1519,7 +1520,7 @@ export default function Home() {
                     `}</style>
                     <div className="flex justify-center">
                       <ReCAPTCHA
-                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'your-site-key'}
+                        sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']!}
                         onChange={(token: string | null) => setRecaptchaToken(token)}
                         onExpired={() => setRecaptchaToken(null)}
                         onErrored={() => setRecaptchaToken(null)}
@@ -1527,8 +1528,8 @@ export default function Home() {
                         className="recaptcha-container"
                       />
                     </div>
-                    {errors.recaptcha && (
-                      <p className="mt-2 text-sm text-red-400 text-center">{errors.recaptcha}</p>
+                    {errors['recaptcha'] && (
+                      <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
                     )}
                   </div>
 
@@ -1689,60 +1690,46 @@ export default function Home() {
               <form onSubmit={handleContactSubmit} className="space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
+                    <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
                     <Input
-                      id="firstName"
+                      id="fullName"
                       type="text"
                       className="w-full"
-                      placeholder="Enter your first name"
-                      value={contactName}
-                      onChange={(e) => setContactName(e.target.value)}
+                      placeholder="Full Name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
                     />
-                    {errors.contactName && (
-                      <p className="text-xs text-red-500 mt-1">{errors.contactName}</p>
+                    {errors['fullName'] && (
+                      <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
                     )}
                   </div>
                   <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="lastName" className="text-gray-700">Last Name</Label>
+                    <Label htmlFor="email" className="text-gray-700">Email</Label>
                     <Input
-                      id="lastName"
-                      type="text"
-                      className="w-full"
-                      placeholder="Enter your last name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      id="email"
+                      type="email"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={`w-full ${errors['email'] ? 'border-red-500' : ''}`}
                     />
-                    {errors.lastName && (
-                      <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>
+                    {errors['email'] && (
+                      <p className="text-xs text-red-500 mt-1">{errors['email']}</p>
                     )}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">Email</Label>
+                  <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    className="w-full"
-                    placeholder="Enter your email"
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
+                    id="phone"
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={`w-full ${errors['phone'] ? 'border-red-500' : ''}`}
                   />
-                  {errors.contactEmail && (
-                    <p className="text-xs text-red-500 mt-1">{errors.contactEmail}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="subject" className="text-gray-700">Subject</Label>
-                  <Input
-                    id="subject"
-                    type="text"
-                    className="w-full"
-                    placeholder="Enter subject"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                  />
-                  {errors.subject && (
-                    <p className="text-xs text-red-500 mt-1">{errors.subject}</p>
+                  {errors['phone'] && (
+                    <p className="text-xs text-red-500 mt-1">{errors['phone']}</p>
                   )}
                 </div>
                 <div className="space-y-1">
@@ -1754,8 +1741,8 @@ export default function Home() {
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                   />
-                  {errors.contactMessage && (
-                    <p className="text-xs text-red-500 mt-1">{errors.contactMessage}</p>
+                  {errors['contactMessage'] && (
+                    <p className="text-xs text-red-500 mt-1">{errors['contactMessage']}</p>
                   )}
                 </div>
                 <div className="mt-3">
@@ -1773,7 +1760,7 @@ export default function Home() {
                   `}</style>
                   <div className="flex justify-center">
                     <ReCAPTCHA
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || 'your-site-key'}
+                      sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] || 'your-site-key'}
                       onChange={(token: string | null) => setRecaptchaToken(token)}
                       onExpired={() => setRecaptchaToken(null)}
                       onErrored={() => setRecaptchaToken(null)}
@@ -1781,8 +1768,8 @@ export default function Home() {
                       className="contact-recaptcha"
                     />
                   </div>
-                  {errors.recaptcha && (
-                    <p className="mt-2 text-sm text-red-500 text-center">{errors.recaptcha}</p>
+                  {errors['recaptcha'] && (
+                    <p className="mt-2 text-sm text-red-500 text-center">{errors['recaptcha']}</p>
                   )}
                 </div>
                 <Button

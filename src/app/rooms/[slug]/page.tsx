@@ -52,18 +52,16 @@ interface Room extends Omit<WPPost, '_embedded'> {
   content: {
     rendered: string;
   };
+  excerpt?: {
+    rendered: string;
+  };
   slug: string;
   id: number;
 }
 
-// Type definitions
-type PageParams = {
+// Define the params type for the page
+type RoomPageParams = {
   slug: string;
-};
-
-type PageProps = {
-  params: PageParams;
-  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 // Helper functions
@@ -77,10 +75,12 @@ const renderSize = (size?: string | number) => {
 };
 
 // Generate static paths at build time
-export async function generateStaticParams(): Promise<PageParams[]> {
+export async function generateStaticParams(): Promise<Array<{ params: RoomPageParams }>> {
   const rooms = await api.getRooms() as Room[];
   return rooms.map((room) => ({
-    slug: room.slug,
+    params: {
+      slug: room.slug,
+    },
   }));
 }
 
@@ -101,27 +101,25 @@ const isImageType = (img: unknown): img is ImageType => {
 };
 
 // Generate metadata
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: PageParams 
+export async function generateMetadata({
+  params,
+}: {
+  params: RoomPageParams;
 }): Promise<Metadata> {
   const rooms = await api.getRooms() as Room[];
   const room = rooms.find((r: Room) => r.slug === params.slug);
 
   if (!room) {
-    return {
-      title: 'Room Not Found',
-      description: 'The requested room could not be found.'
-    };
+    return {};
   }
 
-  const description = room.content?.rendered 
-    ? room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160)
-    : 'Luxury accommodation with premium amenities';
+  const title = room.title?.rendered || 'Luxury Room';
+  const description = room.excerpt?.rendered 
+    ? room.excerpt.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160)
+    : 'Experience luxury accommodation with our premium rooms.';
 
   return {
-    title: room.title?.rendered || 'Luxury Room',
+    title: `${title} | Rabaul Hotel`,
     description,
     openGraph: {
       title: room.title?.rendered || 'Luxury Room',
@@ -132,9 +130,19 @@ export async function generateMetadata({
 }
 
 // Main component
-export default async function RoomDetailPage({ params }: PageProps) {
+export default async function RoomDetailPage({ 
+  params 
+}: { 
+  params: RoomPageParams 
+}) {
+  const { slug } = params;
+  
+  if (!slug) {
+    notFound();
+  }
+
   const rooms = await api.getRooms() as Room[];
-  const room = rooms.find((r: Room) => r.slug === params.slug);
+  const room = rooms.find((r: Room) => r.slug === slug);
 
   if (!room) {
     notFound();

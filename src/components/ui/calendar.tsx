@@ -182,8 +182,8 @@ function CalendarDayButton({
 
   const ref = React.useRef<HTMLButtonElement>(null)
   React.useEffect(() => {
-    if (modifiers.focused) ref.current?.focus()
-  }, [modifiers.focused])
+    if (modifiers["focused"]) ref.current?.focus()
+  }, [modifiers["focused"]])
 
   return (
     <Button
@@ -192,14 +192,14 @@ function CalendarDayButton({
       size="icon"
       data-day={day.date.toLocaleDateString()}
       data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
+        modifiers["selected"] &&
+        !modifiers["range_start"] &&
+        !modifiers["range_end"] &&
+        !modifiers["range_middle"]
       }
-      data-range-start={modifiers.range_start}
-      data-range-end={modifiers.range_end}
-      data-range-middle={modifiers.range_middle}
+      data-range-start={modifiers["range_start"]}
+      data-range-end={modifiers["range_end"]}
+      data-range-middle={modifiers["range_middle"]}
       className={cn(
         "hover:bg-gray-700 data-[selected-single=true]:bg-blue-600 data-[range-middle=true]:bg-blue-700 data-[range-start=true]:bg-blue-600 data-[range-end=true]:bg-blue-600 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square h-auto w-full min-w-[--cell-size] flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] [&>span]:text-xs [&>span]:opacity-70",
         defaultClassNames.day,

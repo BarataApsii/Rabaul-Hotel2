@@ -8,7 +8,7 @@
 
 // Base URL for WordPress API
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env["NEXT_PUBLIC_API_BASE_URL"] ||
   "http://localhost/rabaul-hotel/wp-json/wp/v2";
 
 interface RequestOptions extends Omit<RequestInit, "headers"> {
