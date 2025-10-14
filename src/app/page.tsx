@@ -83,6 +83,33 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [lastName, setLastName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
+
+  // Map room IDs to their display names
+  const getRoomNameById = (roomId: string) => {
+    const roomMap: Record<string, string> = {
+      'deluxe': 'Deluxe Room',
+      'executive': 'Executive Suite',
+      'family': 'Family Room',
+      'standard': 'Standard Room',
+      'budget': 'Budget Room'
+    }
+    return roomMap[roomId] || 'Selected Room'
+  }
+
+  // Handle URL parameters when component mounts
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const roomId = params.get('roomId')
+    if (roomId) {
+      setSelectedRoomId(roomId)
+      // Scroll to booking section after a short delay to ensure the page is loaded
+      const timer = setTimeout(() => {
+        document.getElementById('book')?.scrollIntoView({ behavior: 'smooth' })
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % 9)
@@ -1125,21 +1152,34 @@ export default function Home() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
-                      <Label htmlFor="room-type" className="text-sm font-medium text-white">Room Type</Label>
-                      <Select value={roomType || 'select'} onValueChange={value => setRoomType(value === 'select' ? undefined : value)}>
-                        <SelectTrigger id="room-type" className="h-10 text-sm border-white/30">
-                          <SelectValue placeholder="Select room type" />
+                      <Label htmlFor="room-type" className="font-medium text-white">Room Type</Label>
+                      <Select 
+                        onValueChange={setRoomType} 
+                        value={selectedRoomId || roomType}
+                        disabled={!!selectedRoomId}
+                      >
+                        <SelectTrigger className="h-12 bg-white/10 border-white/30 text-white">
+                          <SelectValue placeholder={selectedRoomId ? "Pre-selected Room" : "Select a room type"} />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="select">Select Room</SelectItem>
-                          <SelectItem value="budget">Budget Room - K200/night</SelectItem>
-                          <SelectItem value="standard">Standard Room - K300/night</SelectItem>
-                          <SelectItem value="deluxe">Deluxe Room - K450/night</SelectItem>
-                          <SelectItem value="executive">Executive King Room - K600/night</SelectItem>
-                          <SelectItem value="family">Family Suite - K500/night</SelectItem>
-                          <SelectItem value="conference">Conference Room - K1,000/day</SelectItem>
+                        <SelectContent className="bg-white">
+                          {selectedRoomId ? (
+                            <SelectItem value={selectedRoomId}>
+                              {getRoomNameById(selectedRoomId) || 'Selected Room'}
+                            </SelectItem>
+                          ) : (
+                            <>
+                              <SelectItem value="deluxe">Deluxe Room</SelectItem>
+                              <SelectItem value="executive">Executive Suite</SelectItem>
+                              <SelectItem value="family">Family Room</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
+                      {selectedRoomId && (
+                        <p className="text-xs text-white/70 mt-1">
+                          Room pre-selected from room page
+                        </p>
+                      )}
                     </div>
                     
                     <div className="space-y-1">

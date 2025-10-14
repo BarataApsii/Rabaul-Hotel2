@@ -123,13 +123,15 @@ const RoomsSection = () => {
                       )}
                     </div>
                   )}
-                  <div className="mt-auto flex justify-end">
+                  <CardFooter className="mt-auto flex justify-end">
                     <Link href={`/rooms/${room.slug}`}>
-                      <Button className="bg-green-900 hover:bg-green-800 transition-colors w-32 text-white">
+                      <Button 
+                        className="bg-green-900 hover:bg-green-800 text-white px-4 py-1.5 text-sm transition-colors duration-200"
+                      >
                         View Details
                       </Button>
                     </Link>
-                  </div>
+                  </CardFooter>
                 </div>
               </Card>
             ))}

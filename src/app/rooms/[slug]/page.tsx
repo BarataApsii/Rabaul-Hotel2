@@ -3,8 +3,10 @@ import { api, WPPost } from '@/lib/api';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils/format';
 import { Button } from '@/components/ui/button';
+import { BookingFormWrapper } from './BookingFormWrapper';
 import Link from 'next/link';
-import { ArrowLeft, Bed, Users, Ruler, Calendar, MapPin, Wifi, Tv, Coffee, Wind } from 'lucide-react';
+import { ArrowLeft, Bed, Users, Ruler, MapPin, Wifi, Tv, Coffee, Wind } from 'lucide-react';
+import { BookingForm } from '@/components/forms/BookingForm';
 
 // Add this after the imports
 type Amenity = 
@@ -156,7 +158,76 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-8">
+            {/* Booking Form - Mobile Only */}
+            <div className="lg:hidden bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Book This Room</h3>
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="check-in" className="block text-sm font-medium text-gray-700 mb-1">
+                      Check-in
+                    </label>
+                    <input
+                      type="date"
+                      id="check-in"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-900 focus:border-transparent"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="check-out" className="block text-sm font-medium text-gray-700 mb-1">
+                      Check-out
+                    </label>
+                    <input
+                      type="date"
+                      id="check-out"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-900 focus:border-transparent"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="adults" className="block text-sm font-medium text-gray-700 mb-1">
+                      Adults
+                    </label>
+                    <select
+                      id="adults"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-900 focus:border-transparent"
+                      defaultValue="1"
+                    >
+                      {[1, 2, 3, 4].map(num => (
+                        <option key={num} value={num}>{num} {num === 1 ? 'Adult' : 'Adults'}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="children" className="block text-sm font-medium text-gray-700 mb-1">
+                      Children
+                    </label>
+                    <select
+                      id="children"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-900 focus:border-transparent"
+                      defaultValue="0"
+                    >
+                      {[0, 1, 2, 3].map(num => (
+                        <option key={num} value={num}>{num} {num === 1 ? 'Child' : 'Children'}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-green-900 text-white py-3 px-6 rounded-md hover:bg-green-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-900"
+                >
+                  Book Now
+                </button>
+              </form>
+            </div>
+
             {/* Room Highlights */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-white p-4 rounded-lg shadow-sm flex items-center">
@@ -202,15 +273,20 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
             {images.length > 1 && (
               <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-6">Gallery</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {images.slice(1).map((img, index) => (
-                    <div key={index} className="relative h-48 md:h-56 rounded-lg overflow-hidden group">
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
                       <Image
                         src={img.url}
                         alt={img.alt}
                         fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+                        quality={75}
+                        loading={index > 2 ? 'lazy' : 'eager'}
+                        priority={index < 3}
                       />
                     </div>
                   ))}
@@ -220,49 +296,73 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              {/* Booking Widget */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <h3 className="text-xl font-bold mb-4">Book This Room</h3>
-                <div className="space-y-4">
+          <div className="lg:col-span-1 space-y-6">
+            <div className="sticky top-6">
+              <BookingFormWrapper 
+                roomId={room.id.toString()}
+                roomTitle={room.title.rendered}
+                price={typeof room.acf?.price === 'string' ? parseFloat(room.acf.price) : (room.acf?.price || 0)}
+              />
+            </div>
+
+            {/* Room Details */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Room Details</h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <Users className="h-5 w-5 text-green-900 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-900 focus:border-transparent"
-                      />
-                      <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                    <p className="text-sm font-medium text-gray-700">Max Occupancy</p>
+                    <p className="text-sm text-gray-500">
+                      {room.acf?.max_guests || '2'} {room.acf?.max_guests === 1 ? 'Guest' : 'Guests'}
+                    </p>
+                  </div>
+                </div>
+                {room.acf?.room_size && (
+                  <div className="flex items-start">
+                    <Ruler className="h-5 w-5 text-green-900 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Room Size</p>
+                      <p className="text-sm text-gray-500">{room.acf.room_size}</p>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-900 focus:border-transparent"
+                )}
+                {room.acf?.view && (
+                  <div className="flex items-start">
+                    <svg 
+                      className="h-5 w-5 text-green-900 mr-3 mt-0.5 flex-shrink-0" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
                       />
-                      <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">View</p>
+                      <p className="text-sm text-gray-500">{room.acf.view}</p>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
-                    <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-900 focus:border-transparent">
-                      {[1, 2, 3, 4].map((num) => (
-                        <option key={num} value={num}>
-                          {num} {num === 1 ? 'Guest' : 'Guests'}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <Button className="w-full bg-green-900 hover:bg-green-800 h-12 text-lg">
-                    Book Now
-                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Room Highlights */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white p-4 rounded-lg shadow-sm flex items-center">
+                <Bed className="w-5 h-5 text-green-900 mr-2" />
+                <div>
+                  <p className="text-sm text-gray-500">Bed Type</p>
+                  <p className="font-medium">{room.acf?.bed_type || 'King/Queen'}</p>
                 </div>
               </div>
-
-              {/* Amenities */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-xl font-bold mb-4">Amenities</h3>
                 <div className="space-y-3">
