@@ -161,7 +161,7 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
           <div className="lg:col-span-2 space-y-8">
             {/* Booking Form - Mobile Only */}
             <div className="lg:hidden bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Book This Room</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Book This Room.</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
