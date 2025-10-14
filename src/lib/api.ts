@@ -147,7 +147,7 @@ export const api = {
           },
         });
         if (data && data.length > 0) return data;
-      } catch (e) {
+      } catch {
         console.log('Tried /room endpoint, trying /rooms next');
       }
 

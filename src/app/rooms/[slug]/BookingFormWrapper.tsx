@@ -67,7 +67,7 @@ export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrap
       />
       {isSuccess && (
         <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
-          Booking request submitted successfully! We'll contact you shortly to confirm your reservation.
+          Booking request submitted successfully! We&apos;ll contact you shortly to confirm your reservation.
         </div>
       )}
       {error && (

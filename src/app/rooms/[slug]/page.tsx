@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { formatPrice } from '@/lib/utils/format';
 import { BookingFormWrapper } from './BookingFormWrapper';
 import Link from 'next/link';
-import { ArrowLeft, Bed, Users, Ruler, MapPin, Wifi, Tv, Coffee, Wind } from 'lucide-react';
-import { ReactNode } from 'react';
+import { ArrowLeft, Bed, Users, Ruler, MapPin } from 'lucide-react';
+import type { Metadata } from 'next';
 
 // Define proper types for the room and its properties
 interface ImageType {
@@ -66,47 +66,40 @@ interface Room extends Omit<WPPost, '_embedded'> {
   id: number;
 }
 
-type Amenity = 
-  | string 
-  | { 
-      id: number;
-      title: { rendered: string } | string;
-      acf?: {
-        icon?: string;
-        description?: string;
-      };
-    } 
-  | { 
-      name: string;
-      id?: number;
-      title?: { rendered: string } | string;
-    };
+// Page configuration
+export const dynamic = 'force-static';
+export const dynamicParams = false; // Return 404 for unknown routes
 
-// Helper function to get amenity text
-const getAmenityText = (amenity: Amenity): string => {
-  if (!amenity) return '';
-  if (typeof amenity === 'string') return amenity;
-  
-  if ('title' in amenity && amenity.title) {
-    if (typeof amenity.title === 'string') return amenity.title;
-    if (typeof amenity.title === 'object' && 'rendered' in amenity.title) {
-      return amenity.title.rendered;
-    }
-  }
-  
-  if ('name' in amenity) return amenity.name;
-  
-  return 'Amenity';
+type RoomDetailPageProps = {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-interface RoomDetailPageProps {
-  params: {
-    slug: string;
+export async function generateMetadata(
+  { params }: RoomDetailPageProps
+): Promise<Metadata> {
+  const rooms = await api.getRooms() as Room[];
+  const room = rooms.find((r: Room) => r.slug === params.slug);
+
+  if (!room) {
+    return {
+      title: 'Room Not Found',
+      description: 'The requested room could not be found.'
+    };
+  }
+
+  return {
+    title: room.title.rendered,
+    description: room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160),
+    openGraph: {
+      title: room.title.rendered,
+      description: room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160),
+      type: 'website',
+    },
   };
-  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
+export default async function RoomDetailPage({ params }: { params: { slug: string } }) {
   // Fetch rooms with proper typing
   const rooms = await api.getRooms() as Room[];
   const room = rooms.find((r: Room) => r.slug === params.slug);
@@ -151,17 +144,29 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
     });
   }
 
-  // No default amenities - use an empty array
-  const finalAmenities: string[] = [];
-
-  // Helper function to safely access room.acf properties with type safety
-  const getRoomAcfValue = <T extends keyof RoomACF>(
-    roomAcf: RoomACF | undefined,
-    key: T,
-    defaultValue: RoomACF[T]
-  ): RoomACF[T] => {
-    return roomAcf && key in roomAcf ? roomAcf[key] : defaultValue;
-  };
+  // Room features data
+  const features = [
+    {
+      icon: Bed,
+      label: 'Bed Type',
+      value: room.acf?.bed_type || 'King/Queen'
+    },
+    {
+      icon: Users,
+      label: 'Max Guests',
+      value: renderGuestCount(room.acf?.max_guests || room.acf?.guests)
+    },
+    {
+      icon: Ruler,
+      label: 'Room Size',
+      value: renderSize(room.acf?.size || room.acf?.room_size)
+    },
+    {
+      icon: MapPin,
+      label: 'View',
+      value: room.acf?.view || 'Garden'
+    }
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -222,34 +227,15 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Room Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <Bed className="w-5 h-5 text-green-900 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-500">Bed Type</p>
-                  <p className="font-medium">{room.acf?.bed_type || 'King/Queen'}</p>
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-center">
+                  <feature.icon className="w-5 h-5 text-green-900 mr-3" />
+                  <div>
+                    <p className="text-sm text-gray-500">{feature.label}</p>
+                    <p className="font-medium">{feature.value}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center">
-                <Users className="w-5 h-5 text-green-900 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-500">Max Guests</p>
-                  <p className="font-medium">{renderGuestCount(room.acf?.max_guests || room.acf?.guests)}</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Ruler className="w-5 h-5 text-green-900 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-500">Room Size</p>
-                  <p className="font-medium">{renderSize(room.acf?.size || room.acf?.room_size)}</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <MapPin className="w-5 h-5 text-green-900 mr-3" />
-                <div>
-                  <p className="text-sm text-gray-500">View</p>
-                  <p className="font-medium">{room.acf?.view || 'Garden'}</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -272,11 +258,8 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
 
 // Generate static paths at build time
 export async function generateStaticParams() {
-  const rooms = await api.getRooms();
+  const rooms = await api.getRooms() as Room[];
   return rooms.map((room: Room) => ({
     slug: room.slug,
   }));
 }
-
-export const dynamicParams = true;
-export const dynamic = 'force-static';
