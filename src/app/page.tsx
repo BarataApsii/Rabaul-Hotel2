@@ -639,6 +639,17 @@ export default function Home() {
             >
               Reservations
             </Button>
+
+            {/* Gallery */}
+            <Button 
+              variant="ghost"
+              onClick={() => scrollToSection(bookRef)}
+              className={`text-white hover:bg-gray-100/20 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-0 focus:ring-offset-0 active:scale-95 text-base px-6 py-2.5 border border-gray-300/30 rounded-md text-center cursor-pointer w-32 h-10 ${
+                activeSection === 'booking' ? 'bg-white/20' : ''
+              }`}
+            >
+              Gallery
+            </Button>
             
             {/* Contact Us */}
             <Button 
