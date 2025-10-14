@@ -102,7 +102,7 @@ export default function GalleryPage() {
         </div>
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Gallery</h1>
-          <p className="text-xl text-gray-600">Experience the beauty of Rabaul through our collection of images</p>
+          <p className="text-xl text-gray-600">Experience the beauty of Rabaul through our collection of images.</p>
         </div>
 
         {/* Category Filter */}

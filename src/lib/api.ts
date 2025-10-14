@@ -120,11 +120,6 @@ const defaultParams = {
   acf_format: 'standard',
 };
 
-// Add ACF support to the REST API
-const addAcfSupport = (): void => {
-  // This function is intentionally left empty as ACF support is handled by default in our requests
-};
-
 // API methods
 export const api = {
   // Get all rooms

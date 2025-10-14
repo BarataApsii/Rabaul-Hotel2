@@ -1,7 +1,6 @@
 'use client';
 
 import { BookingForm, type BookingFormData } from '@/components/forms/BookingForm';
-import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 
 export interface BookingFormWrapperProps {
@@ -11,7 +10,6 @@ export interface BookingFormWrapperProps {
 }
 
 export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrapperProps) {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
