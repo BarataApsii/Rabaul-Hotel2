@@ -131,24 +131,55 @@ const addAcfSupport = () => {
 export const api = {
   // Get all rooms
   getRooms: async (): Promise<WPPost[]> => {
-    return apiRequest<WPPost[]>('/rooms', {
-      params: {
-        ...defaultParams,
-        _embed: 'wp:featuredmedia',
-        _fields: [
-          'id',
-          'title',
-          'content',
-          'excerpt',
-          'featured_media',
-          'acf',
-          'better_featured_image',
-          '_links',
-          '_embedded',
-        ].join(','),
-        acf_format: 'standard',
-      },
-    });
+    try {
+      // Try both 'rooms' and 'room' endpoints as different WordPress configurations might use either
+      try {
+        const data = await apiRequest<WPPost[]>('/room', {
+          params: {
+            ...defaultParams,
+            _embed: 'wp:featuredmedia',
+            _fields: [
+              'id',
+              'title',
+              'content',
+              'excerpt',
+              'featured_media',
+              'acf',
+              'better_featured_image',
+              '_links',
+              '_embedded',
+            ].join(','),
+            acf_format: 'standard',
+          },
+        });
+        if (data && data.length > 0) return data;
+      } catch (e) {
+        console.log('Tried /room endpoint, trying /rooms next');
+      }
+
+      // If first attempt failed, try with 'rooms' endpoint
+      return await apiRequest<WPPost[]>('/rooms', {
+        params: {
+          ...defaultParams,
+          _embed: 'wp:featuredmedia',
+          _fields: [
+            'id',
+            'title',
+            'content',
+            'excerpt',
+            'featured_media',
+            'acf',
+            'better_featured_image',
+            '_links',
+            '_embedded',
+          ].join(','),
+          acf_format: 'standard',
+        },
+      });
+    } catch (error) {
+      console.error('Error in getRooms:', error);
+      throw error;
+    }
   },
 
   // Get all amenities
