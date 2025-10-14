@@ -851,7 +851,7 @@ export default function Home() {
                     {/* Caption Overlay */}
                     <div className="absolute bottom-4 left-4 z-20">
                       <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
-                        <h3 className="text-white font-bold text-lg mb-1">Rabaul Hotel</h3>
+                        <h3 style={{ color: '#CCCCCC !important' }} className="font-bold text-lg mb-1">Rabaul Hotel</h3>
                         <p className="text-white/90 text-sm">{slide.caption}</p>
                       </div>
                     </div>
