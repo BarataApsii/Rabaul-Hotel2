@@ -6,13 +6,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-// Scroll to top when component mounts
-const ScrollToTop = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-  return null;
-};
 
 // Define types for our gallery items
 type GalleryItem = {

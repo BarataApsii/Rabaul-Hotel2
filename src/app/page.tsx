@@ -12,26 +12,6 @@ import AmenitiesSection from '@/components/sections/AmenitiesSection'
 // Import specific images directly instead of from lib/images
 const logoImage = '/images/logo.png';
 
-// Define attraction images with proper typing
-interface AttractionImage {
-  src: string;
-  alt: string;
-}
-
-interface AttractionImages {
-  [key: string]: AttractionImage;
-}
-
-const attractionImages: AttractionImages = {
-  tavurvur: { src: '/images/cards/mt-tavurvur.PNG', alt: 'Tavurvur Volcano' },
-  simpsonHarbour: { src: '/images/cards/simpson-harbour-at-sunset.jpg', alt: 'Simpson Harbour' },
-  matupitIsland: { src: '/images/cards/matupit-island.PNG', alt: 'Matupit Island' },
-  ww2Tunnels: { src: '/images/cards/war-tunnel.PNG', alt: 'WW2 Tunnels' },
-  oldRabaul: { src: '/images/cards/old-rabaul-ruins.PNG', alt: 'Old Rabaul' },
-  museum: { src: '/images/cards/kokopo-war-museum.jpg', alt: 'Rabaul Museum' },
-  warCemetery: { src: '/images/cards/scenic-lookouts.PNG', alt: 'War Cemetery' },
-  market: { src: '/images/cards/rabaul-market.jpg', alt: 'Local Market' },
-};
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, Car, ConciergeBell, Utensils, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
