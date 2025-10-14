@@ -53,7 +53,7 @@ const ExploreSection = () => {
   return (
     <section id="explore" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8" style={{ color: '#1a5f2c' }}>Explore Rabaul</h2>
+        <h2 className="text-3xl font-bold text-center mb-8 text-green-900">Explore Rabaul</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {exploreItems.map((item) => (
             <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
@@ -78,7 +78,7 @@ const ExploreSection = () => {
               <div className="flex flex-col flex-grow p-6">
                 {item.title?.rendered && (
                   <CardHeader className="p-0 mb-4">
-                    <CardTitle className="text-xl">
+                    <CardTitle className="text-xl text-green-900">
                       {item.title.rendered}
                     </CardTitle>
                   </CardHeader>
