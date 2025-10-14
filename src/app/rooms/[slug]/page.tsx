@@ -5,6 +5,7 @@ import { BookingFormWrapper } from './BookingFormWrapper';
 import Link from 'next/link';
 import { ArrowLeft, Bed, Users, Ruler, MapPin } from 'lucide-react';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 // Define proper types for the room and its properties
 interface ImageType {
@@ -25,19 +26,8 @@ interface RoomACF {
   image_1?: ImageType;
   image_2?: ImageType;
   image_3?: ImageType;
-  [key: string]: unknown; // For any other ACF fields
+  [key: string]: unknown;
 }
-
-// Helper function to safely render guest count
-const renderGuestCount = (guests?: number | string) => {
-  const count = guests ? Number(guests) : 2;
-  return `${count} ${count === 1 ? 'Guest' : 'Guests'}`;
-};
-
-// Helper function to safely render size
-const renderSize = (size?: string | number) => {
-  return size ? `${size} m²` : '25 m²';
-};
 
 // Extend WPPost with our custom fields
 interface Room extends Omit<WPPost, '_embedded'> {
@@ -66,18 +56,56 @@ interface Room extends Omit<WPPost, '_embedded'> {
   id: number;
 }
 
-// Page configuration
-export const dynamic = 'force-static';
-export const dynamicParams = false; // Return 404 for unknown routes
+// Type definitions
+type PageParams = {
+  slug: string;
+};
 
-type RoomDetailPageProps = {
-  params: { slug: string };
+type PageProps = {
+  params: PageParams;
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(
-  { params }: RoomDetailPageProps
-): Promise<Metadata> {
+// Helper functions
+const renderGuestCount = (guests?: number | string) => {
+  const count = guests ? Number(guests) : 2;
+  return `${count} ${count === 1 ? 'Guest' : 'Guests'}`;
+};
+
+const renderSize = (size?: string | number) => {
+  return size ? `${size} m²` : '25 m²';
+};
+
+// Generate static paths at build time
+export async function generateStaticParams(): Promise<PageParams[]> {
+  const rooms = await api.getRooms() as Room[];
+  return rooms.map((room) => ({
+    slug: room.slug,
+  }));
+}
+
+// Page configuration
+export const dynamic = 'force-static';
+export const dynamicParams = true;
+
+// Type guard for ImageType
+const isImageType = (img: unknown): img is ImageType => {
+  return Boolean(
+    img &&
+    typeof img === 'object' &&
+    'url' in img && 
+    typeof (img as { url: unknown }).url === 'string' &&
+    'alt' in img &&
+    typeof (img as { alt: unknown }).alt === 'string'
+  );
+};
+
+// Generate metadata
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: PageParams 
+}): Promise<Metadata> {
   const rooms = await api.getRooms() as Room[];
   const room = rooms.find((r: Room) => r.slug === params.slug);
 
@@ -88,43 +116,29 @@ export async function generateMetadata(
     };
   }
 
+  const description = room.content?.rendered 
+    ? room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160)
+    : 'Luxury accommodation with premium amenities';
+
   return {
-    title: room.title.rendered,
-    description: room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160),
+    title: room.title?.rendered || 'Luxury Room',
+    description,
     openGraph: {
-      title: room.title.rendered,
-      description: room.content.rendered.replace(/<[^>]*>?/gm, '').substring(0, 160),
+      title: room.title?.rendered || 'Luxury Room',
+      description,
       type: 'website',
     },
   };
 }
 
-export default async function RoomDetailPage({ params }: { params: { slug: string } }) {
-  // Fetch rooms with proper typing
+// Main component
+export default async function RoomDetailPage({ params }: PageProps) {
   const rooms = await api.getRooms() as Room[];
   const room = rooms.find((r: Room) => r.slug === params.slug);
 
-  // Handle case when room is not found
   if (!room) {
-    return <div className="container mx-auto p-8">Room not found</div>;
+    notFound();
   }
-
-  // Ensure room has required properties
-  if (!room.title?.rendered || !room.content?.rendered) {
-    return <div className="container mx-auto p-8">Invalid room data</div>;
-  }
-
-  // Type guard for ImageType
-  const isImageType = (img: unknown): img is ImageType => {
-    return Boolean(
-      img &&
-      typeof img === 'object' &&
-      'url' in img && 
-      typeof (img as { url: unknown }).url === 'string' &&
-      'alt' in img &&
-      typeof (img as { alt: unknown }).alt === 'string'
-    );
-  };
 
   // Get the three custom images from ACF
   const customImages: ImageType[] = [
@@ -140,7 +154,7 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
     const featuredMedia = room._embedded['wp:featuredmedia'][0];
     images.unshift({
       url: featuredMedia.source_url,
-      alt: featuredMedia.alt_text || room.title.rendered || 'Room image'
+      alt: featuredMedia.alt_text || room.title?.rendered || 'Room image'
     });
   }
 
@@ -184,7 +198,7 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
       {/* Room Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {room.title.rendered}
+          {room.title?.rendered || 'Luxury Room'}
         </h1>
         {room.acf?.price && (
           <p className="text-xl font-semibold text-green-900">
@@ -219,7 +233,7 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
             <h2 className="text-2xl font-bold mb-4">Room Description</h2>
             <div 
               className="prose max-w-none [&>p]:text-gray-600 [&>p]:mb-4"
-              dangerouslySetInnerHTML={{ __html: room.content.rendered }} 
+              dangerouslySetInnerHTML={{ __html: room.content?.rendered || '' }} 
             />
           </div>
 
@@ -227,15 +241,18 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">Room Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center">
-                  <feature.icon className="w-5 h-5 text-green-900 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-500">{feature.label}</p>
-                    <p className="font-medium">{feature.value}</p>
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="flex items-center">
+                    <Icon className="w-5 h-5 text-green-900 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-500">{feature.label}</p>
+                      <p className="font-medium">{feature.value}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -246,7 +263,7 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
             <h3 className="text-xl font-semibold mb-4">Book This Room</h3>
             <BookingFormWrapper 
               roomId={room.id.toString()}
-              roomTitle={room.title.rendered}
+              roomTitle={room.title?.rendered || 'Luxury Room'}
               price={typeof room.acf?.price === 'string' ? parseFloat(room.acf.price) : (room.acf?.price || 0)}
             />
           </div>
@@ -254,12 +271,4 @@ export default async function RoomDetailPage({ params }: { params: { slug: strin
       </div>
     </div>
   );
-}
-
-// Generate static paths at build time
-export async function generateStaticParams() {
-  const rooms = await api.getRooms() as Room[];
-  return rooms.map((room: Room) => ({
-    slug: room.slug,
-  }));
 }
