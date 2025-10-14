@@ -185,7 +185,7 @@ export const api = {
     }
   },
 
-  // Get all amenities
+  // Get all amenities (general amenities)
   getAmenities: async (): Promise<WPPost[]> => {
     return apiRequest<WPPost[]>('/amenities', {
       params: {
@@ -202,6 +202,24 @@ export const api = {
           '_links',
           '_embedded'
         ].join(','),
+        acf_format: 'standard',
+      },
+    });
+  },
+
+  // Get room-specific amenities
+  // Get room-specific amenities with optimized fields
+  getRoomAmenities: async (): Promise<WPPost[]> => {
+    return apiRequest<WPPost[]>('/room_amenities', {
+      params: {
+        ...defaultParams,
+        _fields: [
+          'id',
+          'title',
+          'acf',
+          'slug'
+        ].join(','),
+        per_page: 50, // Adjust based on expected number of amenities
         acf_format: 'standard',
       },
     });

@@ -6,6 +6,48 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft, Bed, Users, Ruler, Calendar, MapPin, Wifi, Tv, Coffee, Wind } from 'lucide-react';
 
+// Add this after the imports
+type Amenity = 
+  | string 
+  | { 
+      id: number;
+      title: { rendered: string };
+      acf?: {
+        icon?: string;
+        description?: string;
+      };
+    } 
+  | { 
+      name: string;
+      id?: number;
+      title?: { rendered: string } | string;
+    };
+
+// Helper function to get amenity text
+const getAmenityText = (amenity: Amenity): string => {
+  if (typeof amenity === 'string') {
+    return amenity;
+  }
+  
+  // Handle ACF relationship object
+  if ('title' in amenity && amenity.title) {
+    if (typeof amenity.title === 'string') {
+      return amenity.title;
+    }
+    if (typeof amenity.title === 'object' && 'rendered' in amenity.title) {
+      return amenity.title.rendered;
+    }
+  }
+  
+  // Handle direct name property
+  if ('name' in amenity && amenity.name) {
+    return amenity.name;
+  }
+  
+  console.warn('Could not determine amenity text for:', amenity);
+  return 'Amenity';
+};
+
 interface RoomDetailPageProps {
   params: {
     slug: string;
@@ -13,6 +55,7 @@ interface RoomDetailPageProps {
 }
 
 export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
+  // Fetch rooms
   const rooms = await api.getRooms();
   const room = rooms.find(r => r.slug === params.slug);
 
@@ -20,47 +63,26 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
     notFound();
   }
 
-  // Get all available images
-  const images = [];
+  // Get the three custom images from ACF
+  const customImages = [
+    room.acf?.image_1,
+    room.acf?.image_2,
+    room.acf?.image_3
+  ].filter(Boolean); // Remove any undefined/null values
+
+  // Add featured image as fallback if we don't have all three custom images
+  const images = [...customImages];
   
-  // Add featured image if available
-  if (room._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+  if (images.length < 3 && room._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
     const featuredMedia = room._embedded['wp:featuredmedia'][0];
-    images.push({
+    images.unshift({
       url: featuredMedia.source_url,
       alt: (featuredMedia as any)?.alt_text || room.title.rendered
     });
   }
-  
-  // Add gallery images from ACF if available
-  if (room.acf?.gallery_images?.length) {
-    room.acf.gallery_images.forEach((img: any) => {
-      if (img.url) {
-        images.push({
-          url: img.url,
-          alt: img.alt || room.title.rendered
-        });
-      }
-    });
-  }
 
-  // Default amenities if none provided
-  const defaultAmenities = [
-    'Air Conditioning',
-    'Free WiFi',
-    'Flat-screen TV',
-    'Mini Bar',
-    'Safe',
-    'Hair Dryer',
-    'Coffee/Tea Maker',
-    'Telephone',
-    'Work Desk',
-    'Bathrobes',
-    'Slippers',
-    'Toiletries'
-  ];
-
-  const amenities = room.acf?.amenities?.length ? room.acf.amenities : defaultAmenities;
+  // No default amenities - use an empty array
+  const finalAmenities: string[] = [];
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -95,6 +117,40 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Room Header */}
+      <div className="bg-white py-12">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            {room.title.rendered}
+          </h1>
+          {room.acf?.price && (
+            <p className="text-2xl font-semibold text-green-900 mb-6">
+              {formatPrice(room.acf.price)} per night
+            </p>
+          )}
+        </div>
+
+        {/* Image Grid */}
+        {images.length > 0 && (
+          <div className="container mx-auto px-4 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {images.slice(0, 3).map((img, index) => (
+                <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md">
+                  <Image
+                    src={img.url}
+                    alt={img.alt || `${room.title.rendered} - Image ${index + 1}`}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="container mx-auto px-4 py-12">
@@ -210,26 +266,48 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-xl font-bold mb-4">Amenities</h3>
                 <div className="space-y-3">
-                  {amenities.map((amenity: string, index: number) => {
-                    let icon = <Wifi className="w-5 h-5 text-green-900" />;
+                  {finalAmenities.map((amenity: Amenity, index: number) => {
+                    const amenityText = getAmenityText(amenity);
+                    const lowerAmenity = amenityText.toLowerCase();
                     
-                    // Map common amenities to icons
-                    if (amenity.toLowerCase().includes('wifi')) {
-                      icon = <Wifi className="w-5 h-5 text-green-900" />;
-                    } else if (amenity.toLowerCase().includes('tv')) {
-                      icon = <Tv className="w-5 h-5 text-green-900" />;
-                    } else if (amenity.toLowerCase().includes('coffee') || amenity.toLowerCase().includes('tea')) {
-                      icon = <Coffee className="w-5 h-5 text-green-900" />;
-                    } else if (amenity.toLowerCase().includes('air') || amenity.toLowerCase().includes('conditioning')) {
-                      icon = <Wind className="w-5 h-5 text-green-900" />;
+                    // Check if this is an ACF amenity with a custom icon
+                    const isAcfAmenity = typeof amenity === 'object' && 'acf' in amenity;
+                    
+                    // Default icon (can be overridden by ACF icon or by the mapping below)
+                    let icon = isAcfAmenity && amenity.acf?.icon ? (
+                      <span dangerouslySetInnerHTML={{ __html: amenity.acf.icon }} />
+                    ) : (
+                      <Wifi className="w-5 h-5 text-green-900" />
+                    );
+                    
+                    // Only use the default icon mapping if no ACF icon is provided
+                    if (!isAcfAmenity || !amenity.acf?.icon) {
+                      if (lowerAmenity.includes('wifi') || lowerAmenity.includes('wi-fi')) {
+                        icon = <Wifi className="w-5 h-5 text-green-900" />;
+                      } else if (lowerAmenity.includes('tv') || lowerAmenity.includes('television')) {
+                        icon = <Tv className="w-5 h-5 text-green-900" />;
+                      } else if (lowerAmenity.includes('coffee') || lowerAmenity.includes('tea')) {
+                        icon = <Coffee className="w-5 h-5 text-green-900" />;
+                      } else if (lowerAmenity.includes('air') || lowerAmenity.includes('conditioning')) {
+                        icon = <Wind className="w-5 h-5 text-green-900" />;
+                      } else if (lowerAmenity.includes('bed')) {
+                        icon = <Bed className="w-5 h-5 text-green-900" />;
+                      } else if (lowerAmenity.includes('bath') || lowerAmenity.includes('shower') || lowerAmenity.includes('toilet')) {
+                        icon = <Users className="w-5 h-5 text-green-900" />;
+                      }
                     }
                     
                     return (
-                      <div key={index} className="flex items-center">
-                        <div className="w-6 mr-2">
+                      <div key={`${typeof amenity === 'object' && 'id' in amenity ? amenity.id : index}`} className="flex items-center">
+                        <div className="w-6 mr-2 flex-shrink-0">
                           {icon}
                         </div>
-                        <span className="text-gray-700">{amenity}</span>
+                        <span className="text-gray-700">
+                          {amenityText}
+                          {isAcfAmenity && amenity.acf?.description && (
+                            <span className="block text-sm text-gray-500">{amenity.acf.description}</span>
+                          )}
+                        </span>
                       </div>
                     );
                   })}
