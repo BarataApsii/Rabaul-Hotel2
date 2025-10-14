@@ -21,57 +21,66 @@ type GalleryItem = {
   alt: string;
   category: string;
   title: string;
+  slug?: string; // Optional slug for room items
 };
 
-// Sample gallery data - replace with your actual images
+// Helper function to get room slug from title
+const getRoomSlug = (title: string): string => {
+  return title.toLowerCase().replace(/\s+/g, '-');
+};
+
+// Sample gallery data using actual image paths
 const galleryItems: GalleryItem[] = [
   // Rooms
   {
-    id: 'room-1',
-    src: '/images/rooms/room1.jpg',
-    alt: 'Deluxe Room',
+    id: 'budget-room',
+    src: '/images/rooms/budget-room.PNG',
+    alt: 'Budget Room',
     category: 'rooms',
-    title: 'Deluxe Room with Ocean View'
+    title: 'Budget Room',
+    slug: 'budget-room'
   },
   {
-    id: 'room-2',
-    src: '/images/rooms/room2.jpg',
-    alt: 'Executive Suite',
+    id: 'standard-room',
+    src: '/images/rooms/standard-room.PNG',
+    alt: 'Standard Room',
     category: 'rooms',
-    title: 'Executive Suite'
+    title: 'Standard Room',
+    slug: 'standard-room'
+  },
+  {
+    id: 'executive-room',
+    src: '/images/rooms/executive-room.PNG',
+    alt: 'Executive Room',
+    category: 'rooms',
+    title: 'Executive Room',
+    slug: 'executive-room'
   },
   
   // Amenities
   {
-    id: 'amenity-1',
-    src: '/images/amenities/pool.jpg',
-    alt: 'Swimming Pool',
+    id: 'conference-room',
+    src: '/images/amenities/conference-room.PNG',
+    alt: 'Conference Room',
     category: 'amenities',
-    title: 'Infinity Pool'
+    title: 'Conference Room'
   },
   {
-    id: 'amenity-2',
-    src: '/images/amenities/spa.jpg',
-    alt: 'Spa',
+    id: 'room-service',
+    src: '/images/amenities/room-services.png',
+    alt: 'Room Service',
     category: 'amenities',
-    title: 'Luxury Spa'
+    title: '24/7 Room Service'
   },
   
   // Explore Rabaul
   {
-    id: 'explore-1',
-    src: '/images/explore/volcano.jpg',
-    alt: 'Tavurvur Volcano',
+    id: 'beach',
+    src: '/videos/beach.mp4',
+    alt: 'Beach View',
     category: 'explore',
-    title: 'Tavurvur Volcano'
-  },
-  {
-    id: 'explore-2',
-    src: '/images/explore/harbor.jpg',
-    alt: 'Simpson Harbour',
-    category: 'explore',
-    title: 'Simpson Harbour at Sunset'
-  },
+    title: 'Scenic Beach Views'
+  }
 ];
 
 // Get unique categories
@@ -122,32 +131,61 @@ export default function GalleryPage() {
 
         {/* Image Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item) => (
-            <motion.div
-              key={item.id}
-              className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-              whileHover={{ scale: 1.02 }}
-              onClick={() => setSelectedImage(item)}
-            >
-              <div className="aspect-w-16 aspect-h-10 w-full">
-                <Image
-                  src={item.src}
-                  alt={item.alt}
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                <div className="text-white">
-                  <h3 className="font-semibold text-lg">{item.title}</h3>
-                  <p className="text-sm opacity-90">
-                    {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                  </p>
+          {filteredItems.map((item) => {
+            const isRoom = item.category === 'rooms';
+            const slug = item.slug || getRoomSlug(item.title);
+            
+            const content = (
+              <div className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                <div className="aspect-w-16 aspect-h-10 w-full">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
+                  <div className="text-right">
+                    <span className="inline-block bg-white/90 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">
+                      {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg text-white">{item.title}</h3>
+                    {isRoom && (
+                      <span className="text-sm text-white/90 flex items-center">
+                        View Details <ArrowRight className="w-4 h-4 ml-1" />
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
+            );
+
+            return (
+              <motion.div 
+                key={item.id}
+                whileHover={{ scale: 1.02 }}
+                onClick={(e) => {
+                  if (!isRoom) {
+                    e.preventDefault();
+                    setSelectedImage(item);
+                  }
+                }}
+                className="cursor-pointer"
+              >
+                {isRoom ? (
+                  <Link href={`/rooms/${slug}`}>
+                    {content}
+                  </Link>
+                ) : (
+                  content
+                )}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Image Modal */}

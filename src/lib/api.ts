@@ -57,6 +57,7 @@ export async function apiRequest<T = unknown>(
 // --------------------
 export interface WPPost {
   id: number;
+  slug: string;
   date: string;
   title: { rendered: string };
   content: { rendered: string };
@@ -140,6 +141,7 @@ export const api = {
             _embed: 'wp:featuredmedia',
             _fields: [
               'id',
+              'slug',
               'title',
               'content',
               'excerpt',
@@ -164,6 +166,7 @@ export const api = {
           _embed: 'wp:featuredmedia',
           _fields: [
             'id',
+            'slug',
             'title',
             'content',
             'excerpt',
