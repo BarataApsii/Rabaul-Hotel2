@@ -125,7 +125,7 @@ const RoomsSection = () => {
                   )}
                   <div className="mt-auto flex justify-end">
                     <Link href={`/rooms/${room.slug}`}>
-                      <Button className="bg-green-900 hover:bg-green-800 transition-colors w-32">
+                      <Button className="bg-green-900 hover:bg-green-800 transition-colors w-32 text-white">
                         View Details
                       </Button>
                     </Link>
