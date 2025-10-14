@@ -58,14 +58,14 @@ export async function apiRequest<T = unknown>(
 export interface WPPost {
   id: number;
   slug: string;
-  date: string;
+  date: Date;
   title: { rendered: string };
   content: { rendered: string };
   excerpt?: { rendered: string };
   featured_media?: number;
   acf?: {
     price?: number | string | null;
-    [key: string]: any; // For any other ACF fields
+    [key: string]: unknown;
   };
   better_featured_image?: {
     source_url: string;
@@ -109,7 +109,7 @@ export interface WPPost {
       };
     }>;
   };
-  [key: string]: any; // For any other fields
+  [key: string]: unknown;
 }
 
 // Default parameters for all requests
@@ -121,11 +121,8 @@ const defaultParams = {
 };
 
 // Add ACF support to the REST API
-const addAcfSupport = () => {
-  if (typeof window !== 'undefined') {
-    // This will be executed on the client side
-    // We'll add ACF support by default in our requests
-  }
+const addAcfSupport = (): void => {
+  // This function is intentionally left empty as ACF support is handled by default in our requests
 };
 
 // API methods

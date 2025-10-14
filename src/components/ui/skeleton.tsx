@@ -3,10 +3,7 @@
 import { cn } from "@/lib/utils"
 import { forwardRef } from "react"
 
-export interface SkeletonProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
-
-const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
+const Skeleton = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
     return (
       <div

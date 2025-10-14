@@ -1,19 +1,94 @@
 import { notFound } from 'next/navigation';
 import { api, WPPost } from '@/lib/api';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import { formatPrice } from '@/lib/utils/format';
 import { Button } from '@/components/ui/button';
 import { BookingFormWrapper } from './BookingFormWrapper';
 import Link from 'next/link';
 import { ArrowLeft, Bed, Users, Ruler, MapPin, Wifi, Tv, Coffee, Wind } from 'lucide-react';
 import { BookingForm } from '@/components/forms/BookingForm';
+import { ReactNode } from 'react';
 
-// Add this after the imports
+// Define proper types for the room and its properties
+interface ImageType {
+  url: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+interface RoomACF {
+  price?: string | number | null;
+  max_guests?: number | string;
+  guests?: number | string;
+  size?: string | number;
+  room_size?: string | number;
+  bed_type?: string;
+  view?: string;
+  image_1?: ImageType;
+  image_2?: ImageType;
+  image_3?: ImageType;
+  [key: string]: unknown; // For any other ACF fields
+}
+
+// Helper function to safely render guest count
+const renderGuestCount = (guests?: number | string) => {
+  const count = guests ? Number(guests) : 2;
+  return `${count} ${count === 1 ? 'Guest' : 'Guests'}`;
+};
+
+// Helper function to safely render size
+const renderSize = (size?: string | number) => {
+  return size ? `${size} m²` : '25 m²';
+};
+
+// Extend WPPost with our custom fields
+interface Room extends Omit<WPPost, '_embedded'> {
+  acf?: RoomACF;
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      id: number;
+      source_url: string;
+      alt_text?: string;
+      media_details?: {
+        width: number;
+        height: number;
+        file: string;
+        filesize: number;
+        sizes: Record<string, any>;
+      };
+    }>;
+  };
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+  slug: string;
+  id: number;
+}
+
+// Helper component to safely render content
+interface SafeRenderProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+const SafeRender: React.FC<SafeRenderProps> = ({ children, fallback = null }) => {
+  try {
+    return <>{children}</>;
+  } catch (error) {
+    console.error('Error in SafeRender:', error);
+    return <>{fallback}</>;
+  }
+};
+
 type Amenity = 
   | string 
   | { 
       id: number;
-      title: { rendered: string };
+      title: { rendered: string } | string;
       acf?: {
         icon?: string;
         description?: string;
@@ -27,26 +102,18 @@ type Amenity =
 
 // Helper function to get amenity text
 const getAmenityText = (amenity: Amenity): string => {
-  if (typeof amenity === 'string') {
-    return amenity;
-  }
+  if (!amenity) return '';
+  if (typeof amenity === 'string') return amenity;
   
-  // Handle ACF relationship object
   if ('title' in amenity && amenity.title) {
-    if (typeof amenity.title === 'string') {
-      return amenity.title;
-    }
+    if (typeof amenity.title === 'string') return amenity.title;
     if (typeof amenity.title === 'object' && 'rendered' in amenity.title) {
       return amenity.title.rendered;
     }
   }
   
-  // Handle direct name property
-  if ('name' in amenity && amenity.name) {
-    return amenity.name;
-  }
+  if ('name' in amenity) return amenity.name;
   
-  console.warn('Could not determine amenity text for:', amenity);
   return 'Amenity';
 };
 
@@ -57,41 +124,101 @@ interface RoomDetailPageProps {
 }
 
 export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
-  // Fetch rooms
-  const rooms = await api.getRooms();
-  const room = rooms.find(r => r.slug === params.slug);
+  // Fetch rooms with proper typing
+  const rooms = await api.getRooms() as Room[];
+  const room = rooms.find((r: Room) => r.slug === params.slug);
 
+  // Handle case when room is not found
   if (!room) {
-    notFound();
+    return <div className="container mx-auto p-8">Room not found</div>;
   }
 
+  // Ensure room has required properties
+  if (!room.title?.rendered || !room.content?.rendered) {
+    return <div className="container mx-auto p-8">Invalid room data</div>;
+  }
+
+  // Type guard for ImageType
+  const isImageType = (img: unknown): img is ImageType => {
+    return Boolean(
+      img &&
+      typeof img === 'object' &&
+      'url' in img && 
+      typeof (img as any).url === 'string' &&
+      'alt' in img &&
+      typeof (img as any).alt === 'string'
+    );
+  };
+
   // Get the three custom images from ACF
-  const customImages = [
+  const customImages: ImageType[] = [
     room.acf?.image_1,
     room.acf?.image_2,
     room.acf?.image_3
-  ].filter(Boolean); // Remove any undefined/null values
+  ].filter(isImageType);
 
   // Add featured image as fallback if we don't have all three custom images
-  const images = [...customImages];
+  const images: ImageType[] = [...customImages];
   
   if (images.length < 3 && room._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
     const featuredMedia = room._embedded['wp:featuredmedia'][0];
     images.unshift({
       url: featuredMedia.source_url,
-      alt: (featuredMedia as any)?.alt_text || room.title.rendered
+      alt: featuredMedia.alt_text || room.title.rendered || 'Room image'
     });
   }
 
   // No default amenities - use an empty array
   const finalAmenities: string[] = [];
 
+  // Helper function to safely access room.acf properties with type safety
+  const getRoomAcf = <T extends keyof RoomACF>(
+    key: T,
+    defaultValue: RoomACF[T]
+  ): RoomACF[T] => {
+    return room.acf && key in room.acf ? room.acf[key] : defaultValue;
+  };
+
+  // Helper function to safely render price
+  const renderPrice = (price?: string | number | null) => {
+    if (price === undefined || price === null) return null;
+    
+    const priceStr = typeof price === 'number' ? price.toString() : price;
+    const formattedPrice = formatPrice(priceStr);
+      
+    return (
+      <p className="text-xl font-semibold text-green-900 mb-4">
+        {formattedPrice} <span className="text-gray-500 text-sm">/ night</span>
+      </p>
+    );
+  };
+
+  // Helper component to safely render content
+  const SafeRender = ({ 
+    children,
+    fallback = null 
+  }: { 
+    children: ReactNode; 
+    fallback?: ReactNode 
+  }) => {
+    try {
+      return <>{children}</>;
+    } catch (error) {
+      console.error('Error in SafeRender:', error);
+      return <>{fallback}</>;
+    }
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Back Button */}
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/#rooms" className="inline-flex items-center text-green-900 hover:text-green-700 transition-colors">
+          <Link 
+            href="/#rooms" 
+            className="inline-flex items-center text-green-900 hover:text-green-700 transition-colors"
+            aria-label="Back to Rooms"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Rooms
           </Link>
@@ -100,25 +227,25 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
 
       {/* Hero Section */}
       <div className="relative h-64 bg-gray-800">
-        {images[0] && (
-          <Image
-            src={images[0].url}
-            alt={images[0].alt}
-            fill
-            className="object-cover opacity-80"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
-          <div className="container mx-auto px-4 h-full flex flex-col justify-end pb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">{room.title.rendered}</h1>
-            {room.acf?.price && (
-              <p className="text-xl font-semibold text-amber-400">
-                {formatPrice(room.acf.price)} <span className="text-white text-base">/ night</span>
-              </p>
+        <SafeRender>
+          <>
+            {images[0]?.url && (
+              <Image
+                src={images[0].url}
+                alt={images[0].alt || room.title.rendered}
+                fill
+                className="object-cover opacity-80"
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
             )}
-          </div>
-        </div>
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+              <h1 className="text-4xl font-bold text-white text-center px-4">
+                {room.title.rendered}
+              </h1>
+            </div>
+          </>
+        </SafeRender>
       </div>
 
       {/* Room Header */}
@@ -129,7 +256,7 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
           </h1>
           {room.acf?.price && (
             <p className="text-xl font-semibold text-green-900 mb-4">
-              {formatPrice(room.acf.price)} per night
+              {formatPrice(room.acf.price.toString())} per night
             </p>
           )}
         </div>
@@ -138,18 +265,21 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
         {images.length > 0 && (
           <div className="container mx-auto px-4 mt-6 max-w-4xl">
             <div className="grid grid-cols-3 gap-2">
-              {images.slice(0, 3).map((img, index) => (
-                <div key={index} className="relative aspect-square rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow">
-                  <Image
-                    src={img.url}
-                    alt={img.alt || `${room.title.rendered} - Image ${index + 1}`}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 640px) 30vw, 200px"
-                    priority={index === 0}
-                  />
-                </div>
-              ))}
+              {images.slice(0, 3).map((img, index) => {
+                if (!isImageType(img)) return null;
+                return (
+                  <div key={index} className="relative aspect-square rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow">
+                    <Image
+                      src={img.url}
+                      alt={img.alt || `${room.title.rendered || 'Room'} - Image ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 30vw, 200px"
+                      priority={index === 0}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -241,14 +371,18 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
                 <Users className="w-5 h-5 text-green-900 mr-2" />
                 <div>
                   <p className="text-sm text-gray-500">Guests</p>
-                  <p className="font-medium">{room.acf?.guests || '2'} {room.acf?.guests === '1' ? 'Guest' : 'Guests'}</p>
+                  <p className="font-medium">
+                    {renderGuestCount(room.acf?.guests || room.acf?.max_guests)}
+                  </p>
                 </div>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm flex items-center">
                 <Ruler className="w-5 h-5 text-green-900 mr-2" />
                 <div>
                   <p className="text-sm text-gray-500">Size</p>
-                  <p className="font-medium">{room.acf?.size || '25'} m²</p>
+                  <p className="font-medium">
+                    {renderSize(room.acf?.size || room.acf?.room_size)}
+                  </p>
                 </div>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm flex items-center">
@@ -274,22 +408,27 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
               <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-6">Gallery</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {images.slice(1).map((img, index) => (
-                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
-                      <Image
-                        src={img.url}
-                        alt={img.alt}
-                        fill
-                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 25vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        placeholder="blur"
-                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
-                        quality={75}
-                        loading={index > 2 ? 'lazy' : 'eager'}
-                        priority={index < 3}
-                      />
-                    </div>
-                  ))}
+                  {images.slice(1).map((img, index) => {
+                    if (!isImageType(img)) return null;
+                    return (
+                      <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
+                        {img.url && (
+                          <Image
+                            src={img.url}
+                            alt={img.alt || `${room.title.rendered || 'Room'} - Image ${index + 1}`}
+                            fill
+                            sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+                            quality={75}
+                            loading={index > 2 ? 'lazy' : 'eager'}
+                            priority={index < 3}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
