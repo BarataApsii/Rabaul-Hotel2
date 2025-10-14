@@ -666,11 +666,11 @@ export default function Home() {
           {/* Right side - Contact Info (Desktop only) */}
           <div className="hidden md:flex items-center space-x-6 flex-shrink-0 mr-4">
             <div className="flex items-center space-x-2 text-sm">
-              <Mail className="w-4 h-4" />
+              <Mail className="w-4 h-4 text-white" />
               <span className='text-yellow-400'>reservations@rabaulhotel.com.pg</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
-              <Phone className="w-4 h-4" />
+              <Phone className="w-4 h-4 text-white" />
               <span className='text-yellow-400'>+675 7189 3571</span>
             </div>
           </div>
