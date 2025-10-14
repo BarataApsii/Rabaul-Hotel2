@@ -1,8 +1,8 @@
 'use client';
 
 import { BookingForm, type BookingFormData } from '@/components/forms/BookingForm';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
 
 export interface BookingFormWrapperProps {
   roomId: string;
@@ -12,8 +12,8 @@ export interface BookingFormWrapperProps {
 
 export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrapperProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Handle form submission
@@ -23,21 +23,22 @@ export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrap
     
     try {
       // Here you would typically send the data to your API
-      console.log('Submitting booking:', formData);
-      
-      // For now, we'll just redirect to the booking page with the form data
-      const queryParams = new URLSearchParams({
-        roomId: formData.roomId || '',
-        roomTitle: roomTitle,
-        checkIn: formData.checkIn,
-        checkOut: formData.checkOut,
-        adults: formData.adults.toString(),
-        children: formData.children.toString(),
-        price: price.toString()
+      console.log('Submitting booking:', {
+        ...formData,
+        roomTitle,
+        price
       });
       
-      // Redirect to booking page with all parameters
-      router.push(`/booking?${queryParams.toString()}`);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message
+      setIsSuccess(true);
+      
+      // Optionally reset form after successful submission
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
       
     } catch (err) {
       console.error('Booking submission failed:', err);
@@ -45,14 +46,14 @@ export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrap
     } finally {
       setIsSubmitting(false);
     }
-  }, [price, roomTitle, router]);
+  }, [roomTitle, price]);
 
-  // Pre-fill form from URL parameters if available
+  // Set up initial form data
   const initialFormData = {
-    checkIn: searchParams.get('checkIn') || new Date().toISOString().split('T')[0],
-    checkOut: searchParams.get('checkOut') || new Date(Date.now() + 86400000).toISOString().split('T')[0],
-    adults: parseInt(searchParams.get('adults') || '2', 10),
-    children: parseInt(searchParams.get('children') || '0', 10),
+    checkIn: new Date().toISOString().split('T')[0],
+    checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    adults: 2,
+    children: 0,
     roomId: roomId
   };
 
@@ -66,6 +67,11 @@ export function BookingFormWrapper({ roomId, roomTitle, price }: BookingFormWrap
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
+      {isSuccess && (
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          Booking request submitted successfully! We'll contact you shortly to confirm your reservation.
+        </div>
+      )}
       {error && (
         <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
           {error}

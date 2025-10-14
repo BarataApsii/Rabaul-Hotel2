@@ -99,7 +99,7 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
       </div>
 
       {/* Hero Section */}
-      <div className="relative h-96 bg-gray-800">
+      <div className="relative h-64 bg-gray-800">
         {images[0] && (
           <Image
             src={images[0].url}
@@ -110,11 +110,11 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
-          <div className="container mx-auto px-4 h-full flex flex-col justify-end pb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{room.title.rendered}</h1>
+          <div className="container mx-auto px-4 h-full flex flex-col justify-end pb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">{room.title.rendered}</h1>
             {room.acf?.price && (
-              <p className="text-2xl font-semibold text-amber-400">
-                {formatPrice(room.acf.price)} <span className="text-white text-lg">/ night</span>
+              <p className="text-xl font-semibold text-amber-400">
+                {formatPrice(room.acf.price)} <span className="text-white text-base">/ night</span>
               </p>
             )}
           </div>
@@ -122,13 +122,13 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
       </div>
 
       {/* Room Header */}
-      <div className="bg-white py-12">
+      <div className="bg-white py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
             {room.title.rendered}
           </h1>
           {room.acf?.price && (
-            <p className="text-2xl font-semibold text-green-900 mb-6">
+            <p className="text-xl font-semibold text-green-900 mb-4">
               {formatPrice(room.acf.price)} per night
             </p>
           )}
@@ -136,16 +136,16 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
 
         {/* Image Grid */}
         {images.length > 0 && (
-          <div className="container mx-auto px-4 mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="container mx-auto px-4 mt-6 max-w-4xl">
+            <div className="grid grid-cols-3 gap-2">
               {images.slice(0, 3).map((img, index) => (
-                <div key={index} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md">
+                <div key={index} className="relative aspect-square rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow">
                   <Image
                     src={img.url}
                     alt={img.alt || `${room.title.rendered} - Image ${index + 1}`}
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 640px) 30vw, 200px"
                     priority={index === 0}
                   />
                 </div>
