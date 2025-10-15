@@ -1,5 +1,13 @@
 import { Geist, Geist_Mono, Montserrat, Playfair_Display } from "next/font/google";
+import type { Metadata } from 'next';
 import "./globals.css";
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/images/favicon.png',
+  },
+};
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
