@@ -1518,16 +1518,31 @@ export default function Home() {
                         justify-content: center;
                       }
                     `}</style>
-                    <div className="flex justify-center">
-                      <ReCAPTCHA
-                        sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']!}
-                        onChange={(token: string | null) => setRecaptchaToken(token)}
-                        onExpired={() => setRecaptchaToken(null)}
-                        onErrored={() => setRecaptchaToken(null)}
-                        theme="dark"
-                        className="recaptcha-container"
-                      />
-                    </div>
+                    {process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+                      <div className="flex justify-center">
+                        <ReCAPTCHA
+                          sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                          onChange={(token: string | null) => setRecaptchaToken(token)}
+                          onExpired={() => setRecaptchaToken(null)}
+                          onErrored={() => setRecaptchaToken(null)}
+                          theme="dark"
+                          className="recaptcha-container"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="text-center p-4 bg-yellow-50 text-yellow-800 rounded">
+                          <p>ReCAPTCHA verification is disabled in development.</p>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setRecaptchaToken('dev-mode-token')}
+                          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                        >
+                          Continue in Development Mode
+                        </button>
+                      </div>
+                    )}
                     {errors['recaptcha'] && (
                       <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
                     )}
