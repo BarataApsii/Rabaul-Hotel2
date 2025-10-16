@@ -1059,7 +1059,11 @@ export default function Home() {
       <section 
         id="book" 
         ref={bookRef}
-        className="py-8 md:py-12 scroll-mt-16 relative bg-gray-100 w-full flex justify-center"
+        className="py-16 md:py-20 scroll-mt-16 relative w-full flex justify-center bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("/images/booking-background.PNG")',
+          backgroundAttachment: 'fixed'
+        }}
       >
         <div className="container max-w-7xl px-4 relative">
           <div className="max-w-3xl mx-auto text-center mb-12 text-white">
