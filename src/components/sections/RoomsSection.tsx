@@ -170,7 +170,7 @@ const RoomsSection = () => {
               const maxGuests = room.acf?.max_guests || room.acf?.guests;
               
               return (
-                <Card key={room.id} className="overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full w-full">
+                <Card key={room.id} className="overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full w-full border-0">
                   <div className="relative h-48 w-full">
                     <Image
                       src={imageUrl}

@@ -56,7 +56,7 @@ const ExploreSection = () => {
         <h2 className="text-3xl font-bold text-center mb-8 text-green-900">Explore Rabaul</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {exploreItems.map((item) => (
-            <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col border-0">
               {/* Featured Image */}
               <div className="relative h-64 w-full">
                 {item._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
