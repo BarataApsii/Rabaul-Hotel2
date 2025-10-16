@@ -1,14 +1,13 @@
 // src/lib/api.ts
 
 /**
- * Mock API Utility Functions
+ * API Utility Functions
  * 
- * This file provides mock data for the application.
+ * This file provides functions to interact with the WordPress REST API
  */
 
-import { mockRooms, mockAmenities, mockExplore } from './mockData';
+import { getPosts, getPostBySlug } from './api.server';
 
-// Types for compatibility with existing code
 export type WPPost = {
   id: number;
   slug: string;
@@ -22,68 +21,125 @@ export type WPPost = {
   _embedded?: {
     'wp:featuredmedia'?: Array<{
       source_url: string;
+      alt_text?: string;
+      media_details?: {
+        width: number;
+        height: number;
+      };
     }>;
   };
-  [key: string]: any; // For any additional properties
 };
 
-// Mock API request function for compatibility
-export async function apiRequest<T = unknown>(
-  endpoint: string,
-  _options: any = {}
-): Promise<T> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  // Mock responses based on endpoint
-  if (endpoint.includes('rooms')) {
-    return mockRooms as any;
-  } else if (endpoint.includes('amenities')) {
-    return mockAmenities as any;
-  } else if (endpoint.includes('explore')) {
-    return mockExplore as any;
+// Get all rooms
+async function getRooms(): Promise<WPPost[]> {
+  try {
+    const posts = await getPosts('rooms');
+    return Array.isArray(posts) ? posts : [];
+  } catch (error) {
+    console.error('Error fetching rooms:', error);
+    return [];
   }
-  
-  // Default empty array response for unknown endpoints
-  return [] as any;
 }
 
-/**
- * Get all rooms
- */
-export async function getRooms(): Promise<WPPost[]> {
-  return mockRooms as WPPost[];
+// Get all amenities (general amenities)
+async function getAmenities(): Promise<WPPost[]> {
+  try {
+    const posts = await getPosts('amenities');
+    return Array.isArray(posts) ? posts : [];
+  } catch (error) {
+    console.error('Error fetching amenities:', error);
+    return [];
+  }
 }
 
-/**
- * Get all amenities (general amenities)
- */
-export async function getAmenities(): Promise<WPPost[]> {
-  return mockAmenities as WPPost[];
+// Get room-specific amenities
+async function getRoomAmenities(): Promise<WPPost[]> {
+  try {
+    const posts = await getPosts('room-amenities');
+    return Array.isArray(posts) ? posts : [];
+  } catch (error) {
+    console.error('Error fetching room amenities:', error);
+    return [];
+  }
 }
 
-/**
- * Get room-specific amenities
- */
-export async function getRoomAmenities(): Promise<WPPost[]> {
-  // Return a subset of amenities as room amenities
-  return mockAmenities.slice(0, 3) as WPPost[];
+// Get all tourist spots
+async function getExplore(): Promise<WPPost[]> {
+  try {
+    const posts = await getPosts('tourist-spots');
+    return Array.isArray(posts) ? posts : [];
+  } catch (error) {
+    console.error('Error fetching tourist spots:', error);
+    return [];
+  }
 }
 
-/**
- * Get all explore items
- */
-export async function getExplore(): Promise<WPPost[]> {
-  return mockExplore as WPPost[];
+// Get a single room by slug
+async function getRoomBySlug(slug: string): Promise<WPPost | null> {
+  try {
+    const post = await getPostBySlug('rooms', slug);
+    return post || null;
+  } catch (error) {
+    console.error(`Error fetching room with slug ${slug}:`, error);
+    return null;
+  }
 }
 
 // Export the API object with all methods
 export const api = {
+  // Core methods
   getRooms,
   getAmenities,
   getRoomAmenities,
   getExplore,
-  request: apiRequest
+  getRoomBySlug,
+
+  // Additional utility methods
+  async get(endpoint: string, params: Record<string, any> = {}) {
+    try {
+      // In development, return mock data
+      if (process.env.NODE_ENV === 'development') {
+        // Default empty array response for unknown endpoints
+        return [] as any;
+      }
+
+      // In production, make actual API calls
+      const baseUrl = process.env['NEXT_PUBLIC_WORDPRESS_API_URL'] || 'https://rabaulhotel.com/wp-json/wp/v2';
+      const url = new URL(endpoint, baseUrl);
+      
+      // Add query parameters
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+
+      const response = await fetch(url.toString());
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    } catch (error) {
+      console.error('API GET request failed:', error);
+      throw error;
+    }
+  },
+
+  async post(endpoint: string, data: any = {}) {
+    try {
+      const baseUrl = process.env['NEXT_PUBLIC_WORDPRESS_API_URL'] || 'https://rabaulhotel.com/wp-json/wp/v2';
+      const response = await fetch(new URL(endpoint, baseUrl).toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    } catch (error) {
+      console.error('API POST request failed:', error);
+      throw error;
+    }
+  },
 };
 
 export type { WPPost as WPPostType };

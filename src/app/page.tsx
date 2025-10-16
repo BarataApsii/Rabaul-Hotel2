@@ -1059,11 +1059,9 @@ export default function Home() {
       <section 
         id="book" 
         ref={bookRef}
-        className="py-8 md:py-12 scroll-mt-16 relative bg-cover bg-center bg-no-repeat w-full flex justify-center"
-        style={{ backgroundImage: "url('/images/booking-background.PNG')" }}
+        className="py-8 md:py-12 scroll-mt-16 relative bg-gray-100 w-full flex justify-center"
       >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="container max-w-7xl px-4 relative z-10">
+        <div className="container max-w-7xl px-4 relative">
           <div className="max-w-3xl mx-auto text-center mb-12 text-white">
             <h2 className="text-3xl md:text-4xl font-bold text-white">Book Your Stay</h2>
           </div>

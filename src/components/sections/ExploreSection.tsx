@@ -19,7 +19,7 @@ const ExploreSection = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching explore items:', err);
-        setError('Failed to load explore items. Please try again later.');
+        setError('Failed to load tourist spots. Please try again later.');
       } finally {
         setLoading(false);
       }
