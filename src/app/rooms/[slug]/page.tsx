@@ -4,6 +4,7 @@ import { formatPrice } from '@/lib/utils/format';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
 
 // Define the ACF fields interface
 interface RoomACF extends Record<string, any> {
@@ -37,22 +38,26 @@ interface Room extends WPPost {
 }
 
 // Define the params type for the page
-interface RoomPageParams {
-  slug: string;
-}
+type PageProps = {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
-// Define the props for the page component
-interface RoomDetailPageProps {
-  params: RoomPageParams;
+// Helper function to get room data
+async function getRoomBySlug(slug: string): Promise<Room | undefined> {
+  const rooms = await api.getRooms();
+  return rooms.find((r: WPPost): r is Room => {
+    if (!r.acf) return false;
+    return r.slug === slug;
+  }) as unknown as Room | undefined;
 }
 
 // Generate metadata
-export async function generateMetadata({ params }: { params: RoomPageParams }) {
-  const rooms = await api.getRooms();
-  const room = rooms.find((r: WPPost): r is Room => {
-    if (!r.acf) return false;
-    return r.slug === params.slug;
-  }) as unknown as Room | undefined;
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  const slug = params.slug;
+  const room = await getRoomBySlug(slug);
 
   if (!room) {
     return {
@@ -77,13 +82,10 @@ export async function generateMetadata({ params }: { params: RoomPageParams }) {
   };
 }
 
-export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
-  // Fetch rooms
-  const rooms = await api.getRooms();
-  const room = rooms.find((r: WPPost): r is Room => {
-    if (!r.acf) return false;
-    return r.slug === params.slug;
-  }) as unknown as Room | undefined;
+// Main page component
+export default async function RoomDetailPage({ params }: PageProps) {
+  const slug = params.slug;
+  const room = await getRoomBySlug(slug);
 
   if (!room) {
     notFound();
