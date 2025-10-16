@@ -17,7 +17,7 @@ interface RoomACFFields {
   [key: string]: unknown;
 }
 
-interface Room extends Omit<WPPost, 'acf'> {
+interface Room extends Omit<WPPost, 'acf' | '_embedded'> {
   acf?: RoomACFFields;
   title: {
     rendered: string;
@@ -46,6 +46,7 @@ interface Room extends Omit<WPPost, 'acf'> {
           } | undefined;
         };
       };
+      [key: string]: unknown;
     }>;
   };
 }

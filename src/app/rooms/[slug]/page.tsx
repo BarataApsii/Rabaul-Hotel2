@@ -37,12 +37,6 @@ interface Room extends WPPost {
   };
 }
 
-// Define the params type for the page
-type PageProps = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 // Helper function to get room data
 async function getRoomBySlug(slug: string): Promise<Room | undefined> {
   const rooms = await api.getRooms();
@@ -52,11 +46,12 @@ async function getRoomBySlug(slug: string): Promise<Room | undefined> {
   }) as unknown as Room | undefined;
 }
 
-// Generate metadata
+// Generate metadata with proper type safety
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const slug = params.slug;
+  // Await the params promise first
+  const { slug } = await params;
   const room = await getRoomBySlug(slug);
 
   if (!room) {
@@ -82,11 +77,16 @@ export async function generateMetadata(
   };
 }
 
-// Main page component
-export default async function RoomDetailPage({ params }: PageProps) {
-  const slug = params.slug;
+// Main page component with proper typing
+export default async function RoomDetailPage({
+  params,
+}: {
+  params: { slug: string } | Promise<{ slug: string }>;
+}) {
+  // Handle both direct params and promise params
+  const { slug } = params instanceof Promise ? await params : params;
   const room = await getRoomBySlug(slug);
-
+  
   if (!room) {
     notFound();
   }
