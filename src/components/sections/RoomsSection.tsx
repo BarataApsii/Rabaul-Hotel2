@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -60,31 +60,7 @@ const formatNightlyRate = (price: string | number | undefined): string => {
   return `$${numPrice.toLocaleString()} / night`;
 };
 
-const getImageUrl = (room: Room): string => {
-  // Try better_featured_image first
-  if (room.better_featured_image?.source_url) {
-    return room.better_featured_image.source_url;
-  }
-  
-  // Check embedded media
-  const featuredMedia = room._embedded?.['wp:featuredmedia']?.[0];
-  if (!featuredMedia) return '/images/placeholder-room.jpg';
-  
-  // Try different sizes in order of preference
-  const sizes = featuredMedia.media_details?.sizes;
-  if (sizes) {
-    if (sizes.medium?.source_url) return sizes.medium.source_url;
-    if (sizes.medium_large?.source_url) return sizes.medium_large.source_url;
-    if (sizes.large?.source_url) return sizes.large.source_url;
-    if (sizes.thumbnail?.source_url) return sizes.thumbnail.source_url;
-  }
-  
-  // Fallback to featured media source URL
-  return featuredMedia.source_url || '/images/placeholder-room.jpg';
-};
-
 const RoomsSection = () => {
-  // Use the API to fetch rooms
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,27 +84,22 @@ const RoomsSection = () => {
 
   if (loading) {
     return (
-      <section id="rooms" className="py-12 bg-gray-50 w-full">
-        <div className="w-full px-4">
-          <div className="max-w-[1800px] mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8" style={{ color: '#1a5f2c' }}>
-              Our Rooms & Suites
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full w-full">
-                  <div className="relative h-48 w-full bg-gray-200 animate-pulse"></div>
-                  <div className="flex flex-col flex-grow p-4">
-                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
-                    <div className="mt-auto">
-                      <div className="h-9 bg-gray-200 rounded w-32"></div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-green-900">Our Rooms</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <div className="w-full h-48 bg-gray-200 rounded-t-lg" />
+                <CardHeader>
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -137,113 +108,80 @@ const RoomsSection = () => {
 
   if (error) {
     return (
-      <section id="rooms" className="py-12 bg-gray-50 w-full">
-        <div className="w-full px-4">
-          <div className="max-w-[1800px] mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4" style={{ color: '#1a5f2c' }}>
-              Our Rooms & Suites
-            </h2>
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()}
-              className="bg-green-900 hover:bg-green-800 text-white"
-            >
-              Retry
-            </Button>
-          </div>
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-8 text-green-900">Our Rooms</h2>
+          <div className="text-red-500 text-center">{error}</div>
         </div>
       </section>
     );
   }
 
   return (
-    <section id="rooms" className="py-12 bg-gray-50 w-full">
-      <div className="w-full px-4">
-        <div className="max-w-[1800px] mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8" style={{ color: '#1a5f2c' }}>
-            Our Rooms & Suites
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
-            {rooms.map((room) => {
-              const imageUrl = getImageUrl(room);
-              const roomSize = room.acf?.room_size || room.acf?.size;
-              const maxGuests = room.acf?.max_guests || room.acf?.guests;
+    <section id="rooms" className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-12 text-green-900">Our Rooms</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {rooms.map((room) => (
+            <Card key={room.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col border-0">
+              <div className="relative h-48 w-full">
+                {room._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
+                  <Image
+                    src={room._embedded['wp:featuredmedia'][0].source_url}
+                    alt={room.title?.rendered || 'Room image'}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-400">No image</span>
+                  </div>
+                )}
+              </div>
               
-              return (
-                <Card key={room.id} className="overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full w-full border-0">
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={imageUrl}
-                      alt={room.title?.rendered || 'Room Image'}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="flex flex-col flex-grow p-4">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-lg font-bold text-gray-900">
-                        {room.title?.rendered || 'Room'}
-                      </h3>
-                      {room.acf?.price && (
-                        <div className="text-xs font-medium bg-green-50 text-green-800 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                          {formatNightlyRate(room.acf.price)}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {room.content?.rendered && (
-                      <div 
-                        className="text-gray-600 text-sm mb-4 line-clamp-3"
-                        dangerouslySetInnerHTML={{ 
-                          __html: room.content.rendered.replace(/<[^>]*>/g, ' ').substring(0, 150) + '...' 
-                        }} 
-                      />
+              <div className="flex flex-col flex-grow p-6">
+                <CardHeader className="p-0 mb-4">
+                  <CardTitle className="text-xl text-green-900">
+                    {room.title.rendered}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="p-0 flex-grow">
+                  <div className="space-y-2 mb-4">
+                    <p className="text-lg font-semibold text-gray-800">
+                      {formatNightlyRate(room.acf?.price)}
+                    </p>
+                    {room.acf?.bed_type && (
+                      <p className="text-sm text-gray-600">
+                        {room.acf.bed_type}
+                      </p>
                     )}
-                    
-                    <div className="mb-4 space-y-2 mt-auto">
-                      {roomSize && (
-                        <div className="flex items-center text-gray-600">
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                          </svg>
-                          {roomSize} m²
-                        </div>
-                      )}
-                      
-                      {maxGuests && (
-                        <div className="flex items-center text-gray-600">
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                          </svg>
-                          {maxGuests} {maxGuests === 1 ? 'Guest' : 'Guests'}
-                        </div>
-                      )}
-                      
-                      {room.acf?.bed_type && (
-                        <div className="flex items-center text-gray-600">
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 20v-8a2 2 0 012-2h14a2 2 0 012 2v8M3 20h18M3 20v-8a2 2 0 012-2h14a2 2 0 012 2v8" />
-                          </svg>
-                          {room.acf.bed_type}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <CardFooter className="mt-auto p-0 flex justify-end">
-                      <Link href={`/rooms/${room.slug || room.id}`}>
-                        <Button 
-                          className="w-32 bg-green-900 hover:bg-green-800 text-white py-2 text-sm transition-colors duration-200"
-                        >
-                          View Details
-                        </Button>
-                      </Link>
-                    </CardFooter>
+                    {room.acf?.max_guests && (
+                      <p className="text-sm text-gray-600">
+                        Max Guests: {room.acf.max_guests}
+                      </p>
+                    )}
                   </div>
-                </Card>
-              );
-            })}
-          </div>
+                  
+                  <div 
+                    className="prose text-gray-600 line-clamp-3 text-sm mb-4"
+                    dangerouslySetInnerHTML={{ 
+                      __html: room.excerpt?.rendered || room.content?.rendered || '' 
+                    }} 
+                  />
+                </CardContent>
+
+                <CardFooter className="p-0 mt-auto">
+                  <Button asChild className="w-full">
+                    <Link href={`/rooms/${room.slug}`} className="mt-4">
+                      View Details
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

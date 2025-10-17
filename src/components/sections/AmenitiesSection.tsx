@@ -32,8 +32,21 @@ const AmenitiesSection = () => {
     return (
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-green-900">Our Amenities</h2>
-          <div className="flex justify-center">Loading amenities...</div>
+          <h2 className="text-3xl font-bold text-center mb-12 text-green-900">Our Amenities</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <div className="w-full h-48 bg-gray-200 rounded-t-lg" />
+                <CardHeader>
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -53,11 +66,10 @@ const AmenitiesSection = () => {
   return (
     <section id="amenities" className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8 text-green-900">Our Amenities</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 className="text-3xl font-bold text-center mb-12 text-green-900">Our Amenities</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {amenities.map((amenity) => (
             <Card key={amenity.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col border-0">
-              {/* Featured Image */}
               <div className="relative h-48 w-full">
                 {amenity._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
                   <Image
@@ -65,7 +77,7 @@ const AmenitiesSection = () => {
                     alt={amenity.title?.rendered || 'Amenity image'}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -74,7 +86,6 @@ const AmenitiesSection = () => {
                 )}
               </div>
               
-              {/* Content */}
               <div className="flex flex-col flex-grow p-6">
                 {amenity.title?.rendered && (
                   <CardHeader className="p-0 mb-4">
@@ -87,7 +98,7 @@ const AmenitiesSection = () => {
                 {(amenity.excerpt?.rendered || amenity.content?.rendered) && (
                   <CardContent className="p-0 flex-grow">
                     <div 
-                      className="prose text-gray-600"
+                      className="prose text-gray-600 line-clamp-3"
                       dangerouslySetInnerHTML={{ 
                         __html: amenity.excerpt?.rendered || amenity.content?.rendered || '' 
                       }} 
