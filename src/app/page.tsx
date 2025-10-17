@@ -905,7 +905,7 @@ export default function Home() {
 
           </div>
 
-          {/* Horizontal Booking Form - Hidden on mobile */}
+          {/* Horizontal Booking Form - Hidden on mobile! */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
