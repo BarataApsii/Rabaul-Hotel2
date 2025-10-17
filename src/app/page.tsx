@@ -1532,16 +1532,16 @@ export default function Home() {
                         />
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center p-4 bg-gray-700 rounded-lg">
-                        <label className="flex items-center space-x-2 cursor-pointer">
+                      <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
+                        <div className="flex items-center space-x-3">
                           <input 
                             type="checkbox" 
-                            className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded"
+                            className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
                             checked={!!recaptchaToken}
                             onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
                           />
-                          <span className="text-white">I'm not a robot</span>
-                        </label>
+                          <span className="text-gray-700 font-medium">I'm not a robot</span>
+                        </div>
                       </div>
                     )}
                     {errors['recaptcha'] && (
