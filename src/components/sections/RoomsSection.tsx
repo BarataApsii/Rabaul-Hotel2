@@ -52,10 +52,10 @@ interface Room extends Omit<WPPost, '_embedded'> {
 }
 
 const formatNightlyRate = (price: string | number | undefined): string => {
-  if (!price) return 'Contact for pricing';
+  if (!price) return '';
   
   const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-  if (isNaN(numPrice)) return 'Contact for pricing';
+  if (isNaN(numPrice)) return '';
   
   return `$${numPrice.toLocaleString()} / night`;
 };
@@ -173,7 +173,7 @@ const RoomsSection = () => {
                 </CardContent>
 
                 <CardFooter className="p-0 mt-auto">
-                  <Button asChild className="w-full">
+                  <Button asChild className="w-full bg-green-900 hover:bg-green-800 text-white">
                     <Link href={`/rooms/${room.slug}`} className="mt-4">
                       View Details
                     </Link>

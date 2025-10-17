@@ -1061,7 +1061,7 @@ export default function Home() {
         ref={bookRef}
         className="py-16 md:py-20 scroll-mt-16 relative w-full flex justify-center bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("/images/booking-background.PNG")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/images/booking-background.PNG")',
           backgroundAttachment: 'fixed'
         }}
       >
