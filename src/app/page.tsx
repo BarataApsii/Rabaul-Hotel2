@@ -1520,20 +1520,34 @@ export default function Home() {
                         justify-content: center;
                       }
                     `}</style>
-                    <div className="space-y-4">
-                      <button 
-                        type="button" 
-                        onClick={() => setRecaptchaToken('dev-mode-token')}
-                        className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                      >
-                        I'm not a robot
-                      </button>
-                    </div>
+                    {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+                      <div className="flex justify-center">
+                        <ReCAPTCHA
+                          sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                          onChange={(token: string | null) => setRecaptchaToken(token)}
+                          onExpired={() => setRecaptchaToken(null)}
+                          onErrored={() => setRecaptchaToken(null)}
+                          theme="dark"
+                          className="recaptcha-container"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center p-4 bg-gray-700 rounded-lg">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded"
+                            checked={!!recaptchaToken}
+                            onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                          />
+                          <span className="text-white">I'm not a robot</span>
+                        </label>
+                      </div>
+                    )}
                     {errors['recaptcha'] && (
                       <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
                     )}
                   </div>
-
 
                 <Button 
                   onClick={handleBookingConfirm} 
