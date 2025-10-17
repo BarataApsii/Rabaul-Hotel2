@@ -21,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
-import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, ArrowUp } from 'lucide-react'
+import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
   // Initialize dates as undefined - will be set by the reset effect
@@ -327,10 +327,9 @@ export default function Home() {
     return transportServices.needsTransport ? 100 : 0
   }
 
-  // Calculate total cost
+  // Calculate costs
   const transportCost = calculateTransportCost()
   const roomCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
-  const totalCost = roomCost + transportCost
   // Calculate total guests (removed unused variable)
 
   // Use public path for mobile banner
@@ -518,7 +517,7 @@ export default function Home() {
           } text-white flex items-center space-x-2 transition-all duration-300 transform ${
             toast ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`}
-        >
+         >
           <span>{toast.message}</span>
           <button 
             onClick={() => setToast(null)}
@@ -806,208 +805,208 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section
-        id="home"
-        ref={homeRef}
-        className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-        style={{ 
-          position: 'relative', 
-          zIndex: 10, 
-          marginTop: '0',
-          paddingTop: '6rem'
-        }}
-      >
-        {/* Background Image using Next.js Image for better reliability */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/home-bg.png"
-            alt="Hotel Background"
-            fill
-            className="object-cover opacity-100"
-            priority
-            quality={85}
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
-        </div>
-        <div className="container mx-auto px-4 py-2 relative z-10 flex flex-col items-center">
-          {/* Slider Container */}
-          <div className="w-full max-w-[1800px]">
-            {/* Image Slider */}
-            <div className="w-full h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
-              <div className="w-full h-full relative">
-                {[
-                  { src: '/images/wow-sliders/North-Wing.jpg', caption: 'North Wing Accommodation' },
-                  { src: '/images/wow-sliders/a004fromrvomay07.jpg', caption: 'Scenic Rabaul Views' },
-                  { src: '/images/wow-sliders/a057tubuans.jpg', caption: 'Traditional Tubuan Culture' },
-                  { src: '/images/wow-sliders/dukeof_yorks.jpg', caption: 'Duke of York Islands' },
-                  { src: '/images/wow-sliders/img2014111901091b.jpg', caption: 'Historic Rabaul Heritage' },
-                  { src: '/images/wow-sliders/rabaul_market.jpg', caption: 'Vibrant Local Market' },
-                  { src: '/images/wow-sliders/rabaul_vulcan.jpg', caption: 'Majestic Vulcan Volcano' },
-                  { src: '/images/wow-sliders/rabaultavurvur3364.jpg', caption: 'Tavurvur Volcanic Activity' },
-                  { src: '/images/wow-sliders/simpsonharbour2012.jpg', caption: 'Beautiful Simpson Harbour' }
-                ].map((slide, index) => (
-                  <div
-                    key={index}
-                    className="absolute inset-0 w-full h-full"
-                    style={{
-                      opacity: index === currentSlide ? 1 : 0,
-                      transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
-                      transition: 'all 2s ease-in-out',
-                      zIndex: index === currentSlide ? 10 : 1
-                    }}
-                  >
-                    <Image
-                      src={slide.src}
-                      alt={`Rabaul Hotel - ${slide.caption}`}
-                      fill
-                      sizes="(max-width: 1536px) 100vw, 1536px"
-                      className="object-cover brightness-110 contrast-110"
-                      priority={index === 0}
-                      quality={100}
-                    />
-                    <div className="absolute inset-0 bg-black/10" />
-                    
-                    {/* Caption Overlay */}
-                    <div className="absolute bottom-4 left-4 z-20">
-                      <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
-                        <h3 style={{ color: '#CCCCCC !important' }} className="font-bold text-lg mb-1">Rabaul Hotel</h3>
-                        <p className="text-white/90 text-sm">{slide.caption}</p>
+        <section
+          id="home"
+          ref={homeRef}
+          className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          style={{ 
+            position: 'relative', 
+            zIndex: 10, 
+            marginTop: '0',
+            paddingTop: '6rem'
+          }}
+        >
+          {/* Background Image using Next.js Image for better reliability */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/home-bg.png"
+              alt="Hotel Background"
+              fill
+              className="object-cover opacity-100"
+              priority
+              quality={85}
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+          </div>
+          <div className="container mx-auto px-4 py-2 relative z-10 flex flex-col items-center">
+            {/* Slider Container */}
+            <div className="w-full max-w-[1800px]">
+              {/* Image Slider */}
+              <div className="w-full h-[50vh] lg:h-[40vh] relative rounded-lg shadow-2xl overflow-hidden">
+                <div className="w-full h-full relative">
+                  {[
+                    { src: '/images/wow-sliders/North-Wing.jpg', caption: 'North Wing Accommodation' },
+                    { src: '/images/wow-sliders/a004fromrvomay07.jpg', caption: 'Scenic Rabaul Views' },
+                    { src: '/images/wow-sliders/a057tubuans.jpg', caption: 'Traditional Tubuan Culture' },
+                    { src: '/images/wow-sliders/dukeof_yorks.jpg', caption: 'Duke of York Islands' },
+                    { src: '/images/wow-sliders/img2014111901091b.jpg', caption: 'Historic Rabaul Heritage' },
+                    { src: '/images/wow-sliders/rabaul_market.jpg', caption: 'Vibrant Local Market' },
+                    { src: '/images/wow-sliders/rabaul_vulcan.jpg', caption: 'Majestic Vulcan Volcano' },
+                    { src: '/images/wow-sliders/rabaultavurvur3364.jpg', caption: 'Tavurvur Volcanic Activity' },
+                    { src: '/images/wow-sliders/simpsonharbour2012.jpg', caption: 'Beautiful Simpson Harbour' }
+                  ].map((slide, index) => (
+                    <div
+                      key={index}
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        opacity: index === currentSlide ? 1 : 0,
+                        transform: index === currentSlide ? getSlideTransition(index) : getSlideExitTransition(index),
+                        transition: 'all 2s ease-in-out',
+                        zIndex: index === currentSlide ? 10 : 1
+                      }}
+                    >
+                      <Image
+                        src={slide.src}
+                        alt={`Rabaul Hotel - ${slide.caption}`}
+                        fill
+                        sizes="(max-width: 1536px) 100vw, 1536px"
+                        className="object-cover brightness-110 contrast-110"
+                        priority={index === 0}
+                        quality={100}
+                      />
+                      <div className="absolute inset-0 bg-black/10" />
+                      
+                      {/* Caption Overlay */}
+                      <div className="absolute bottom-4 left-4 z-20">
+                        <div className="bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2">
+                          <h3 style={{ color: '#CCCCCC !important' }} className="font-bold text-lg mb-1">Rabaul Hotel</h3>
+                          <p className="text-white/90 text-sm">{slide.caption}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-
-                {/* Navigation Arrows */}
-                <button
-                  onClick={prevSlide}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-                  aria-label="Previous slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextSlide}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
-                  aria-label="Next slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Horizontal Booking Form - Hidden on mobile! */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden md:block w-full max-w-[1800px] mt-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-              {/* Check-in */}
-              <div className="space-y-1">
-                <Label className="text-sm font-medium text-gray-700">Check-in</Label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                    value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
-                    onChange={(e) => setCheckIn(new Date(e.target.value))}
-                    min={format(new Date(), 'yyyy-MM-dd')}
-                  />
-                </div>
-              </div>
-              
-              {/* Check-out */}
-              <div className="space-y-1">
-                <Label className="text-sm font-medium text-gray-700">Check-out</Label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                    value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
-                    onChange={(e) => setCheckOut(new Date(e.target.value))}
-                    min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                  />
-                </div>
-              </div>
-              
-              {/* Guests */}
-              <div className="space-y-1">
-                <Label className="text-sm font-medium text-gray-700">Guests</Label>
-                <select
-                  className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                  value={adults}
-                  onChange={(e) => setAdults(parseInt(e.target.value))}
-                >
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <option key={num} value={num}>
-                      {num} {num === 1 ? 'Adult' : 'Adults'}
-                    </option>
                   ))}
-                </select>
-              </div>
-              
-              {/* Room Type */}
-              <div className="space-y-1">
-                <Label className="text-sm font-medium text-gray-700">Room Type</Label>
-                <select
-                  className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                  value={roomType || ''}
-                  onChange={(e) => setRoomType(e.target.value || undefined)}
-                >
-                  <option value="">All Room Types</option>
-                  <option value="budget">Budget Room</option>
-                  <option value="standard">Standard Room</option>
-                  <option value="deluxe">Deluxe Room</option>
-                  <option value="executive">Executive Room</option>
-                  <option value="family">Family Suite</option>
-                </select>
-              </div>
-              
-              {/* Check Availability Button */}
-              <Button
-                onClick={() => scrollToSection(bookRef)}
-                className="bg-[#1a5f2c] hover:bg-[#144a22] text-white py-2 h-10 text-sm md:text-base font-medium rounded-md transition-colors duration-200"
-              >
-                Check Availability
-              </Button>
-            </div>
-          </motion.div>
 
-      {/* Bottom content section */}
-      <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent mt-6">
-        <div className="container max-w-7xl mx-auto px-4 py-1">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="w-full text-center"
-          >
-            {/* Mobile Book Now Button - Only visible on mobile */}
-            <div className="md:hidden">
-              <Button
-                size="lg"
-                className="bg-[#1a5f2c] hover:bg-[#144a22] text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-[#1a5f2c]"
-                onClick={() => scrollToSection(bookRef)}
-              >
-                Book Your Stay With Us
-              </Button>
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={prevSlide}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                    aria-label="Previous slide"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-80 hover:opacity-100 shadow-lg backdrop-blur-sm"
+                    aria-label="Next slide"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
             </div>
+
+            {/* Horizontal Booking Form - Hidden on mobile! */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="hidden md:block w-full max-w-[1800px] mt-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                {/* Check-in */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium text-gray-700">Check-in</Label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                      value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setCheckIn(new Date(e.target.value))}
+                      min={format(new Date(), 'yyyy-MM-dd')}
+                    />
+                  </div>
+                </div>
+                
+                {/* Check-out */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium text-gray-700">Check-out</Label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                      value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setCheckOut(new Date(e.target.value))}
+                      min={checkIn ? format(new Date(checkIn.getTime() + 86400000), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
+                    />
+                  </div>
+                </div>
+                
+                {/* Guests */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium text-gray-700">Guests</Label>
+                  <select
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                    value={adults}
+                    onChange={(e) => setAdults(parseInt(e.target.value))}
+                  >
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <option key={num} value={num}>
+                        {num} {num === 1 ? 'Adult' : 'Adults'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Room Type */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium text-gray-700">Room Type</Label>
+                  <select
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
+                    value={roomType || ''}
+                    onChange={(e) => setRoomType(e.target.value || undefined)}
+                  >
+                    <option value="">All Room Types</option>
+                    <option value="budget">Budget Room</option>
+                    <option value="standard">Standard Room</option>
+                    <option value="deluxe">Deluxe Room</option>
+                    <option value="executive">Executive Room</option>
+                    <option value="family">Family Suite</option>
+                  </select>
+                </div>
+                
+                {/* Check Availability Button */}
+                <Button
+                  onClick={() => scrollToSection(bookRef)}
+                  className="bg-[#1a5f2c] hover:bg-[#144a22] text-white py-2 h-10 text-sm md:text-base font-medium rounded-md transition-colors duration-200"
+                >
+                  Check Availability
+                </Button>
+              </div>
             </motion.div>
+
+        {/* Bottom content section */}
+        <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent mt-6">
+          <div className="container max-w-7xl mx-auto px-4 py-1">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="w-full text-center"
+            >
+              {/* Mobile Book Now Button - Only visible on mobile */}
+              <div className="md:hidden">
+                <Button
+                  size="lg"
+                  className="bg-[#1a5f2c] hover:bg-[#144a22] text-white font-semibold px-8 py-4 text-lg rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-[#1a5f2c]"
+                  onClick={() => scrollToSection(bookRef)}
+                >
+                  Book Your Stay With Us
+                </Button>
+              </div>
+              </motion.div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
       {/* About Us Section */}
       <section ref={aboutRef} className="py-8 md:py-12 bg-green-950 text-white">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -1495,59 +1494,49 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-                  
-                  <div className="flex justify-between border-t border-white/30 pt-2 font-bold">
-                    <span>Total Cost:</span>
-                    <span className="text-yellow-300">K {totalCost}</span>
-                  </div>
-                  
-                  <div className="text-sm text-white/80">
-                    <div>Guests: {adults} Adult{adults > 1 ? 's' : ''} {children > 0 ? `& ${children} Child${children > 1 ? 'ren' : ''}` : ''}</div>
-                    <div>Payment: {paymentMethod === 'credit-card' ? 'Credit Card' : paymentMethod === 'bank-transfer' ? 'Bank Transfer' : 'Cash on Arrival'}</div>
-                  </div>
                 </div>
                 <div className="mt-4">
-                    <style jsx global>{`
-                      .recaptcha-container > div {
-                        width: 100% !important;
-                        transform: scale(0.85);
-                        transform-origin: 0 0;
-                        margin: 0 auto;
-                        max-width: 300px;
-                      }
-                      .g-recaptcha {
-                        display: flex;
-                        justify-content: center;
-                      }
-                    `}</style>
-                    {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
-                      <div className="flex justify-center">
-                        <ReCAPTCHA
-                          sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
-                          onChange={(token: string | null) => setRecaptchaToken(token)}
-                          onExpired={() => setRecaptchaToken(null)}
-                          onErrored={() => setRecaptchaToken(null)}
-                          theme="dark"
-                          className="recaptcha-container"
+                  <style jsx global>{`
+                    .recaptcha-container > div {
+                      width: 100% !important;
+                      transform: scale(0.85);
+                      transform-origin: 0 0;
+                      margin: 0 auto;
+                      max-width: 300px;
+                    }
+                    .g-recaptcha {
+                      display: flex;
+                      justify-content: center;
+                    }
+                  `}</style>
+                  {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+                    <div className="flex justify-center">
+                      <ReCAPTCHA
+                        sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                        onChange={(token: string | null) => setRecaptchaToken(token)}
+                        onExpired={() => setRecaptchaToken(null)}
+                        onErrored={() => setRecaptchaToken(null)}
+                        theme="dark"
+                        className="recaptcha-container"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
+                      <div className="flex items-center space-x-3">
+                        <input 
+                          type="checkbox" 
+                          className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                          checked={!!recaptchaToken}
+                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
                         />
+                        <span className="text-gray-700 font-medium">I'm not a robot</span>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
-                        <div className="flex items-center space-x-3">
-                          <input 
-                            type="checkbox" 
-                            className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
-                            checked={!!recaptchaToken}
-                            onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
-                          />
-                          <span className="text-gray-700 font-medium">I'm not a robot</span>
-                        </div>
-                      </div>
-                    )}
-                    {errors['recaptcha'] && (
-                      <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  {errors['recaptcha'] && (
+                    <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
+                  )}
+                </div>
 
                 <Button 
                   onClick={handleBookingConfirm} 
@@ -1595,225 +1584,229 @@ export default function Home() {
       {/* Our Amenities Section */}
       <AmenitiesSection />
 
-      {/* Contact Us Section */}
-      <section 
-        id="contact" 
-        ref={contactRef}
-        className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
-      >
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-        
-        <div className="container max-w-6xl px-4 mx-auto relative z-10">
-          <div className="text-center mb-4">
-            <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Contact Info */}
-            <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <h3 className="text-2xl font-bold text-gray-900 mb-8 relative pb-4">
-                  <span className="relative">
-                    Our Information
-                    <span className="absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></span>
-                  </span>
-                </h3>
-                
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4 group">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
-                      <MapPin className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Our Location</h4>
-                      <p className="text-gray-600">Mango Avenue</p>
-                      <p className="text-gray-600">P.O Box 1</p>
-                      <p className="text-gray-600">Rabaul, East New Britain Province</p>
-                      <p className="text-gray-600">Papua New Guinea</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                      <Phone className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Phone Number</h4>
-                      <div className="space-y-1">
-                        <a href="tel:+67571893571" className="block text-gray-600 hover:text-blue-600 transition-colors">
-                          +675 7189 3571
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
-                      <Mail className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Email Address</h4>
-                      <a href="mailto:reservations@rabaulhotel.com.pg" className="text-blue-600 hover:underline">
-                        reservations@rabaulhotel.com.pg
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-4 group">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
-                      <Clock className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-1">Working Hours</h4>
-                      <p className="text-gray-600">24/7 Front Desk Service</p>
-                      <p className="text-sm text-gray-500">Check-in: 2:00 PM | Check-out: 11:00 AM</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Social Media Links */}
-                <div className="mt-6">
-                  <h4 className="text-base font-semibold text-gray-900 mb-3">Follow Us</h4>
-                  <div className="flex space-x-3">
-                    {[
-                      { icon: Facebook, color: 'bg-blue-500 hover:bg-blue-600', label: 'Facebook' },
-                      { icon: Instagram, color: 'bg-pink-500 hover:bg-pink-600', label: 'Instagram' },
-                      { icon: Twitter, color: 'bg-sky-400 hover:bg-sky-500', label: 'Twitter' },
-                      { icon: Youtube, color: 'bg-red-500 hover:bg-red-600', label: 'YouTube' }
-                    ].map((social, index) => (
-                      <a 
-                        key={index}
-                        href="#" 
-                        className={`w-9 h-9 rounded-full ${social.color} text-white flex items-center justify-center transition-colors duration-300 transform hover:-translate-y-1`}
-                        aria-label={social.label}
-                      >
-                        <social.icon className="h-5 w-5" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
+      {/* Contact Section */}
+<section 
+  id="contact" 
+  ref={contactRef}
+  className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
+>
+  {/* Decorative elements */}
+  <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+  <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+  <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+  
+  <div className="container max-w-6xl px-4 mx-auto relative z-10">
+    <div className="text-center mb-4">
+      <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
+      <p className="text-gray-600 mt-2">Get in touch with our friendly team</p>
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+      {/* Left Column - Contact Info */}
+      <div className="space-y-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Our Information</h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                <MapPin className="h-6 w-6 text-green-700" />
               </div>
-            
+              <div>
+                <h4 className="font-medium text-gray-900">Address</h4>
+                <p className="text-gray-600">Mango Avenue, Rabaul, East New Britain, Papua New Guinea</p>
+              </div>
             </div>
-            
-            {/* Right Column - Contact Form */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
-              <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
-              <form onSubmit={handleContactSubmit} className="space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
-                    <Input
-                      id="fullName"
-                      type="text"
-                      className="w-full"
-                      placeholder="Full Name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                    />
-                    {errors['fullName'] && (
-                      <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
-                    )}
-                  </div>
-                  <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="email" className="text-gray-700">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Email Address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={`w-full ${errors['email'] ? 'border-red-500' : ''}`}
-                    />
-                    {errors['email'] && (
-                      <p className="text-xs text-red-500 mt-1">{errors['email']}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Phone Number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className={`w-full ${errors['phone'] ? 'border-red-500' : ''}`}
-                  />
-                  {errors['phone'] && (
-                    <p className="text-xs text-red-500 mt-1">{errors['phone']}</p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="message" className="text-gray-700 text-sm">Message</Label>
-                  <Textarea
-                    id="message"
-                    className="min-h-[80px] text-sm"
-                    placeholder="Type your message here..."
-                    value={contactMessage}
-                    onChange={(e) => setContactMessage(e.target.value)}
-                  />
-                  {errors['contactMessage'] && (
-                    <p className="text-xs text-red-500 mt-1">{errors['contactMessage']}</p>
-                  )}
-                </div>
-                <div className="mt-3">
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                <Phone className="h-6 w-6 text-green-700" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Phone</h4>
+                <p className="text-gray-600">+675 982 8456</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                <Mail className="h-6 w-6 text-green-700" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Email</h4>
+                <p className="text-gray-600">info@rabaulhotel.com.pg</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                <Clock className="h-6 w-6 text-green-700" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Opening Hours</h4>
+                <p className="text-gray-600">24/7 Reception</p>
+                <p className="text-gray-600">Restaurant: 6:30 AM - 9:30 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Follow Us</h3>
+          <div className="flex space-x-4">
+            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+              <span className="sr-only">Facebook</span>
+              <Facebook className="h-6 w-6" />
+            </a>
+            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+              <span className="sr-only">Instagram</span>
+              <Instagram className="h-6 w-6" />
+            </a>
+            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+              <span className="sr-only">Twitter</span>
+              <Twitter className="h-6 w-6" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column - Contact Form */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
+        <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
+        <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
+        
+        <form onSubmit={handleContactSubmit} className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
+              <Input
+                id="fullName"
+                type="text"
+                className="w-full"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              {errors['fullName'] && (
+                <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
+              )}
+            </div>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="email" className="text-gray-700">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full ${errors['email'] ? 'border-red-500' : ''}`}
+              />
+              {errors['email'] && (
+                <p className="text-xs text-red-500 mt-1">{errors['email']}</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className={`w-full ${errors['phone'] ? 'border-red-500' : ''}`}
+            />
+            {errors['phone'] && (
+              <p className="text-xs text-red-500 mt-1">{errors['phone']}</p>
+            )}
+          </div>
+          
+          <div className="space-y-1">
+            <Label htmlFor="message" className="text-gray-700 text-sm">Message</Label>
+            <Textarea
+              id="message"
+              className="min-h-[80px] text-sm"
+              placeholder="Type your message here..."
+              value={contactMessage}
+              onChange={(e) => setContactMessage(e.target.value)}
+            />
+            {errors['contactMessage'] && (
+              <p className="text-xs text-red-500 mt-1">{errors['contactMessage']}</p>
+            )}
+          </div>
+
+          {/* recaptcha section */}
+          <div className="mt-4">
                   <style jsx global>{`
-                    .contact-recaptcha > div {
+                    .recaptcha-container > div {
                       width: 100% !important;
                       transform: scale(0.85);
                       transform-origin: 0 0;
                       margin: 0 auto;
+                      max-width: 300px;
                     }
                     .g-recaptcha {
                       display: flex;
                       justify-content: center;
                     }
                   `}</style>
-                  <div className="flex justify-center">
-                    <ReCAPTCHA
-                      sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] || 'your-site-key'}
-                      onChange={(token: string | null) => setRecaptchaToken(token)}
-                      onExpired={() => setRecaptchaToken(null)}
-                      onErrored={() => setRecaptchaToken(null)}
-                      theme="light"
-                      className="contact-recaptcha"
-                    />
-                  </div>
+                  {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+                    <div className="flex justify-center">
+                      <ReCAPTCHA
+                        sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                        onChange={(token: string | null) => setRecaptchaToken(token)}
+                        onExpired={() => setRecaptchaToken(null)}
+                        onErrored={() => setRecaptchaToken(null)}
+                        theme="dark"
+                        className="recaptcha-container"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
+                      <div className="flex items-center space-x-3">
+                        <input 
+                          type="checkbox" 
+                          className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                          checked={!!recaptchaToken}
+                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                        />
+                        <span className="text-gray-700 font-medium">I'm not a robot</span>
+                      </div>
+                    </div>
+                  )}
                   {errors['recaptcha'] && (
-                    <p className="mt-2 text-sm text-red-500 text-center">{errors['recaptcha']}</p>
+                    <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
                   )}
                 </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Sending Your Message...
-                    </>
-                  ) : (
-                    <span className="flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      Send Message
-                    </span>
-                  )}
-                </Button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+          
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium mt-4"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending Your Message...
+              </>
+            ) : (
+              <span className="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Send Message
+              </span>
+            )}
+          </Button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Explore Rabaul Section */}
       <ExploreSection />
@@ -1905,13 +1898,12 @@ export default function Home() {
       </footer>
 
       {/* Scroll to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-        aria-label="Scroll to top"
-      >
-        <ArrowUp className="h-6 w-6 text-black" />
-      </button>
-    </div>
-  )
-}
+        <button
+          onClick={scrollToTop}
+          className={`fixed bottom-6 right-6 p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-200 ${showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-6 w-6 text-black" />
+        </button>
+      </div>
+    )}
