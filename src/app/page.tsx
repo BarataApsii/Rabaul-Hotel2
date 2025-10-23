@@ -453,11 +453,35 @@ export default function Home() {
     e.preventDefault()
     if (!validateContactForm()) return
     
+    // Check if API base URL is configured
+    if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
+      showToast('API configuration error. Please try again later.', 'error')
+      console.error('NEXT_PUBLIC_API_BASE_URL is not configured')
+      return
+    }
+    
     setIsLoading(true)
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      console.log('Contact form submitted:', { contactName, lastName, contactEmail, subject, contactMessage })
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contact`
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          subject: subject,
+          message: contactMessage
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `Failed to send message: ${response.statusText}`)
+      }
       
       // Show success toast
       showToast('Thank you for your message! We will get back to you soon.', 'success')
@@ -470,7 +494,12 @@ export default function Home() {
       
     } catch (error) {
       console.error('Failed to send message:', error)
-      showToast('Failed to send your message. Please try again.', 'error')
+      showToast(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to send your message. Please try again.', 
+        'error'
+      )
     } finally {
       setIsLoading(false)
     }

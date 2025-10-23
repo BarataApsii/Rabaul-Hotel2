@@ -192,15 +192,8 @@ export default async function RoomDetailPage({
             </div>
             
             {/* Booking Form */}
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Booking Information</h3>
-              <BookingForm roomType={'conference'} />
-              <button 
-                type="submit"
-                className="w-full bg-green-900 text-white py-3 px-6 rounded-md hover:bg-green-800 transition-colors font-medium text-lg mt-4"
-              >
-                Book Now
-              </button>
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+              <BookingForm roomType={'conference'} roomId={room.id?.toString()} />
             </div>
           </div>
         </div>

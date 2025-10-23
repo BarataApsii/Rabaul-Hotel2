@@ -3,10 +3,20 @@ namespace NodeJS {
     // Next.js built-in environment variables
     NODE_ENV: 'development' | 'production' | 'test';
     
+    // Application configuration
+    NEXT_PUBLIC_SITE_URL: string;
+    NEXT_PUBLIC_API_BASE_URL: string;
+    
     // WordPress configuration
     NEXT_PUBLIC_WORDPRESS_URL: string;
-    NEXT_PUBLIC_SITE_URL: string;
     
-    // Add other environment variables as needed
+    // reCAPTCHA (if used)
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY?: string;
+    
+    // Analytics (if used)
+    NEXT_PUBLIC_GA_MEASUREMENT_ID?: string;
+    
+    // Other environment variables
+    [key: string]: string | undefined;
   }
 }
