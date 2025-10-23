@@ -29,16 +29,16 @@ export default function Home() {
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
   
   // Refs for scrolling to sections
-  const [roomType, setRoomType] = useState<string | undefined>(undefined)
-  const [adults, setAdults] = useState(2)
-  const [children, setChildren] = useState(0)
-  const [title, setTitle] = useState('mr')
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [countryCode, setCountryCode] = useState('+675')
-  const [email, setEmail] = useState('')
-  const [country, setCountry] = useState('')
-  const [specialRequest, setSpecialRequest] = useState('')
+  const [roomType, setRoomType] = useState<string>('')
+  const [adults, setAdults] = useState<number | undefined>(2)
+  const [children, setChildren] = useState<number | undefined>(0)
+  const [title, setTitle] = useState<string>('mr')
+  const [fullName, setFullName] = useState<string>('')
+  const [phone, setPhone] = useState<string>('')
+  const [countryCode, setCountryCode] = useState<string>('+675')
+  const [email, setEmail] = useState<string>('')
+  const [country, setCountry] = useState<string>('')
+  const [specialRequest, setSpecialRequest] = useState<string>('')
   const [transportServices, setTransportServices] = useState({
     needsTransport: false,
     pickupTime: '',
@@ -46,6 +46,8 @@ export default function Home() {
   })
   const [contactMessage, setContactMessage] = useState('')
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  // @ts-ignore - We're using this ref in the verifyRecaptchaToken function
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null)
   const [visible, setVisible] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -130,7 +132,7 @@ export default function Home() {
       const mappedRoomType = roomTypeMap[roomTypeParam.toLowerCase()];
       
       if (mappedRoomType) {
-        setRoomType(mappedRoomType);
+        setRoomType(mappedRoomType || '');
         
         // Scroll to booking section after a short delay
         setTimeout(() => {
@@ -173,7 +175,7 @@ export default function Home() {
     // Set all form fields in a single batch
     setCheckIn(today)
     setCheckOut(tomorrow)
-    setRoomType(undefined)
+    setRoomType(roomId || '')
     setAdults(1)
     setChildren(0)
     setFullName('')
@@ -290,7 +292,7 @@ export default function Home() {
     
     return () => {
       sections.forEach((section) => {
-        if (section) observer.observe(section)
+        if (section) observer.unobserve(section)
       })
     }
   }, [])
@@ -405,7 +407,7 @@ export default function Home() {
       
       setCheckIn(today);
       setCheckOut(tomorrow);
-      setRoomType(undefined); // Reset to show 'Select Room' by default
+      setRoomType(roomId || ''); // Reset to show 'Select Room' by default
       setAdults(1);
       setChildren(0);
       setFullName('');
@@ -416,7 +418,7 @@ export default function Home() {
       setErrors({});
       setBookingDetails(null);
       setIsBookingConfirmed(false);
-      setRecaptchaToken(null); // Reset reCAPTCHA
+setRecaptchaToken(null); // Reset reCAPTCHA
       
     } catch (error) {
       console.error('Booking failed:', error);
@@ -1587,7 +1589,7 @@ export default function Home() {
                           type="checkbox" 
                           className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
                           checked={!!recaptchaToken}
-                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : '')}
                         />
                         <span className="text-gray-700 font-medium">I'm not a robot</span>
                       </div>
@@ -1826,7 +1828,7 @@ export default function Home() {
                           type="checkbox" 
                           className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
                           checked={!!recaptchaToken}
-                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : '')}
                         />
                         <span className="text-gray-700 font-medium">I'm not a robot</span>
                       </div>
