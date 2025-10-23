@@ -45,7 +45,6 @@ export default function Home() {
     pickupLocation: ''
   })
   const [contactMessage, setContactMessage] = useState('')
-  const [subject] = useState('')
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [visible, setVisible] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
