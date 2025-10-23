@@ -77,7 +77,22 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
     
     if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
       newErrors['form'] = 'API base URL is not configured';
+      setErrors(newErrors);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
+    
+    // Additional form validation
+    if (!formData.firstName.trim()) newErrors['firstName'] = 'First name is required';
+    if (!formData.lastName.trim()) newErrors['lastName'] = 'Last name is required';
+    if (!formData.email.trim()) {
+      newErrors['email'] = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors['email'] = 'Email is invalid';
+    }
+    if (!formData.phone.trim()) newErrors['phone'] = 'Phone number is required';
+    if (!formData.checkInDate) newErrors['checkInDate'] = 'Check-in date is required';
+    if (!formData.checkOutDate) newErrors['checkOutDate'] = 'Check-out date is required';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -88,20 +103,39 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
     setIsSubmitting(true);
     
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/bookings`;
-      console.log('Submitting to:', apiUrl); // For debugging
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/booking.php`;
+      console.log('Submitting booking:', { apiUrl, formData });
+      
+      // Prepare form data for PHP backend
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formDataToSend.append(key, value.toString());
+        }
+      });
       
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
+      const responseData = await response.text();
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to submit booking: ${response.statusText}`);
+        throw new Error(`Failed to submit booking: ${response.statusText}`);
+      }
+
+      // Try to parse JSON response, but handle non-JSON responses gracefully
+      try {
+        const jsonResponse = JSON.parse(responseData);
+        if (jsonResponse.success !== true) {
+          throw new Error(jsonResponse.message || 'Booking submission failed');
+        }
+      } catch (e) {
+        // If response is not JSON, check if it contains success message
+        if (!responseData.toLowerCase().includes('success')) {
+          throw new Error('Unexpected response from server');
+        }
       }
 
       setBookingSuccess(true);

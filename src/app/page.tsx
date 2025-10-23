@@ -61,7 +61,7 @@ export default function Home() {
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [isLoading, setIsLoading] = useState(false)
-  const [lastName] = useState('')
+  const [] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
 
@@ -435,15 +435,21 @@ export default function Home() {
   const validateContactForm = () => {
     const newErrors: Record<string, string> = {}
     
-    if (!contactName.trim()) newErrors['contactName'] = 'Name is required'
+    if (!contactName.trim()) {
+      newErrors['contactName'] = 'Name is required'
+    }
+    
     if (!contactEmail.trim()) {
       newErrors['contactEmail'] = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(contactEmail)) {
-      newErrors['contactEmail'] = 'Email is invalid'
+      newErrors['contactEmail'] = 'Please enter a valid email address'
     }
-    if (!contactMessage.trim()) newErrors['contactMessage'] = 'Message is required'
-    if (!lastName.trim()) newErrors['lastName'] = 'Last name is required'
-    if (!subject.trim()) newErrors['subject'] = 'Subject is required'
+    
+    if (!contactMessage.trim()) {
+      newErrors['contactMessage'] = 'Message is required'
+    } else if (contactMessage.trim().length < 10) {
+      newErrors['contactMessage'] = 'Message should be at least 10 characters long'
+    }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -463,24 +469,37 @@ export default function Home() {
     setIsLoading(true)
     
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contact`
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/contact.php`
+      
+      // Prepare form data for PHP backend
+      const formData = new FormData()
+      formData.append('name', contactName)
+      formData.append('email', contactEmail)
+      formData.append('subject', subject)
+      formData.append('message', contactMessage)
       
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: contactName,
-          email: contactEmail,
-          subject: subject,
-          message: contactMessage
-        }),
+        body: formData,
       })
 
+      const responseData = await response.text()
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Failed to send message: ${response.statusText}`)
+        throw new Error(`Failed to send message: ${response.statusText}`)
+      }
+
+      // Try to parse JSON response, but handle non-JSON responses gracefully
+      try {
+        const jsonResponse = JSON.parse(responseData);
+        if (jsonResponse.success !== true) {
+          throw new Error(jsonResponse.message || 'Message submission failed');
+        }
+      } catch (e) {
+        // If response is not JSON, check if it contains success message
+        if (!responseData.toLowerCase().includes('success')) {
+          throw new Error('Unexpected response from server');
+        }
       }
       
       // Show success toast
@@ -1707,54 +1726,51 @@ export default function Home() {
         <form onSubmit={handleContactSubmit} className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1 sm:space-y-2">
-              <Label htmlFor="fullName" className="text-gray-700">Full Name</Label>
+              <Label htmlFor="contactName" className="text-gray-700">Full Name</Label>
               <Input
-                id="fullName"
+                id="contactName"
                 type="text"
                 className="w-full"
                 placeholder="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
               />
-              {errors['fullName'] && (
-                <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
+              {errors['contactName'] && (
+                <p className="text-xs text-red-500 mt-1">{errors['contactName']}</p>
               )}
             </div>
             <div className="space-y-1 sm:space-y-2">
-              <Label htmlFor="email" className="text-gray-700">Email</Label>
+              <Label htmlFor="contactEmail" className="text-gray-700">Email</Label>
               <Input
-                id="email"
+                id="contactEmail"
                 type="email"
                 placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`w-full ${errors['email'] ? 'border-red-500' : ''}`}
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                className={`w-full ${errors['contactEmail'] ? 'border-red-500' : ''}`}
               />
-              {errors['email'] && (
-                <p className="text-xs text-red-500 mt-1">{errors['email']}</p>
+              {errors['contactEmail'] && (
+                <p className="text-xs text-red-500 mt-1">{errors['contactEmail']}</p>
               )}
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
+            <Label htmlFor="phone" className="text-gray-700">Phone Number (Optional)</Label>
             <Input
               id="phone"
               type="tel"
               placeholder="Phone Number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className={`w-full ${errors['phone'] ? 'border-red-500' : ''}`}
+              className="w-full"
             />
-            {errors['phone'] && (
-              <p className="text-xs text-red-500 mt-1">{errors['phone']}</p>
-            )}
           </div>
           
           <div className="space-y-1">
-            <Label htmlFor="message" className="text-gray-700 text-sm">Message</Label>
+            <Label htmlFor="contactMessage" className="text-gray-700 text-sm">Message</Label>
             <Textarea
-              id="message"
+              id="contactMessage"
               className="min-h-[80px] text-sm"
               placeholder="Type your message here..."
               value={contactMessage}
