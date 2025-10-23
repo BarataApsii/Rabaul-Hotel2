@@ -71,12 +71,9 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
     
     // Basic validation
     const newErrors: FormErrors = {};
-    if (!formData.recaptchaToken) {
-      newErrors['recaptcha'] = 'Please complete the reCAPTCHA verification';
-    }
     
     if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
-      newErrors['form'] = 'API base URL is not configured';
+      newErrors['form'] = 'API configuration error. Please try again later.';
       setErrors(newErrors);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -113,6 +110,11 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
           formDataToSend.append(key, value.toString());
         }
       });
+      
+      // Add reCAPTCHA token if available
+      if (formData.recaptchaToken) {
+        formDataToSend.append('g-recaptcha-response', formData.recaptchaToken);
+      }
       
       const response = await fetch(apiUrl, {
         method: 'POST',

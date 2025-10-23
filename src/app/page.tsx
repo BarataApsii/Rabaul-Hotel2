@@ -466,6 +466,12 @@ export default function Home() {
       return
     }
     
+    // Verify reCAPTCHA first
+    if (!recaptchaToken) {
+      showToast('Please complete the reCAPTCHA verification', 'error')
+      return
+    }
+    
     setIsLoading(true)
     
     try {
@@ -475,8 +481,13 @@ export default function Home() {
       const formData = new FormData()
       formData.append('name', contactName)
       formData.append('email', contactEmail)
-      formData.append('subject', subject)
+      formData.append('subject', 'Contact Form Submission')
       formData.append('message', contactMessage)
+      formData.append('g-recaptcha-response', recaptchaToken)
+      
+      if (phone) {
+        formData.append('phone', phone)
+      }
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -509,6 +520,8 @@ export default function Home() {
       setContactName('')
       setContactEmail('')
       setContactMessage('')
+      setPhone('')
+      setRecaptchaToken(null)
       setErrors({})
       
     } catch (error) {
