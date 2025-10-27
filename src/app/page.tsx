@@ -25,9 +25,6 @@ import { useWordPress } from '@/hooks/useWordPress'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
-  // Log the API base URL for debugging
-  console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
-  
   // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
