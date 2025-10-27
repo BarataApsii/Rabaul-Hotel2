@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+  // Using bracket notation for TypeScript compatibility with index signatures
+  const WORDPRESS_URL = process.env['NEXT_PUBLIC_WORDPRESS_URL'];
   
   if (!WORDPRESS_URL) {
     return NextResponse.json(
