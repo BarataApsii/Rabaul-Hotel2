@@ -27,14 +27,28 @@ export function useWordPress<T = WPPost | WPPost[]>(
         const response = await fetch(`/api/wordpress?${queryString}`);
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('WordPress API Error:', {
+            status: response.status,
+            statusText: response.statusText,
+            url: response.url,
+            error: errorText
+          });
+          throw new Error(`HTTP error! status: ${response.status}: ${response.statusText}`);
         }
         
         const result = await response.json();
+        console.log('WordPress API Response:', { url: response.url, data: result });
         setData(result);
       } catch (err) {
-        console.error('Error fetching from WordPress:', err);
-        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+        const error = err instanceof Error ? err : new Error('An unknown error occurred');
+        console.error('Error in useWordPress:', {
+          message: error.message,
+          stack: error.stack,
+          endpoint,
+          params
+        });
+        setError(error);
       } finally {
         setLoading(false);
       }

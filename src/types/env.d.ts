@@ -8,10 +8,11 @@ namespace NodeJS {
     NEXT_PUBLIC_API_BASE_URL: string;
     
     // WordPress configuration
-    NEXT_PUBLIC_WORDPRESS_URL: string;
+    WORDPRESS_API_URL: string;
     
     // reCAPTCHA (if used)
-    NEXT_PUBLIC_RECAPTCHA_SITE_KEY?: string;
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: string;
+    RECAPTCHA_SECRET_KEY: string;
     
     // Analytics (if used)
     NEXT_PUBLIC_GA_MEASUREMENT_ID?: string;

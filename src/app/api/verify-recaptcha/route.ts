@@ -1,3 +1,4 @@
+import 'server-only'; // Add this at the top
 import { NextResponse } from 'next/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -65,13 +66,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+     const secretKey = process.env['RECAPTCHA_SECRET_KEY'];
     if (!secretKey) {
-      log('error', 'RECAPTCHA_SECRET_KEY is not configured');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500, headers: Object.fromEntries(headers) }
-      );
+      console.error('RECAPTCHA_SECRET_KEY is not configured');
+      return new Response('Server configuration error', { status: 500 });
     }
 
     // Add timeout to the fetch request
@@ -158,21 +156,8 @@ export async function POST(request: Request) {
       { headers: Object.fromEntries(headers) }
     );
   } catch (error) {
-    log('error', 'reCAPTCHA verification error', { 
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { 
-        status: 500,
-        headers: {
-          ...Object.fromEntries(new Headers(headers)),
-          'Cache-Control': 'no-store, max-age=0',
-        }
-      }
-    );
+    console.error('Error verifying reCAPTCHA:', error);
+    return new Response('Error verifying reCAPTCHA', { status: 500 });
   }
 }
 

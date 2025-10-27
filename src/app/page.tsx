@@ -21,19 +21,43 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
+import { useWordPress } from '@/hooks/useWordPress'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
+  // Log the API base URL for debugging
+  console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+  
   // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
   
   // Refs for scrolling to sections
-  const [roomType, setRoomType] = useState<string>('')
-  const [adults, setAdults] = useState<number | undefined>(2)
-  const [children, setChildren] = useState<number | undefined>(0)
+  const [roomId] = useState<string>('');
+  const [roomType, setRoomType] = useState<string>('select')
+  const [adults, setAdults] = useState<number>(2)
+  const [children, setChildren] = useState<number>(0)
   const [title, setTitle] = useState<string>('mr')
   const [fullName, setFullName] = useState<string>('')
+  
+  // Fetch room rates from WordPress
+  const { data: roomRatesData, loading: ratesLoading, error: ratesError } = useWordPress<{
+    [key: string]: number;
+  }>('/wp-json/wp/v2/room-rates');
+
+  // Default room rates in case of loading or error
+  const defaultRoomRates: Record<string, number> = {
+    'select': 0,
+    'budget': 200,
+    'standard': 300,
+    'deluxe': 450,
+    'executive': 600,
+    'family': 500,
+    'conference': 1000
+  };
+
+  // Use fetched room rates or fallback to defaults
+  const roomRates = ratesLoading || ratesError ? defaultRoomRates : roomRatesData || defaultRoomRates;
   const [phone, setPhone] = useState<string>('')
   const [countryCode, setCountryCode] = useState<string>('+675')
   const [email, setEmail] = useState<string>('')
@@ -190,7 +214,7 @@ export default function Home() {
     setBookingDetails(null)
     setIsBookingConfirmed(false)
     setFormKey(prev => prev + 1)
-  }, [])
+  }, [roomId]) // Add roomId as a dependency
 
   // Show toast message
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -307,31 +331,25 @@ export default function Home() {
     }
   }
 
-  // Room rates configuration
-  const roomRates = {
-    'select': 0,
-    'budget': 200,
-    'standard': 300,
-    'deluxe': 450,
-    'executive': 600,
-    'family': 500,
-    'conference': 1000
-  }
+  // Room rates calculation - using the roomRates defined above
 
   // Calculate number of nights - handle undefined dates during SSR
   const nights = checkIn && checkOut 
     ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
+    
   // Calculate transport cost
   const calculateTransportCost = () => {
-    // Fixed transport cost when transport is needed
-    return transportServices.needsTransport ? 100 : 0
+    return transportServices.needsTransport ? 100 : 0;
   }
 
-  // Calculate costs
-  const transportCost = calculateTransportCost()
-  const roomCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
-  // Calculate total guests (removed unused variable)
+  // Calculate costs with proper null checks
+  const calculatedAdults = adults || 1;
+  const calculatedChildren = children || 0;
+  const transportCost = calculateTransportCost();
+  const roomCost = roomType && roomType !== 'select' 
+    ? roomRates[roomType] * nights * (calculatedAdults + Math.ceil(calculatedChildren / 2))
+    : 0;
 
   // Use public path for mobile banner
 
@@ -418,7 +436,7 @@ export default function Home() {
       setErrors({});
       setBookingDetails(null);
       setIsBookingConfirmed(false);
-setRecaptchaToken(null); // Reset reCAPTCHA
+      setRecaptchaToken(null); // Reset reCAPTCHA
       
     } catch (error) {
       console.error('Booking failed:', error);
@@ -1023,8 +1041,8 @@ setRecaptchaToken(null); // Reset reCAPTCHA
                   <Label className="text-sm font-medium text-gray-700">Room Type</Label>
                   <select
                     className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                    value={roomType || ''}
-                    onChange={(e) => setRoomType(e.target.value || undefined)}
+                    value={roomType}
+                    onChange={(e) => setRoomType(e.target.value)}
                   >
                     <option value="">All Room Types</option>
                     <option value="budget">Budget Room</option>
@@ -1287,22 +1305,24 @@ setRecaptchaToken(null); // Reset reCAPTCHA
                             <SelectItem value="prof">Prof.</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Input 
-                          id="fullName"
-                          type="text"
-                          placeholder="John Doe"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          className="h-9 text-sm flex-1 border-white/30"
-                        />
+                        <div className="flex-1 space-y-1">
+                          <Input
+                            id="fullName"
+                            type="text"
+                            placeholder="Full Name"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="h-9 text-sm border-white/30"
+                          />
+                          {errors['fullName'] && (
+                            <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
+                          )}
+                        </div>
                       </div>
-                      {errors['fullName'] && (
-                        <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
-                      )}
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="email" className="text-sm font-medium text-white">Email</Label>
-                      <Input 
+                      <Input
                         id="email" 
                         type="email" 
                         placeholder="your@email.com" 
