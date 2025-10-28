@@ -24,6 +24,9 @@ import { format, isBefore, isToday, isEqual } from 'date-fns'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
+  // Log the API base URL for debugging
+  console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+  
   // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
@@ -488,28 +491,112 @@ export default function Home() {
         formData.append('phone', phone)
       }
       
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formData,
-      })
-
-      const responseData = await response.text()
+      // Log the request for debugging
+      console.log('Sending request to:', apiUrl);
+      console.log('Form data:', Object.fromEntries(formData));
       
-      if (!response.ok) {
-        throw new Error(`Failed to send message: ${response.statusText}`)
+      let response;
+      try {
+        // Test if the URL is reachable first
+        console.log('Testing connection to API...');
+        const testResponse = await fetch(apiUrl, { method: 'HEAD' });
+        console.log('Connection test response status:', testResponse.status);
+        
+        // Make the actual request
+        console.log('Sending form data...');
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          body: formData,
+          // Important: Don't set Content-Type header when using FormData
+          // The browser will set it automatically with the correct boundary
+        });
+      } catch (error: unknown) {
+        // Type guard to check if error is an instance of Error
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'An unknown error occurred';
+        
+        const errorName = error instanceof Error ? error.name : 'UnknownError';
+        const errorStack = error instanceof Error ? error.stack : undefined;
+        
+        console.error('Network error details:', {
+          name: errorName,
+          message: errorMessage,
+          stack: errorStack,
+          apiUrl,
+          isSecure: apiUrl.startsWith('https'),
+          isLocal: apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1')
+        });
+        
+        // Provide more user-friendly error messages
+        if (errorName === 'TypeError' && errorMessage.includes('Failed to fetch')) {
+          throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+        } else if (errorName === 'TypeError' && errorMessage.includes('NetworkError')) {
+          throw new Error('Network error occurred. Please check your connection and try again.');
+        } else if (errorName === 'TypeError' && errorMessage.includes('CORS')) {
+          throw new Error('Cross-origin request blocked. Please check if the API allows requests from this domain.');
+        }
+        
+        throw new Error(`An error occurred: ${errorMessage}`);
       }
 
-      // Try to parse JSON response, but handle non-JSON responses gracefully
+      // Get the response as text first to handle different response types
+      const responseText = await response.text();
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('Response body:', responseText);
+      
+      if (!response.ok) {
+        // Try to extract error message from JSON response if possible
+        try {
+          const errorData = JSON.parse(responseText);
+          throw new Error(errorData.message || `Server responded with status ${response.status}: ${response.statusText}`);
+        } catch (e) {
+          // If not JSON, use the status text
+          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+        }
+      }
+
+      // Try to parse response as JSON, but handle non-JSON responses
+      let responseData;
       try {
-        const jsonResponse = JSON.parse(responseData);
-        if (jsonResponse.success !== true) {
-          throw new Error(jsonResponse.message || 'Message submission failed');
-        }
+        responseData = responseText ? JSON.parse(responseText) : {};
       } catch (e) {
-        // If response is not JSON, check if it contains success message
-        if (!responseData.toLowerCase().includes('success')) {
-          throw new Error('Unexpected response from server');
+        // If not JSON, treat it as a plain text response
+        responseData = { success: responseText.toLowerCase().includes('success') };
+      }
+
+      // Log the complete response for debugging
+      console.log('Full response data:', {
+        responseData,
+        rawResponse: responseText,
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
+      // Check for success in the response
+      if (responseData.success !== true && responseData.success !== 'true') {
+        console.log('Response indicates failure. Response data structure:', {
+          hasMessage: 'message' in responseData,
+          hasErrors: 'errors' in responseData,
+          hasEmailError: responseData.errors?.email !== undefined,
+          responseKeys: Object.keys(responseData)
+        });
+        // If we have validation errors, display them
+        if (responseData.errors) {
+          // If there's an email error, show it specifically
+          if (responseData.errors.email) {
+            throw new Error(`Email error: ${responseData.errors.email}`);
+          }
+          // Show the first error if available
+          const firstError = Object.values(responseData.errors)[0];
+          if (firstError) {
+            throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
+          }
         }
+        // Fallback to the message or default error
+        throw new Error(responseData.message || 'Message submission was not successful');
       }
       
       // Show success toast
@@ -1645,102 +1732,103 @@ export default function Home() {
       <AmenitiesSection />
 
       {/* Contact Section */}
-<section 
-  id="contact" 
-  ref={contactRef}
-  className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
->
-  {/* Decorative elements */}
-  <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-  <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-  <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-  
-  <div className="container max-w-6xl px-4 mx-auto relative z-10">
-    <div className="text-center mb-4">
-      <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
-      <p className="text-gray-600 mt-2">Get in touch with our friendly team</p>
-    </div>
-
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-      {/* Left Column - Contact Info */}
-      <div className="space-y-6">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Our Information</h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
-                <MapPin className="h-6 w-6 text-green-700" />
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900">Address</h4>
-                <p className="text-gray-600">Mango Avenue, Rabaul, East New Britain, Papua New Guinea</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
-                <Phone className="h-6 w-6 text-green-700" />
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900">Phone</h4>
-                <p className="text-gray-600">+675 982 8456</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
-                <Mail className="h-6 w-6 text-green-700" />
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900">Email</h4>
-                <p className="text-gray-600">info@rabaulhotel.com.pg</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
-                <Clock className="h-6 w-6 text-green-700" />
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900">Opening Hours</h4>
-                <p className="text-gray-600">24/7 Reception</p>
-                <p className="text-gray-600">Restaurant: 6:30 AM - 9:30 PM</p>
-              </div>
-            </div>
+      <section 
+        id="contact" 
+        ref={contactRef}
+        className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
+      >
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-1/4 h-1/4 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        
+        <div className="container max-w-6xl px-4 mx-auto relative z-10">
+          <div className="text-center mb-4">
+            <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
+            <p className="text-gray-600 mt-2">Get in touch with our friendly team</p>
           </div>
-        </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Follow Us</h3>
-          <div className="flex space-x-4">
-            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
-              <span className="sr-only">Facebook</span>
-              <Facebook className="h-6 w-6" />
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
-              <span className="sr-only">Instagram</span>
-              <Instagram className="h-6 w-6" />
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
-              <span className="sr-only">Twitter</span>
-              <Twitter className="h-6 w-6" />
-            </a>
-          </div>
-        </div>
-      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            {/* Left Column - Contact Info */}
+            <div className="space-y-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Our Information</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                      <MapPin className="h-6 w-6 text-green-700" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Address</h4>
+                      <p className="text-gray-600">Mango Avenue, Rabaul, East New Britain, Papua New Guinea</p>
+                    </div>
+                  </div>
 
-      {/* Right Column - Contact Form */}
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                      <Phone className="h-6 w-6 text-green-700" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Phone</h4>
+                      <p className="text-gray-600">+675 982 8456</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                      <Mail className="h-6 w-6 text-green-700" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Email</h4>
+                      <p className="text-gray-600">info@rabaulhotel.com.pg</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                      <Clock className="h-6 w-6 text-green-700" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">Opening Hours</h4>
+                      <p className="text-gray-600">24/7 Reception</p>
+                      <p className="text-gray-600">Restaurant: 6:30 AM - 9:30 PM</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Follow Us</h3>
+                <div className="flex space-x-4">
+                  <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+                    <span className="sr-only">Facebook</span>
+                    <Facebook className="h-6 w-6" />
+                  </a>
+                  <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+                    <span className="sr-only">Instagram</span>
+                    <Instagram className="h-6 w-6" />
+                  </a>
+                  <a href="#" className="text-gray-600 hover:text-green-700 transition-colors">
+                    <span className="sr-only">Twitter</span>
+                    <Twitter className="h-6 w-6" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Contact Form */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
         <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
         <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
-        
+
         <form onSubmit={handleContactSubmit} className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1 sm:space-y-2">
               <Label htmlFor="contactName" className="text-gray-700">Full Name</Label>
               <Input
                 id="contactName"
+                name="contactName"
                 type="text"
                 className="w-full"
                 placeholder="Full Name"
@@ -1755,6 +1843,7 @@ export default function Home() {
               <Label htmlFor="contactEmail" className="text-gray-700">Email</Label>
               <Input
                 id="contactEmail"
+                name="contactEmail"
                 type="email"
                 placeholder="Email Address"
                 value={contactEmail}
@@ -1766,11 +1855,12 @@ export default function Home() {
               )}
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="phone" className="text-gray-700">Phone Number (Optional)</Label>
             <Input
               id="phone"
+              name="phone"
               type="tel"
               placeholder="Phone Number"
               value={phone}
@@ -1778,11 +1868,12 @@ export default function Home() {
               className="w-full"
             />
           </div>
-          
+
           <div className="space-y-1">
             <Label htmlFor="contactMessage" className="text-gray-700 text-sm">Message</Label>
             <Textarea
               id="contactMessage"
+              name="contactMessage"
               className="min-h-[80px] text-sm"
               placeholder="Type your message here..."
               value={contactMessage}
@@ -1795,48 +1886,50 @@ export default function Home() {
 
           {/* recaptcha section */}
           <div className="mt-4">
-                  <style jsx global>{`
-                    .recaptcha-container > div {
-                      width: 100% !important;
-                      transform: scale(0.85);
-                      transform-origin: 0 0;
-                      margin: 0 auto;
-                      max-width: 300px;
-                    }
-                    .g-recaptcha {
-                      display: flex;
-                      justify-content: center;
-                    }
-                  `}</style>
-                  {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
-                    <div className="flex justify-center">
-                      <ReCAPTCHA
-                        sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
-                        onChange={(token: string | null) => setRecaptchaToken(token)}
-                        onExpired={() => setRecaptchaToken(null)}
-                        onErrored={() => setRecaptchaToken(null)}
-                        theme="dark"
-                        className="recaptcha-container"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
-                      <div className="flex items-center space-x-3">
-                        <input 
-                          type="checkbox" 
-                          className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
-                          checked={!!recaptchaToken}
-                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
-                        />
-                        <span className="text-gray-700 font-medium">I'm not a robot</span>
-                      </div>
-                    </div>
-                  )}
-                  {errors['recaptcha'] && (
-                    <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
-                  )}
-                </div>
-          
+            <style jsx global>{`
+              .recaptcha-container > div {
+                width: 100% !important;
+                transform: scale(0.85);
+                transform-origin: 0 0;
+                margin: 0 auto;
+                max-width: 300px;
+              }
+              .g-recaptcha {
+                display: flex;
+                justify-content: center;
+              }
+            `}</style>
+
+            {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                  onChange={(token: string | null) => setRecaptchaToken(token)}
+                  onExpired={() => setRecaptchaToken(null)}
+                  onErrored={() => setRecaptchaToken(null)}
+                  theme="dark"
+                  className="recaptcha-container"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
+                <label htmlFor="recaptchaCheckbox" className="flex items-center space-x-3">
+                  <input
+                    id="recaptchaCheckbox"
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                    checked={!!recaptchaToken}
+                    onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                  />
+                  <span className="text-gray-700 font-medium">I'm not a robot</span>
+                </label>
+              </div>
+            )}
+            {errors['recaptcha'] && (
+              <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
+            )}
+          </div>
+
           <Button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium mt-4"
