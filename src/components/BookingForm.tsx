@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useState } from 'react';
 
 // Define the interfaces
 interface BookingFormProps {
@@ -22,7 +21,6 @@ interface FormData {
   children: number;
   roomType: 'conference' | 'room';
   roomId?: string;
-  recaptchaToken: string | null;
 }
 
 interface FormErrors {
@@ -30,7 +28,7 @@ interface FormErrors {
 }
 
 export default function BookingForm({ roomType = 'room', roomId }: BookingFormProps) {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -43,26 +41,10 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
     children: 0,
     roomType,
     roomId,
-    recaptchaToken: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-
-  const handleRecaptchaChange = (token: string | null) => {
-    setFormData(prev => ({
-      ...prev,
-      recaptchaToken: token
-    }));
-    if (token) {
-      setErrors(prev => ({
-        ...prev,
-        recaptcha: ''
-      }));
-    }
-  };
-
+  const [, setErrors] = useState<FormErrors>({});
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -111,10 +93,6 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
         }
       });
       
-      // Add reCAPTCHA token if available
-      if (formData.recaptchaToken) {
-        formDataToSend.append('g-recaptcha-response', formData.recaptchaToken);
-      }
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -168,41 +146,7 @@ export default function BookingForm({ roomType = 'room', roomId }: BookingFormPr
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Your existing form fields */}
       
-      {/* Add reCAPTCHA */}
-      <div className="mt-3">
-        <style jsx global>{`
-          .grecaptcha-badge { 
-            visibility: visible !important;
-          }
-          .g-recaptcha {
-            display: flex;
-            justify-content: center;
-            transform: scale(0.9);
-            transform-origin: 0 0;
-            margin-bottom: -10px;
-          }
-        `}</style>
-        {process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
-          <div className="flex justify-center">
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
-              onChange={handleRecaptchaChange}
-              onExpired={() => handleRecaptchaChange(null)}
-              onErrored={() => handleRecaptchaChange(null)}
-            />
-          </div>
-        ) : (
-          <div className="p-3 bg-yellow-50 text-yellow-800 text-sm rounded-md">
-            reCAPTCHA is not configured. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY
-          </div>
-        )}
-        {errors['recaptcha'] && (
-          <p className="mt-1 text-sm text-red-600">{errors['recaptcha']}</p>
-        )}
-      </div>
-
-      {/* Submit button */}
+{/* Submit button */}
       <button
         type="submit"
         disabled={isSubmitting}

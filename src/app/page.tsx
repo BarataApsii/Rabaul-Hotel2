@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
+import { useWordPress } from '@/hooks/useWordPress'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
@@ -32,16 +33,36 @@ export default function Home() {
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
   
   // Refs for scrolling to sections
-  const [roomType, setRoomType] = useState<string | undefined>(undefined)
-  const [adults, setAdults] = useState(2)
-  const [children, setChildren] = useState(0)
-  const [title, setTitle] = useState('mr')
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [countryCode, setCountryCode] = useState('+675')
-  const [email, setEmail] = useState('')
-  const [country, setCountry] = useState('')
-  const [specialRequest, setSpecialRequest] = useState('')
+  const [roomId] = useState<string>('');
+  const [roomType, setRoomType] = useState<string>('select')
+  const [adults, setAdults] = useState<number>(2)
+  const [children, setChildren] = useState<number>(0)
+  const [title, setTitle] = useState<string>('mr')
+  const [fullName, setFullName] = useState<string>('')
+  
+  // Fetch room rates from WordPress
+  const { data: roomRatesData, loading: ratesLoading, error: ratesError } = useWordPress<{
+    [key: string]: number;
+  }>('/wp-json/wp/v2/room-rates');
+
+  // Default room rates in case of loading or error
+  const defaultRoomRates: Record<string, number> = {
+    'select': 0,
+    'budget': 200,
+    'standard': 300,
+    'deluxe': 450,
+    'executive': 600,
+    'family': 500,
+    'conference': 1000
+  };
+
+  // Use fetched room rates or fallback to defaults
+  const roomRates = ratesLoading || ratesError ? defaultRoomRates : roomRatesData || defaultRoomRates;
+  const [phone, setPhone] = useState<string>('')
+  const [countryCode, setCountryCode] = useState<string>('+675')
+  const [email, setEmail] = useState<string>('')
+  const [country, setCountry] = useState<string>('')
+  const [specialRequest, setSpecialRequest] = useState<string>('')
   const [transportServices, setTransportServices] = useState({
     needsTransport: false,
     pickupTime: '',
@@ -49,6 +70,8 @@ export default function Home() {
   })
   const [contactMessage, setContactMessage] = useState('')
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  // @ts-ignore - We're using this ref in the verifyRecaptchaToken function
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null)
   const [visible, setVisible] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -133,7 +156,7 @@ export default function Home() {
       const mappedRoomType = roomTypeMap[roomTypeParam.toLowerCase()];
       
       if (mappedRoomType) {
-        setRoomType(mappedRoomType);
+        setRoomType(mappedRoomType || '');
         
         // Scroll to booking section after a short delay
         setTimeout(() => {
@@ -176,7 +199,7 @@ export default function Home() {
     // Set all form fields in a single batch
     setCheckIn(today)
     setCheckOut(tomorrow)
-    setRoomType(undefined)
+    setRoomType(roomId || '')
     setAdults(1)
     setChildren(0)
     setFullName('')
@@ -191,7 +214,7 @@ export default function Home() {
     setBookingDetails(null)
     setIsBookingConfirmed(false)
     setFormKey(prev => prev + 1)
-  }, [])
+  }, [roomId]) // Add roomId as a dependency
 
   // Show toast message
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -293,7 +316,7 @@ export default function Home() {
     
     return () => {
       sections.forEach((section) => {
-        if (section) observer.observe(section)
+        if (section) observer.unobserve(section)
       })
     }
   }, [])
@@ -308,31 +331,25 @@ export default function Home() {
     }
   }
 
-  // Room rates configuration
-  const roomRates = {
-    'select': 0,
-    'budget': 200,
-    'standard': 300,
-    'deluxe': 450,
-    'executive': 600,
-    'family': 500,
-    'conference': 1000
-  }
+  // Room rates calculation - using the roomRates defined above
 
   // Calculate number of nights - handle undefined dates during SSR
   const nights = checkIn && checkOut 
     ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
+    
   // Calculate transport cost
   const calculateTransportCost = () => {
-    // Fixed transport cost when transport is needed
-    return transportServices.needsTransport ? 100 : 0
+    return transportServices.needsTransport ? 100 : 0;
   }
 
-  // Calculate costs
-  const transportCost = calculateTransportCost()
-  const roomCost = roomType && roomType !== 'select' ? roomRates[roomType as keyof typeof roomRates] * nights : 0
-  // Calculate total guests (removed unused variable)
+  // Calculate costs with proper null checks
+  const calculatedAdults = adults || 1;
+  const calculatedChildren = children || 0;
+  const transportCost = calculateTransportCost();
+  const roomCost = roomType && roomType !== 'select' 
+    ? roomRates[roomType] * nights * (calculatedAdults + Math.ceil(calculatedChildren / 2))
+    : 0;
 
   // Use public path for mobile banner
 
@@ -359,6 +376,12 @@ export default function Home() {
     // First validate the form
     if (!validateBookingForm()) return
     
+    // Ensure check-in and check-out dates are set
+    if (!checkIn || !checkOut) {
+      showToast('Please select both check-in and check-out dates', 'error');
+      return;
+    }
+    
     // Check if reCAPTCHA is completed
     if (!recaptchaToken) {
       setErrors(prev => ({ ...prev, recaptcha: 'Please complete the reCAPTCHA' }));
@@ -383,20 +406,48 @@ export default function Home() {
         throw new Error('reCAPTCHA verification failed');
       }
 
-      // Simulate API call for booking
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Booking confirmed:', { 
-        checkIn, 
-        checkOut, 
-        roomType, 
-        adults, 
-        children, 
-        fullName, 
-        phone, 
-        email, 
-        country, 
-        specialRequest 
+      // Format dates for API
+      const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+      };
+
+      // Prepare transport details
+      const transportDetails = transportServices.needsTransport 
+        ? `Pickup from: ${transportServices.pickupLocation} at ${transportServices.pickupTime}` 
+        : 'No transport required';
+
+      // Make API call to submit booking
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const response = await fetch(`${API_BASE}/booking.php`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          fullName: fullName,
+          checkIn: formatDate(checkIn),
+          checkOut: formatDate(checkOut),
+          roomType: roomType,
+          adults: adults,
+          children: children,
+          title: title,
+          phone: `${countryCode} ${phone}`,
+          transport: transportDetails,
+          payment: paymentMethod,
+          requests: specialRequest,
+          country: country
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to submit booking');
+      }
+
+      const result = await response.json();
+      console.log('Booking response:', result);
       
       // Show success toast
       showToast('Reservation confirmed! We have sent a confirmation to your email.', 'success');
@@ -408,24 +459,33 @@ export default function Home() {
       
       setCheckIn(today);
       setCheckOut(tomorrow);
-      setRoomType(undefined); // Reset to show 'Select Room' by default
+      setRoomType(roomId || '');
       setAdults(1);
       setChildren(0);
       setFullName('');
       setPhone('');
       setEmail('');
+      setTitle('');
       setCountry('');
       setSpecialRequest('');
+      setTransportServices({
+        needsTransport: false,
+        pickupLocation: '',
+        pickupTime: ''
+      });
+      setPaymentMethod('credit-card');
       setErrors({});
       setBookingDetails(null);
       setIsBookingConfirmed(false);
-      setRecaptchaToken(null); // Reset reCAPTCHA
+      setRecaptchaToken(null);
       
     } catch (error) {
       console.error('Booking failed:', error);
       showToast(
         error instanceof Error && error.message === 'reCAPTCHA verification failed'
           ? 'Security verification failed. Please try again.'
+          : error instanceof Error
+          ? error.message
           : 'Failed to process your booking. Please try again.', 
         'error'
       );
@@ -1108,8 +1168,8 @@ export default function Home() {
                   <Label className="text-sm font-medium text-gray-700">Room Type</Label>
                   <select
                     className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
-                    value={roomType || ''}
-                    onChange={(e) => setRoomType(e.target.value || undefined)}
+                    value={roomType}
+                    onChange={(e) => setRoomType(e.target.value)}
                   >
                     <option value="">All Room Types</option>
                     <option value="budget">Budget Room</option>
@@ -1372,22 +1432,24 @@ export default function Home() {
                             <SelectItem value="prof">Prof.</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Input 
-                          id="fullName"
-                          type="text"
-                          placeholder="John Doe"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          className="h-9 text-sm flex-1 border-white/30"
-                        />
+                        <div className="flex-1 space-y-1">
+                          <Input
+                            id="fullName"
+                            type="text"
+                            placeholder="Full Name"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="h-9 text-sm border-white/30"
+                          />
+                          {errors['fullName'] && (
+                            <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
+                          )}
+                        </div>
                       </div>
-                      {errors['fullName'] && (
-                        <p className="text-xs text-red-500 mt-1">{errors['fullName']}</p>
-                      )}
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="email" className="text-sm font-medium text-white">Email</Label>
-                      <Input 
+                      <Input
                         id="email" 
                         type="email" 
                         placeholder="your@email.com" 
@@ -1674,7 +1736,7 @@ export default function Home() {
                           type="checkbox" 
                           className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
                           checked={!!recaptchaToken}
-                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                          onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : '')}
                         />
                         <span className="text-gray-700 font-medium">I'm not a robot</span>
                       </div>
@@ -1817,143 +1879,143 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column - Contact Form */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
-        <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
-        <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
+      {/* Right Column - Contact Form */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-fit">
+          <h3 className="text-xl font-bold text-gray-900 mb-1">Send us a Message</h3>
+          <p className="text-gray-600 mb-6 text-sm">We&apos;ll get back to you within 24 hours</p>
 
-        <form onSubmit={handleContactSubmit} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1 sm:space-y-2">
-              <Label htmlFor="contactName" className="text-gray-700">Full Name</Label>
-              <Input
-                id="contactName"
-                name="contactName"
-                type="text"
-                className="w-full"
-                placeholder="Full Name"
-                value={contactName}
-                onChange={(e) => setContactName(e.target.value)}
-              />
-              {errors['contactName'] && (
-                <p className="text-xs text-red-500 mt-1">{errors['contactName']}</p>
-              )}
-            </div>
-            <div className="space-y-1 sm:space-y-2">
-              <Label htmlFor="contactEmail" className="text-gray-700">Email</Label>
-              <Input
-                id="contactEmail"
-                name="contactEmail"
-                type="email"
-                placeholder="Email Address"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className={`w-full ${errors['contactEmail'] ? 'border-red-500' : ''}`}
-              />
-              {errors['contactEmail'] && (
-                <p className="text-xs text-red-500 mt-1">{errors['contactEmail']}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-gray-700">Phone Number (Optional)</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="Phone Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="contactMessage" className="text-gray-700 text-sm">Message</Label>
-            <Textarea
-              id="contactMessage"
-              name="contactMessage"
-              className="min-h-[80px] text-sm"
-              placeholder="Type your message here..."
-              value={contactMessage}
-              onChange={(e) => setContactMessage(e.target.value)}
-            />
-            {errors['contactMessage'] && (
-              <p className="text-xs text-red-500 mt-1">{errors['contactMessage']}</p>
-            )}
-          </div>
-
-          {/* recaptcha section */}
-          <div className="mt-4">
-            <style jsx global>{`
-              .recaptcha-container > div {
-                width: 100% !important;
-                transform: scale(0.85);
-                transform-origin: 0 0;
-                margin: 0 auto;
-                max-width: 300px;
-              }
-              .g-recaptcha {
-                display: flex;
-                justify-content: center;
-              }
-            `}</style>
-
-            {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
-              <div className="flex justify-center">
-                <ReCAPTCHA
-                  sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
-                  onChange={(token: string | null) => setRecaptchaToken(token)}
-                  onExpired={() => setRecaptchaToken(null)}
-                  onErrored={() => setRecaptchaToken(null)}
-                  theme="dark"
-                  className="recaptcha-container"
+          <form onSubmit={handleContactSubmit} className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="contactName" className="text-gray-700">Full Name</Label>
+                <Input
+                  id="contactName"
+                  name="contactName"
+                  type="text"
+                  className="w-full"
+                  placeholder="Full Name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
                 />
+                {errors['contactName'] && (
+                  <p className="text-xs text-red-500 mt-1">{errors['contactName']}</p>
+                )}
               </div>
-            ) : (
-              <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
-                <label htmlFor="recaptchaCheckbox" className="flex items-center space-x-3">
-                  <input
-                    id="recaptchaCheckbox"
-                    type="checkbox"
-                    className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
-                    checked={!!recaptchaToken}
-                    onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
-                  />
-                  <span className="text-gray-700 font-medium">I'm not a robot</span>
-                </label>
+              <div className="space-y-1 sm:space-y-2">
+                <Label htmlFor="contactEmail" className="text-gray-700">Email</Label>
+                <Input
+                  id="contactEmail"
+                  name="contactEmail"
+                  type="email"
+                  placeholder="Email Address"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className={`w-full ${errors['contactEmail'] ? 'border-red-500' : ''}`}
+                />
+                {errors['contactEmail'] && (
+                  <p className="text-xs text-red-500 mt-1">{errors['contactEmail']}</p>
+                )}
               </div>
-            )}
-            {errors['recaptcha'] && (
-              <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
-            )}
-          </div>
+            </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium mt-4"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Sending Your Message...
-              </>
-            ) : (
-              <span className="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Send Message
-              </span>
-            )}
-          </Button>
-        </form>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-gray-700">Phone Number (Optional)</Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="contactMessage" className="text-gray-700 text-sm">Message</Label>
+              <Textarea
+                id="contactMessage"
+                name="contactMessage"
+                className="min-h-[80px] text-sm"
+                placeholder="Type your message here..."
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+              />
+              {errors['contactMessage'] && (
+                <p className="text-xs text-red-500 mt-1">{errors['contactMessage']}</p>
+              )}
+            </div>
+
+            {/* recaptcha section */}
+            <div className="mt-4">
+              <style jsx global>{`
+                .recaptcha-container > div {
+                  width: 100% !important;
+                  transform: scale(0.85);
+                  transform-origin: 0 0;
+                  margin: 0 auto;
+                  max-width: 300px;
+                }
+                .g-recaptcha {
+                  display: flex;
+                  justify-content: center;
+                }
+              `}</style>
+
+              {process.env.NODE_ENV === 'production' && process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY'] ? (
+                <div className="flex justify-center">
+                  <ReCAPTCHA
+                    sitekey={process.env['NEXT_PUBLIC_RECAPTCHA_SITE_KEY']}
+                    onChange={(token: string | null) => setRecaptchaToken(token)}
+                    onExpired={() => setRecaptchaToken(null)}
+                    onErrored={() => setRecaptchaToken(null)}
+                    theme="dark"
+                    className="recaptcha-container"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center justify-center p-4 bg-white rounded-lg shadow">
+                  <label htmlFor="recaptchaCheckbox" className="flex items-center space-x-3">
+                    <input
+                      id="recaptchaCheckbox"
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                      checked={!!recaptchaToken}
+                      onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
+                    />
+                    <span className="text-gray-700 font-medium">I'm not a robot</span>
+                  </label>
+                </div>
+              )}
+              {errors['recaptcha'] && (
+                <p className="mt-2 text-sm text-red-400 text-center">{errors['recaptcha']}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium mt-4"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Sending Your Message...
+                </>
+              ) : (
+                <span className="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Send Message
+                </span>
+              )}
+            </Button>
+          </form>
+        </div>
     </div>
   </div>
 </section>

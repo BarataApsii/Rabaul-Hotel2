@@ -1,10 +1,25 @@
 import { WPPost } from './wordpress';
 
-const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+// This is a server-only module
+import 'server-only';
+
+// This ensures this module is not imported in client components
+declare const __non_webpack_require__: any;
+const isServer = typeof window === 'undefined';
+
+if (!isServer) {
+  throw new Error('This module can only be used in server components and API routes');
+}
+
+const WORDPRESS_API_URL = process.env['WORDPRESS_API_URL'] || process.env['NEXT_PUBLIC_WORDPRESS_URL'];
 
 if (!WORDPRESS_API_URL) {
-  throw new Error('NEXT_PUBLIC_WORDPRESS_URL is not defined in environment variables');
+  throw new Error('WORDPRESS_API_URL is not defined in environment variables');
 }
+
+// Cache implementation can be added here if needed in the future
+// const CACHE = new Map<string, { data: any; timestamp: number }>();
+// const CACHE_TTL = 60 * 1000; // 1 minute cache
 
 export async function fetchFromWordPress<T = any>(
   endpoint: string,

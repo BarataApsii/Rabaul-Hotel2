@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import BookingForm from '@/components/BookingForm';
+import { Button } from '@/components/ui/button';
 
 // Define the ACF fields interface
 interface RoomACF extends Record<string, any> {
@@ -152,6 +153,7 @@ export default async function RoomDetailPage({
 
           {/* Right Column - Details */}
           <div className="lg:w-1/2 space-y-8">
+            {/* Room Header */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {room.title?.rendered || 'Luxury Room'}
@@ -161,39 +163,55 @@ export default async function RoomDetailPage({
                   {formatPrice(room.acf['price'])} <span className="text-lg text-gray-600">/ night</span>
                 </p>
               )}
-              
-              {/* Room Description */}
-              <div className="prose max-w-none mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Room Description</h2>
-                {room.content?.rendered ? (
-                  <div 
-                    dangerouslySetInnerHTML={{ __html: room.content.rendered }} 
-                    className="text-gray-600"
-                  />
-                ) : (
-                  <p className="text-gray-600">No description available for this room.</p>
-                )}
-              </div>
-
-              {/* Amenities */}
-              {amenities.length > 0 && (
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Amenities</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {amenities.map((amenity, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <span className="text-green-900">•</span>
-                        <span className="text-gray-700">{amenity}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            </div>
+            
+            {/* Room Description */}
+            <div className="prose max-w-none mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Room Description</h2>
+              {room.content?.rendered ? (
+                <div 
+                  dangerouslySetInnerHTML={{ __html: room.content.rendered }} 
+                  className="text-gray-600"
+                />
+              ) : (
+                <p className="text-gray-600">No description available for this room.</p>
               )}
+            </div>
+
+            {/* Amenities */}
+            {amenities.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Amenities</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="text-green-900">•</span>
+                      <span className="text-gray-700">{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Book Now Button */}
+            <div className="mb-8">
+              <Button 
+                onClick={() => {
+                  const bookingSection = document.getElementById('booking-section');
+                  bookingSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-green-900 hover:bg-green-800 text-white w-full py-6 text-lg"
+              >
+                Book Now
+              </Button>
             </div>
             
             {/* Booking Form */}
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-              <BookingForm roomType={'conference'} roomId={room.id?.toString()} />
+            <div className="sticky top-4">
+              <div id="booking-section" className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Book Your Stay</h2>
+                <BookingForm roomType={'conference'} roomId={room.id?.toString()} />
+              </div>
             </div>
           </div>
         </div>

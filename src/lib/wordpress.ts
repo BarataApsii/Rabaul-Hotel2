@@ -1,6 +1,6 @@
 // WordPress API utility functions
 
-const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL || '';
+const WORDPRESS_API_URL = process.env["NEXT_PUBLIC_WORDPRESS_URL"] || '';
 
 if (!WORDPRESS_API_URL) {
   console.warn('NEXT_PUBLIC_WORDPRESS_URL is not set in environment variables');
@@ -10,6 +10,9 @@ export interface WPPost {
   id: number;
   slug: string;
   title: {
+    rendered: string;
+  };
+  excerpt?: {
     rendered: string;
   };
   content: {

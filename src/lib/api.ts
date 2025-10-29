@@ -4,85 +4,77 @@
  * API Utility Functions
  * 
  * This file provides functions to interact with the WordPress REST API
+ * It's designed to work in both client and server components
  */
 
-import { getPosts, getPostBySlug } from './api.server';
+import type { WPPost } from './wordpress';
 
-export type WPPost = {
-  id: number;
-  slug: string;
-  title: { rendered: string };
-  content: { rendered: string };
-  excerpt?: { rendered: string };
-  acf?: Record<string, any>;
-  better_featured_image?: {
-    source_url: string;
-  };
-  _embedded?: {
-    'wp:featuredmedia'?: Array<{
-      source_url: string;
-      alt_text?: string;
-      media_details?: {
-        width: number;
-        height: number;
-      };
-    }>;
-  };
-};
+export type { WPPost };
 
-// Get all rooms
-async function getRooms(): Promise<WPPost[]> {
+// Base URL for API requests
+const API_BASE_URL = process.env['NEXT_PUBLIC_WORDPRESS_API_URL'] || 'https://rabaulhotel.com/wp-json/wp/v2';
+
+// Client-side API functions
+async function fetchAPI<T>(endpoint: string, params: Record<string, any> = {}): Promise<T> {
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${API_BASE_URL}/${endpoint}${queryString ? `?${queryString}` : ''}`;
+  
   try {
-    const posts = await getPosts('rooms');
-    return Array.isArray(posts) ? posts : [];
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
   } catch (error) {
-    console.error('Error fetching rooms:', error);
+    console.error('API Error:', error);
+    throw error;
+  }
+}
+
+// Get posts by post type
+export async function getPosts(postType: string, params: Record<string, any> = {}): Promise<WPPost[]> {
+  try {
+    return await fetchAPI<WPPost[]>(postType, params);
+  } catch (error) {
+    console.error(`Error fetching ${postType}:`, error);
     return [];
   }
+}
+
+// Get a single post by slug
+export async function getPostBySlug(postType: string, slug: string): Promise<WPPost | null> {
+  try {
+    const posts = await fetchAPI<WPPost[]>(postType, { slug, _embed: true });
+    return posts[0] || null;
+  } catch (error) {
+    console.error(`Error fetching ${postType} with slug ${slug}:`, error);
+    return null;
+  }
+}
+
+// Get all rooms
+export async function getRooms(): Promise<WPPost[]> {
+  return getPosts('rooms');
 }
 
 // Get all amenities (general amenities)
-async function getAmenities(): Promise<WPPost[]> {
-  try {
-    const posts = await getPosts('amenities');
-    return Array.isArray(posts) ? posts : [];
-  } catch (error) {
-    console.error('Error fetching amenities:', error);
-    return [];
-  }
+export async function getAmenities(): Promise<WPPost[]> {
+  return getPosts('amenities');
 }
 
 // Get room-specific amenities
-async function getRoomAmenities(): Promise<WPPost[]> {
-  try {
-    const posts = await getPosts('room-amenities');
-    return Array.isArray(posts) ? posts : [];
-  } catch (error) {
-    console.error('Error fetching room amenities:', error);
-    return [];
-  }
+export async function getRoomAmenities(): Promise<WPPost[]> {
+  return getPosts('room-amenities');
 }
 
 // Get all tourist spots
-async function getExplore(): Promise<WPPost[]> {
-  try {
-    const posts = await getPosts('tourist-spots');
-    return Array.isArray(posts) ? posts : [];
-  } catch (error) {
-    console.error('Error fetching tourist spots:', error);
-    return [];
-  }
+export async function getExplore(): Promise<WPPost[]> {
+  return getPosts('tourist-spots');
 }
 
 // Get a single room by slug
-async function getRoomBySlug(slug: string): Promise<WPPost | null> {
-  try {
-    const post = await getPostBySlug('rooms', slug);
-    return post || null;
-  } catch (error) {
-    console.error(`Error fetching room with slug ${slug}:`, error);
-    return null;
-  }
+export async function getRoomBySlug(slug: string): Promise<WPPost | null> {
+  return getPostBySlug('rooms', slug);
 }
 
 // Export the API object with all methods
@@ -100,7 +92,7 @@ export const api = {
       // In development, return mock data
       if (process.env.NODE_ENV === 'development') {
         // Default empty array response for unknown endpoints
-        return [] as any;
+        return [];
       }
 
       // In production, make actual API calls

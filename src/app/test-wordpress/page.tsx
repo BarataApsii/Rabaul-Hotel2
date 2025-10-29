@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { api, WPPost } from '@/lib/api';
+import { getRooms, WPPost } from '@/lib/api';
 
 export default function TestWordPress() {
   const [data, setData] = useState<WPPost[] | null>(null);
@@ -12,7 +12,7 @@ export default function TestWordPress() {
       try {
         setLoading(true);
         // Test the rooms endpoint
-        const rooms = await api.getRooms();
+        const rooms = await getRooms();
         setData(rooms);
         setError(null);
       } catch (err) {

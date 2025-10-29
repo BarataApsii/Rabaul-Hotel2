@@ -55,7 +55,7 @@ export function WordPressImage({
   // If it's a relative path, make it absolute to the WordPress site
   if (src.startsWith('/') && !src.startsWith('//')) {
     // Use the WordPress site URL from environment variables or fallback
-    const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || '';
+    const wpUrl = process.env['NEXT_PUBLIC_WORDPRESS_URL'] || '';
     imageUrl = `${wpUrl}${src}`;
   } else if (src.startsWith('http:')) {
     // Convert HTTP to HTTPS
