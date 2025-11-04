@@ -1,5 +1,6 @@
-// WordPress API Client - Simplified Version
-const API_BASE_URL = '/api/wordpress';
+// WordPress API Client
+const API_BASE_URL = process.env['NEXT_PUBLIC_WORDPRESS_URL'] || '';
+const WP_API_PREFIX = '/wp-json/wp/v2';
 
 // Base types
 export interface WPImage {
@@ -46,32 +47,56 @@ export interface WPRoom extends WPPostBase {
 
 // Fetch helper
 async function fetchFromWordPress<T>(path: string, params: Record<string, any> = {}): Promise<T> {
-  const query = new URLSearchParams();
-  query.set('path', path);
-  
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      if (Array.isArray(value)) {
-        value.forEach(v => query.append(`${key}[]`, String(v)));
-      } else if (typeof value === 'object') {
-        query.set(key, JSON.stringify(value));
-      } else {
-        query.set(key, String(value));
+  try {
+    // Remove any leading slashes from the path
+    const cleanPath = path.replace(/^\/+/, '');
+    
+    // Construct the base URL
+    const url = new URL(`${API_BASE_URL}${WP_API_PREFIX}/${cleanPath}`);
+    
+    // Add query parameters
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach(v => url.searchParams.append(`${key}[]`, String(v)));
+        } else if (typeof value === 'object') {
+          url.searchParams.set(key, JSON.stringify(value));
+        } else {
+          url.searchParams.set(key, String(value));
+        }
       }
+    });
+    
+    console.log('Fetching from WordPress:', url.toString());
+    
+    const response = await fetch(url.toString(), {
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
+    });
+
+    if (!response.ok) {
+      let errorMessage = `Request failed with status ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error?.message || errorMessage;
+      } catch (e) {
+        // Ignore JSON parse errors
+      }
+      throw new Error(`Failed to fetch ${path}: ${errorMessage}`);
     }
-  });
 
-  const response = await fetch(`${API_BASE_URL}?${query.toString()}`, {
-    headers: { 'Content-Type': 'application/json' },
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || `Failed to fetch ${path}`);
+    return response.json();
+  } catch (error) {
+    console.error('Error in fetchFromWordPress:', {
+      path,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    throw error;
   }
-
-  return response.json();
 }
 
 // Define the allowed image sizes
@@ -106,12 +131,17 @@ export async function getPosts<T = WPPostBase>(
   postType: string,
   params: Record<string, any> = {}
 ): Promise<T[]> {
-  const posts = await fetchFromWordPress<T[]>(`wp/v2/${postType}`, {
-    _embed: true,
-    per_page: 100,
-    ...params,
-  });
-  return Array.isArray(posts) ? posts : [];
+  try {
+    const posts = await fetchFromWordPress<T[]>(postType, {
+      _embed: true,
+      per_page: 100,
+      ...params,
+    });
+    return Array.isArray(posts) ? posts : [];
+  } catch (error) {
+    console.error(`Error fetching posts of type ${postType}:`, error);
+    return [];
+  }
 }
 
 // Get single post by slug

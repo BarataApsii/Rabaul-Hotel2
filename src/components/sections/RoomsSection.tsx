@@ -187,7 +187,7 @@ const RoomsSection = () => {
                       </span>
                     </div>
                     <button 
-                      className="bg-green-900 text-white py-1.5 px-3 rounded hover:bg-green-800 transition-colors text-sm"
+                      className="bg-green-900 text-white py-1.5 px-3 rounded hover:bg-green-800 transition-colors text-sm cursor-pointer"
                       onClick={() => window.location.href = `/rooms/${room.slug}`}
                     >
                       View Details
