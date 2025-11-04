@@ -20,7 +20,7 @@ interface RoomMediaDetails {
 
 interface Room extends Omit<WPPost, '_embedded'> {
   acf?: {
-    price?: string | number;
+    room_rates?: string | number;
     max_guests?: number | string;
     guests?: number | string;
     size?: string | number;
@@ -49,13 +49,13 @@ interface Room extends Omit<WPPost, '_embedded'> {
   slug: string;
 }
 
-const formatNightlyRate = (price: string | number | undefined): string => {
+const formatPrice = (price: string | number | undefined): string => {
   if (!price) return '';
   
   const numPrice = typeof price === 'string' ? parseFloat(price) : price;
   if (isNaN(numPrice)) return '';
   
-  return `$${numPrice.toLocaleString()} / night`;
+  return `K${numPrice.toLocaleString()}`;
 };
 
 const RoomsSection = () => {
@@ -68,6 +68,16 @@ const RoomsSection = () => {
       try {
         setLoading(true);
         const data = await api.getRooms();
+        console.log('Fetched rooms data:', data);
+        // Log ACF fields for each room
+        data.forEach((room: any, index: number) => {
+          console.log(`Room ${index + 1} (${room.title?.rendered || 'No title'}):`, {
+            acf: room.acf,
+            price: room.acf?.price,
+            price_per_night: room.acf?.price_per_night,
+            allAcfFields: Object.keys(room.acf || {})
+          });
+        });
         setRooms(data as Room[]);
       } catch (err) {
         console.error('Error fetching rooms:', err);
@@ -150,9 +160,6 @@ const RoomsSection = () => {
                 
                 <CardContent className="p-0 grow">
                   <div className="space-y-2 mb-4">
-                    <p className="text-lg font-semibold text-gray-800">
-                      {formatNightlyRate(room.acf?.price)}
-                    </p>
                     {room.acf?.bed_type && (
                       <p className="text-sm text-gray-600">
                         {room.acf.bed_type}
@@ -171,12 +178,21 @@ const RoomsSection = () => {
                       __html: room.excerpt?.rendered || room.content?.rendered || '' 
                     }} 
                   />
-                  <button 
-                    className="w-full mt-auto bg-green-900 text-white py-2 px-4 rounded hover:bg-green-800 transition-colors"
-                    onClick={() => window.location.href = `/rooms/${room.slug}`}
-                  >
-                    View Details
-                  </button>
+                  <div className="flex justify-between items-center mt-4">
+                    <div className="flex items-center">
+                      <span className="text-lg font-semibold text-gray-800">
+                        {room.acf?.room_rates 
+                          ? `${formatPrice(room.acf.room_rates)} / ${room.title.rendered.toLowerCase().includes('conference') ? 'day' : 'night'}`
+                          : 'Price on request'}
+                      </span>
+                    </div>
+                    <button 
+                      className="bg-green-900 text-white py-1.5 px-3 rounded hover:bg-green-800 transition-colors text-sm"
+                      onClick={() => window.location.href = `/rooms/${room.slug}`}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </CardContent>
               </div>
             </Card>
