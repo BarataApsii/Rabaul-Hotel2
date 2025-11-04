@@ -180,7 +180,7 @@ const RoomsSection = () => {
                   />
                   <div className="flex justify-between items-center mt-4">
                     <div className="flex items-center">
-                      <span className="text-lg font-semibold text-gray-800">
+                      <span className="text-lg font-semibold text-green-900">
                         {room.acf?.room_rates 
                           ? `${formatPrice(room.acf.room_rates)} / ${room.title.rendered.toLowerCase().includes('conference') ? 'day' : 'night'}`
                           : 'Price on request'}
