@@ -1,50 +1,61 @@
 'use client'
 
 import * as React from "react"
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { DayPicker as BaseDayPicker, DayProps, Formatters } from "react-day-picker"
+import { DayPicker as BaseDayPicker } from "react-day-picker"
+import type { DayPickerProps } from "react-day-picker"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-type CalendarMode = 'single' | 'multiple' | 'range';
+type CalendarCaptionLayout = NonNullable<DayPickerProps['captionLayout']>;
 
-type CalendarProps = {
-  classNames?: Record<string, string>;
-  buttonVariant?: React.ComponentProps<typeof Button>["variant"];
-  captionLayout?: 'buttons' | 'dropdown' | 'dropdown-buttons';
-  mode?: CalendarMode;
-} & Omit<React.ComponentProps<typeof BaseDayPicker>, 'classNames' | 'captionLayout' | 'mode'>;
+interface CalendarProps {
+  className?: string;
+  classNames?: Partial<React.ComponentProps<typeof BaseDayPicker>['classNames']>;
+  buttonVariant?: React.ComponentProps<typeof Button>['variant'];
+  captionLayout?: CalendarCaptionLayout;
+  showOutsideDays?: boolean;
+  formatters?: any;
+  components?: any;
+  selected?: Date | undefined;
+  onSelect?: (date: Date | undefined) => void;
+  disabled?: (date: Date) => boolean;
+  initialFocus?: boolean;
+}
 
-function Calendar({
+export function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = "buttons",
+  captionLayout = "dropdown",
   buttonVariant = "ghost",
   formatters,
   components,
-  mode = 'single',
+  selected,
+  onSelect,
+  disabled,
+  initialFocus = false,
   ...props
 }: CalendarProps) {
-
   return (
     <BaseDayPicker
-      mode={mode as any}
+      mode="single"
+      selected={selected}
+      onSelect={onSelect}
+      disabled={disabled}
       showOutsideDays={showOutsideDays}
+      initialFocus={initialFocus}
       className={cn(
-        "bg-gray-800 text-white group/calendar p-3 [--cell-size:2rem] rounded-md shadow-lg [[data-slot=card-content]_&]:bg-gray-800 [[data-slot=popover-content]_&]:bg-gray-800",
-        "rtl:**:[.rdp-button_next>svg]:rotate-180",
-        "rtl:**:[.rdp-button_previous>svg]:rotate-180",
+        "bg-gray-800 text-white group/calendar p-3 [--cell-size:2rem] rounded-md shadow-lg",
         className
       )}
-      captionLayout="buttons"
+      captionLayout={captionLayout}
       formatters={{
-        formatCaption: (date: Date) => {
-          return new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(date);
-        },
+        formatCaption: (date: Date) =>
+          new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(date),
         ...formatters,
-      } as Formatters}
+      }}
       classNames={{
         root: "w-fit",
         months: "relative flex flex-col gap-4 md:flex-row",
@@ -78,40 +89,77 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: (props) => <ChevronLeftIcon className="size-4" {...props} />,
-        IconRight: (props) => <ChevronRightIcon className="size-4" {...props} />,
-        IconDropdown: (props) => <ChevronDownIcon className="size-4" {...props} />,
-        Day: (props) => <CalendarDayButton {...props} />,
+        PreviousMonthButton: ({ className, ...props }: React.HTMLAttributes<HTMLButtonElement>) => (
+          <Button
+            variant={buttonVariant}
+            className={cn("h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)}
+            {...props}
+          >
+            <ChevronLeftIcon className="h-4 w-4" />
+          </Button>
+        ),
+        NextMonthButton: ({ className, ...props }: React.HTMLAttributes<HTMLButtonElement>) => (
+          <Button
+            variant={buttonVariant}
+            className={cn("h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)}
+            {...props}
+          >
+            <ChevronRightIcon className="h-4 w-4" />
+          </Button>
+        ),
+        Day: (props) => {
+          // Type assertion for the day cell props
+          const dayProps = props as unknown as {
+            date: Date;
+            displayMonth: Date;
+            className?: string;
+            style?: React.CSSProperties;
+            modifiers: Record<string, boolean>;
+            onClick?: (e: React.MouseEvent) => void;
+          };
+          
+          const { date, className, style } = dayProps;
+          const modifiers = dayProps.modifiers || {};
+          const isDisabled = modifiers['disabled'] || false;
+          const isSelected = modifiers['selected'] || false;
+          const isToday = modifiers['today'] || false;
+          const isOutside = modifiers['outside'] || false;
+          
+          return (
+            <div
+              className={cn('day-cell', className)}
+              style={style}
+              onClick={(e) => {
+                if (isDisabled) return;
+                dayProps.onClick?.(e);
+              }}
+              role="button"
+              aria-selected={isSelected}
+              data-today={isToday}
+              data-outside={isOutside}
+              data-disabled={isDisabled}
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "h-[--cell-size] w-full rounded-md p-0 text-sm font-normal",
+                  "hover:bg-gray-700 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                  isSelected && "bg-blue-600 text-white",
+                  isToday && "font-semibold text-white",
+                  isDisabled && "opacity-50 cursor-not-allowed",
+                  isOutside && "text-gray-500 aria-selected:text-gray-400"
+                )}
+                disabled={isDisabled}
+              >
+                {date.getDate()}
+              </Button>
+            </div>
+          );
+        },
         ...components,
       }}
       {...props}
     />
   )
 }
-
-function CalendarDayButton(props: DayProps) {
-  const { date, displayMonth } = props;
-  const ref = React.useRef<HTMLButtonElement>(null);
-
-  return (
-    <Button
-      ref={ref}
-      className={cn(
-        "h-[--cell-size] w-full rounded-md p-0 text-sm font-normal aria-selected:opacity-100",
-        "hover:bg-gray-700 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-        "data-selected:bg-blue-600 data-selected:text-white",
-        "data-today:font-semibold data-today:text-white",
-        "data-outside:text-gray-500 data-outside:hover:bg-transparent",
-        "data-disabled:pointer-events-none data-disabled:opacity-50",
-        !displayMonth && "opacity-50"
-      )}
-      variant="ghost"
-      size="sm"
-      {...props}
-    >
-      {date.getDate()}
-    </Button>
-  );
-}
-
-export { Calendar, CalendarDayButton }

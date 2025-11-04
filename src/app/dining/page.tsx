@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function DiningPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100">
       {/* Navigation Back Button */}
       <div className="container mx-auto px-4 pt-6">
         <Link href="/" className="inline-flex items-center text-gray-700 hover:text-gray-900 transition-colors">

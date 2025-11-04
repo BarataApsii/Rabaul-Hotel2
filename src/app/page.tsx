@@ -755,12 +755,12 @@ export default function Home() {
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="!w-7 !h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7! h-7!" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="!w-7 !h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7! h-7!" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="4" x2="20" y1="12" y2="12"></line>
                 <line x1="4" x2="20" y1="6" y2="6"></line>
                 <line x1="4" x2="20" y1="18" y2="18"></line>
@@ -878,7 +878,7 @@ export default function Home() {
           </div>
           
           {/* Right side - Contact Info (Desktop only) */}
-          <div className="hidden md:flex items-center space-x-6 flex-shrink-0 mr-4">
+          <div className="hidden md:flex items-center space-x-6 shrink-0 mr-4">
             <div className="flex items-center space-x-2 text-sm">
               <Mail className="w-4 h-4 text-white" />
               <span className='text-yellow-400'>reservations@rabaulhotel.com.pg</span>
@@ -894,7 +894,7 @@ export default function Home() {
           
           {/* Mobile Menu */}
           <div 
-            className={`fixed left-0 top-20 z-[1002] flex flex-col justify-start overflow-y-auto transition-all duration-300 ease-in-out transform ${
+            className={`fixed left-0 top-20 z-1002 flex flex-col justify-start overflow-y-auto transition-all duration-300 ease-in-out transform ${
               mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             } md:hidden`}
           >
@@ -1015,7 +1015,7 @@ export default function Home() {
         <section
           id="home"
           ref={homeRef}
-          className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          className="relative bg-linear-to-br from-gray-900 via-gray-800 to-gray-900"
           style={{ 
             position: 'relative', 
             zIndex: 10, 
@@ -1033,7 +1033,7 @@ export default function Home() {
               priority
               quality={85}
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+            <div className="absolute inset-0 bg-linear-to-br from-black/60 via-black/40 to-black/60" />
           </div>
           <div className="container mx-auto px-4 py-2 relative z-10 flex flex-col items-center">
             {/* Slider Container */}
@@ -1191,7 +1191,7 @@ export default function Home() {
             </motion.div>
 
         {/* Bottom content section */}
-        <div className="relative z-10 w-full bg-gradient-to-t from-black/60 to-transparent mt-6">
+        <div className="relative z-10 w-full bg-linear-to-t from-black/60 to-transparent mt-6">
           <div className="container max-w-7xl mx-auto px-4 py-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1299,7 +1299,6 @@ export default function Home() {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
-                            mode="single"
                             selected={checkIn}
                             onSelect={setCheckIn}
                             initialFocus
@@ -1327,7 +1326,6 @@ export default function Home() {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             key={`calendar-out-${formKey}`}
-                            mode="single"
                             selected={checkOut}
                             onSelect={setCheckOut}
                             initialFocus
@@ -1734,7 +1732,7 @@ export default function Home() {
                       <div className="flex items-center space-x-3">
                         <input 
                           type="checkbox" 
-                          className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                          className="shrink-0 h-5 w-5 text-gray-400 border-gray-300 focus:ring-gray-400"
                           checked={!!recaptchaToken}
                           onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : '')}
                         />
@@ -1797,7 +1795,7 @@ export default function Home() {
       <section 
         id="contact" 
         ref={contactRef}
-        className="py-8 bg-gradient-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
+        className="py-8 bg-linear-to-br from-green-50 to-blue-50 scroll-mt-12 relative overflow-hidden"
       >
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -1818,7 +1816,7 @@ export default function Home() {
                 
                 <div className="space-y-4">
                   <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                    <div className="shrink-0 bg-green-100 p-3 rounded-full">
                       <MapPin className="h-6 w-6 text-green-700" />
                     </div>
                     <div>
@@ -1828,7 +1826,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                    <div className="shrink-0 bg-green-100 p-3 rounded-full">
                       <Phone className="h-6 w-6 text-green-700" />
                     </div>
                     <div>
@@ -1838,7 +1836,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                    <div className="shrink-0 bg-green-100 p-3 rounded-full">
                       <Mail className="h-6 w-6 text-green-700" />
                     </div>
                     <div>
@@ -1848,7 +1846,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
+                    <div className="shrink-0 bg-green-100 p-3 rounded-full">
                       <Clock className="h-6 w-6 text-green-700" />
                     </div>
                     <div>
@@ -1979,7 +1977,7 @@ export default function Home() {
                     <input
                       id="recaptchaCheckbox"
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 text-[#1a5f2c] rounded-sm border-2 border-gray-300 focus:ring-[#1a5f2c]"
+                      className="shrink-0 h-5 w-5 text-gray-400 border-gray-300 focus:ring-gray-400"
                       checked={!!recaptchaToken}
                       onChange={(e) => setRecaptchaToken(e.target.checked ? 'dev-mode-token' : null)}
                     />
@@ -2065,17 +2063,17 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-4 text-yellow-400">Contact Info</h4>
               <ul className="space-y-4">
                 <li className="flex items-start space-x-3">
-                  <Phone className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <Phone className="h-5 w-5 text-white shrink-0 mt-0.5" />
                   <div className="text-white">
                     <a href="tel:+6759821999" className="block hover:text-yellow-400 transition-colors">+675 982 1999 / 7189 3571</a>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <Mail className="h-5 w-5 text-white shrink-0 mt-0.5" />
                   <a href="mailto:info@rabaulhotel.com" className="text-white hover:text-yellow-400 transition-colors">info@rabaulhotel.com</a>
                 </li>
                 <li className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                  <MapPin className="h-5 w-5 text-white shrink-0 mt-0.5" />
                   <span className="text-white">
                     Mango Avenue, P.O Box 1
                     <br />Rabaul, East New Britain Province

@@ -78,9 +78,37 @@ export async function getPostBySlug(type: string, slug: string): Promise<WPPost 
 }
 
 // ✅ Export as single object for easy import (api.getRooms(), api.getPosts(), etc.)
+/**
+ * Get amenities data
+ */
+export async function getAmenities(): Promise<WPPost[]> {
+  try {
+    const amenities = await fetchAPI<WPPost[]>("amenities", { per_page: 50, _embed: true });
+    return amenities;
+  } catch (error) {
+    console.error("❌ Error fetching amenities:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get explore rabaul content
+ */
+export async function getExploreRabaul(): Promise<WPPost[]> {
+  try {
+    const explore = await fetchAPI<WPPost[]>("explore-rabaul", { per_page: 50, _embed: true });
+    return explore;
+  } catch (error) {
+    console.error("❌ Error fetching explore rabaul content:", error);
+    throw error;
+  }
+}
+
 export const api = {
   fetchAPI,
   getPosts,
   getRooms,
   getPostBySlug,
+  getAmenities,
+  getExploreRabaul,
 };

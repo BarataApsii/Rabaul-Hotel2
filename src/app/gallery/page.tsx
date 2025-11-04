@@ -139,7 +139,7 @@ export default function GalleryPage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
                   <div className="text-right">
                     <span className="inline-block bg-white/90 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">
                       {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
