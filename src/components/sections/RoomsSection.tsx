@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -118,10 +118,13 @@ const RoomsSection = () => {
   }
 
   return (
-    <section id="rooms" className="py-12 bg-white">
+    <section id="rooms" className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12 text-green-900">Our Rooms</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">Our Rooms</h2>
+          <p className="text-gray-600 mt-2">Experience comfort and luxury in our well-appointed rooms</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {rooms.map((room) => (
             <Card key={room.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col border-0">
               <div className="relative h-48 w-full">
@@ -140,14 +143,14 @@ const RoomsSection = () => {
                 )}
               </div>
               
-              <div className="flex flex-col flex-grow p-6">
+              <div className="flex flex-col grow p-6">
                 <CardHeader className="p-0 mb-4">
                   <CardTitle className="text-xl text-green-900">
                     {room.title.rendered}
                   </CardTitle>
                 </CardHeader>
                 
-                <CardContent className="p-0 flex-grow">
+                <CardContent className="p-0 grow">
                   <div className="space-y-2 mb-4">
                     <p className="text-lg font-semibold text-gray-800">
                       {formatNightlyRate(room.acf?.price)}
@@ -165,20 +168,18 @@ const RoomsSection = () => {
                   </div>
                   
                   <div 
-                    className="prose text-gray-600 line-clamp-3 text-sm mb-4"
+                    className="prose text-gray-600 text-sm mb-4 line-clamp-3"
                     dangerouslySetInnerHTML={{ 
                       __html: room.excerpt?.rendered || room.content?.rendered || '' 
                     }} 
                   />
                 </CardContent>
 
-                <CardFooter className="p-0 mt-auto">
-                  <Button asChild className="w-full bg-green-900 hover:bg-green-800 text-white">
-                    <Link href={`/rooms/${room.slug}`} className="mt-4">
-                      View Details
-                    </Link>
-                  </Button>
-                </CardFooter>
+                <Button asChild className="w-full bg-green-900 hover:bg-green-800 text-white mt-4">
+                  <Link href={`/rooms/${room.slug}`}>
+                    View Details
+                  </Link>
+                </Button>
               </div>
             </Card>
           ))}

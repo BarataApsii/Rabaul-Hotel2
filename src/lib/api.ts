@@ -77,7 +77,6 @@ export async function getPostBySlug(type: string, slug: string): Promise<WPPost 
   }
 }
 
-// ✅ Export as single object for easy import (api.getRooms(), api.getPosts(), etc.)
 /**
  * Get amenities data
  */
@@ -92,14 +91,17 @@ export async function getAmenities(): Promise<WPPost[]> {
 }
 
 /**
- * Get explore rabaul content
+ * Get tourist spots content
  */
 export async function getExploreRabaul(): Promise<WPPost[]> {
   try {
-    const explore = await fetchAPI<WPPost[]>("explore-rabaul", { per_page: 50, _embed: true });
+    const explore = await fetchAPI<WPPost[]>("tourist-spots", { 
+      per_page: 50, 
+      _embed: true 
+    });
     return explore;
   } catch (error) {
-    console.error("❌ Error fetching explore rabaul content:", error);
+    console.error("❌ Error fetching tourist spots:", error);
     throw error;
   }
 }
