@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { WPPost } from '@/lib/wordpress';
 
 interface UseWordPressResult<T> {
@@ -7,78 +7,30 @@ interface UseWordPressResult<T> {
   error: Error | null;
 }
 
-export function useWordPress<T = WPPost | WPPost[]>(
-  endpoint: string,
-  params: Record<string, any> = {}
-): UseWordPressResult<T> {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
+export function useWordPress<T = WPPost | WPPost[]>(endpoint: string, params: Record<string, any> = {}) {
+  const [state, setState] = useState<UseWordPressResult<T>>({ data: null, loading: true, error: null });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Always go through our API route, which will handle the WordPress API call
-        const queryString = new URLSearchParams({
-          path: endpoint,
-          ...params,
-        }).toString();
+  const fetchData = useCallback(async () => {
+    setState({ data: null, loading: true, error: null });
+    try {
+      const url = new URL('/api/wordpress', window.location.origin);
+      url.searchParams.set('path', endpoint);
+      Object.entries(params).forEach(([k, v]) => v != null && url.searchParams.set(k, String(v)));
 
-        const response = await fetch(`/api/wordpress?${queryString}`, {
-          credentials: 'same-origin',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (!response.ok) {
-          // Try to get error details without exposing them in production
-          let errorMessage = `Request failed with status ${response.status}`;
-          
-          if (process.env.NODE_ENV === 'development') {
-            try {
-              const errorData = await response.json();
-              console.error('API Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                endpoint,
-                error: errorData
-              });
-            } catch (e) {
-              const errorText = await response.text();
-              console.error('API Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                endpoint,
-                error: errorText || 'Unknown error occurred'
-              });
-            }
-          }
-          
-          throw new Error(errorMessage);
-        }
-        
-        const result = await response.json();
-        console.log('WordPress API Response:', { url: response.url, data: result });
-        setData(result);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('An unknown error occurred');
-        console.error('Error in useWordPress:', {
-          message: error.message,
-          stack: error.stack,
-          endpoint,
-          params
-        });
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+      const res = await fetch(url.toString(), {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-cache',
+      });
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const json = await res.json();
+      setState({ data: json, loading: false, error: null });
+    } catch (err) {
+      setState({ data: null, loading: false, error: err instanceof Error ? err : new Error('Unknown error') });
+    }
   }, [endpoint, JSON.stringify(params)]);
 
-  return { data, loading, error };
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  return state;
 }

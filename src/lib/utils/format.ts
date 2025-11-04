@@ -1,46 +1,19 @@
-// src/lib/utils/format.ts
-
-/**
- * Format number as currency with PGK symbol
- */
 export const formatCurrency = (amount: number | string): string => {
-  // Convert string to number if needed
-  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
-  // Handle invalid numbers
-  if (isNaN(numAmount)) return 'Contact for pricing';
-  
-  // Format with PGK symbol and thousand separators
-  return `PGK${numAmount.toLocaleString('en-PG', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })}`;
+  const num = typeof amount === 'string' ? parseFloat(amount.trim()) : amount;
+  if (isNaN(num)) return 'Contact for pricing';
+  return `PGK${num.toLocaleString('en-PG',{minimumFractionDigits:0,maximumFractionDigits:0})}`;
 };
 
-/**
- * Format price for display
- * Handles numbers, strings, undefined, and null
- */
-export const formatPrice = (price: number | string | undefined | null): string => {
+export const formatPrice = (price: number | string | undefined | null | object): string => {
   if (price === undefined || price === null) return 'Contact for pricing';
-  
-  // Handle empty objects or other non-numeric values
-  if (typeof price === 'object' && Object.keys(price).length === 0) {
-    return 'Contact for pricing';
-  }
-  
-  // Convert string to number
-  const amount = typeof price === 'string' ? parseFloat(price) : price;
-  
-  // Check if the result is a valid number
-  if (isNaN(amount)) return 'Contact for pricing';
-  
-  return formatCurrency(amount);
+  if (typeof price === 'object' && Object.keys(price).length === 0) return 'Contact for pricing';
+  const num = typeof price === 'string' ? parseFloat(price.trim()) : price;
+  if (isNaN(Number(num))) return 'Contact for pricing';
+  return formatCurrency(num as number);
 };
 
-/**
- * Format price (without per night suffix)
- */
-export const formatNightlyRate = (price: number | string | undefined | null): string => {
-  return formatPrice(price);
+export const formatNightlyRate = (rate: number | string | undefined | null): string => {
+  if (rate === undefined || rate === null) return 'Contact for rates';
+  if (typeof rate === 'string' && rate.toLowerCase().includes('request')) return rate.trim();
+  return `${formatPrice(rate)} / night`;
 };
