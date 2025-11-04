@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WPPost } from '@/lib/api';
@@ -174,12 +173,6 @@ const RoomsSection = () => {
                     }} 
                   />
                 </CardContent>
-
-                <Button asChild className="w-full bg-green-900 hover:bg-green-800 text-white mt-4">
-                  <Link href={`/rooms/${room.slug}`}>
-                    View Details
-                  </Link>
-                </Button>
               </div>
             </Card>
           ))}

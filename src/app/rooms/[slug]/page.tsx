@@ -5,8 +5,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
-import BookingForm from '@/components/BookingForm';
-import { Button } from '@/components/ui/button';
 
 // Define the ACF fields interface
 interface RoomACF extends Record<string, any> {
@@ -192,27 +190,6 @@ export default async function RoomDetailPage({
                 </div>
               </div>
             )}
-            
-            {/* Book Now Button */}
-            <div className="mb-8">
-              <Button 
-                onClick={() => {
-                  const bookingSection = document.getElementById('booking-section');
-                  bookingSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="bg-green-900 hover:bg-green-800 text-white w-full py-6 text-lg"
-              >
-                Book Now
-              </Button>
-            </div>
-            
-            {/* Booking Form */}
-            <div className="sticky top-4">
-              <div id="booking-section" className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Book Your Stay</h2>
-                <BookingForm roomType={'conference'} roomId={room.id?.toString()} />
-              </div>
-            </div>
           </div>
         </div>
       </div>
