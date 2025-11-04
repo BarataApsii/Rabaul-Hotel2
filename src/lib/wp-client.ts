@@ -12,7 +12,9 @@ export interface WPImage {
       medium?: { source_url: string };
       large?: { source_url: string };
       full?: { source_url: string };
+      [key: string]: { source_url: string } | undefined;
     };
+    [key: string]: any; // For any additional properties
   };
 }
 
@@ -72,12 +74,24 @@ async function fetchFromWordPress<T>(path: string, params: Record<string, any> =
   return response.json();
 }
 
+// Define the allowed image sizes
+type ImageSize = 'thumbnail' | 'medium' | 'large' | 'full' | string;
+
 // Get featured image URL
-export function getFeaturedImage(post: WPPostBase, size: keyof WPImage['media_details']['sizes'] = 'large'): string | null {
+export function getFeaturedImage(
+  post: WPPostBase, 
+  size: ImageSize = 'large'
+): string | null {
   const media = post._embedded?.['wp:featuredmedia']?.[0];
   if (!media) return null;
   
-  return media.media_details?.sizes?.[size]?.source_url || media.source_url || null;
+  // Try to get the requested size, fall back to full size, then source_url
+  return (
+    media.media_details?.sizes?.[size]?.source_url ||
+    (size !== 'full' ? media.media_details?.sizes?.full?.source_url : null) ||
+    media.source_url ||
+    null
+  );
 }
 
 // Get excerpt with fallback

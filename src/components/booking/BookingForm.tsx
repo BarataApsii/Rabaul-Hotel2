@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { format, addDays, isBefore, isToday } from 'date-fns';
+import { format, addDays, isBefore, isToday, isSameDay } from 'date-fns';
 import { useWordPress } from '@/hooks/useWordPress';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -111,7 +111,6 @@ export default function BookingForm() {
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
-                  mode="single"
                   selected={formData.checkIn}
                   onSelect={(date) => {
                     if (date) {
@@ -142,7 +141,6 @@ export default function BookingForm() {
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
-                  mode="single"
                   selected={formData.checkOut}
                   onSelect={(date) => {
                     if (date) {
@@ -150,7 +148,10 @@ export default function BookingForm() {
                       setErrors(prev => ({ ...prev, checkOut: '' }));
                     }
                   }}
-                  disabled={(date) => isBefore(date, formData.checkIn || addDays(new Date(), 1))}
+                  disabled={(date) => 
+                    isBefore(date, formData.checkIn || addDays(new Date(), 1)) && 
+                    !isSameDay(date, formData.checkIn || new Date())
+                  }
                   initialFocus
                 />
               </PopoverContent>
