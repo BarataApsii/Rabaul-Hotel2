@@ -171,6 +171,12 @@ const RoomsSection = () => {
                       __html: room.excerpt?.rendered || room.content?.rendered || '' 
                     }} 
                   />
+                  <button 
+                    className="w-full mt-auto bg-green-900 text-white py-2 px-4 rounded hover:bg-green-800 transition-colors"
+                    onClick={() => window.location.href = `/rooms/${room.slug}`}
+                  >
+                    View Details
+                  </button>
                 </CardContent>
               </div>
             </Card>
