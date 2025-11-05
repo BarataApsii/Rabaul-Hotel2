@@ -2,15 +2,28 @@ import { NextResponse } from 'next/server';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 
 export async function POST(request: Request) {
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
+
   try {
-    const formData = await request.formData();
+    // Parse JSON body
+    const body = await request.json();
     
     // Extract form data
-    const name = formData.get('name')?.toString() || '';
-    const email = formData.get('email')?.toString() || '';
-    const message = formData.get('message')?.toString() || '';
-    const phone = formData.get('phone')?.toString() || '';
-    const recaptchaToken = formData.get('g-recaptcha-response')?.toString() || '';
+    const name = body.name?.toString() || '';
+    const email = body.email?.toString() || '';
+    const message = body.message?.toString() || '';
+    const phone = body.phone?.toString() || '';
+    const recaptchaToken = body['g-recaptcha-response']?.toString() || '';
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -43,15 +56,27 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString()
     });
 
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       success: true,
       message: 'Your message has been sent successfully!'
-    }, { status: 200 });
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
   } catch (error) {
     console.error('Error processing contact form:', error);
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       success: false,
-      message: 'An error occurred while processing your request'
-    }, { status: 500 });
+      message: error instanceof Error ? error.message : 'An error occurred while processing your request'
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
   }
 }

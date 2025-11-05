@@ -179,9 +179,52 @@ export default function GalleryPage() {
     fetchGalleryItems();
   }, []);
 
+  // Process items and ensure valid categories
+  const processedItems = galleryItems.map(item => {
+    // Ensure category is valid and lowercase
+    const validCategories = ['rooms', 'amenities', 'explore'];
+    let category = item.category.toLowerCase();
+    
+    // If category is not valid, try to determine it from the source URL
+    if (!validCategories.includes(category)) {
+      const src = item.src.toLowerCase();
+      if (src.includes('/rooms/')) category = 'rooms';
+      else if (src.includes('/amenities/')) category = 'amenities';
+      else if (src.includes('/explore/') || src.includes('/videos/')) category = 'explore';
+      else category = 'gallery';
+    }
+    
+    return {
+      ...item,
+      category: category
+    };
+  });
+
+  // Get unique categories from items (excluding 'gallery' as it's our default)
+  const itemCategories = [
+    'all',
+    ...Array.from(new Set(processedItems
+      .map(item => item.category)
+      .filter(cat => cat !== 'gallery')
+    ))
+  ].filter(Boolean);
+
+  // Filter items based on active category
   const filteredItems = activeCategory === 'all' 
-    ? galleryItems 
-    : galleryItems.filter(item => item.category === activeCategory);
+    ? processedItems 
+    : processedItems.filter(item => 
+        item.category.toLowerCase() === activeCategory.toLowerCase()
+      );
+      
+  // Debug logs
+  console.log('Active Category:', activeCategory);
+  console.log('All Items with Categories:', processedItems.map(i => ({ 
+    title: i.title, 
+    category: i.category,
+    src: i.src
+  })));
+  console.log('Available Categories:', itemCategories);
+  console.log('Filtered Items:', filteredItems);
 
   if (loading) {
     return (
