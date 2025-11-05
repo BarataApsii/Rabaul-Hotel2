@@ -187,22 +187,29 @@ export default function BookingForm() {
         <CardTitle className="text-center text-2xl font-bold text-primary">Book Your Stay</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-2">
+        <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-2" aria-label="Booking form">
 
           {/* Check-in Date */}
           <div className="space-y-2">
-            <Label htmlFor="check-in">Check-in Date</Label>
+            <Label htmlFor="check-in-date">Check-in Date</Label>
             <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  id="check-in-date"
+                  name="checkIn"
+                  type="button"
                   variant="outline"
                   className={`w-full justify-start text-left font-normal ${errors.checkIn ? 'border-destructive' : ''}`}
+                  aria-label="Select check-in date"
+                  aria-haspopup="dialog"
+                  aria-expanded={isCheckInOpen}
+                  aria-controls="check-in-calendar"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.checkIn ? format(formData.checkIn, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0" align="start">
+              <PopoverContent id="check-in-calendar" className="w-[300px] p-0" align="start">
                 <Calendar
                   selected={formData.checkIn}
                   onSelect={(date) => {
@@ -217,23 +224,30 @@ export default function BookingForm() {
                 />
               </PopoverContent>
             </Popover>
-            {errors.checkIn && <p className="text-sm text-destructive">{errors.checkIn}</p>}
+            {errors.checkIn && <p className="text-sm text-destructive" id="check-in-error">{errors.checkIn}</p>}
           </div>
 
           {/* Check-out Date */}
           <div className="space-y-2">
-            <Label htmlFor="check-out">Check-out Date</Label>
+            <Label htmlFor="check-out-date">Check-out Date</Label>
             <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  id="check-out-date"
+                  name="checkOut"
+                  type="button"
                   variant="outline"
                   className={`w-full justify-start text-left font-normal ${errors.checkOut ? 'border-destructive' : ''}`}
+                  aria-label="Select check-out date"
+                  aria-haspopup="dialog"
+                  aria-expanded={isCheckOutOpen}
+                  aria-controls="check-out-calendar"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.checkOut ? format(formData.checkOut, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0" align="start">
+              <PopoverContent id="check-out-calendar" className="w-[300px] p-0" align="start">
                 <Calendar
                   selected={formData.checkOut}
                   onSelect={(date) => {
@@ -252,13 +266,14 @@ export default function BookingForm() {
                 />
               </PopoverContent>
             </Popover>
-            {errors.checkOut && <p className="text-sm text-destructive">{errors.checkOut}</p>}
+            {errors.checkOut && <p className="text-sm text-destructive" id="check-out-error">{errors.checkOut}</p>}
           </div>
 
           {/* Room Type */}
           <div className="space-y-2">
-            <Label htmlFor="room-type">Room Type</Label>
+            <Label htmlFor="room-type-select">Room Type</Label>
             <Select
+              name="roomType"
               value={formData.roomType}
               onValueChange={(value) => {
                 setFormData(prev => ({ ...prev, roomType: value }));
@@ -266,7 +281,12 @@ export default function BookingForm() {
               }}
               disabled={isLoadingRooms}
             >
-              <SelectTrigger className={`${errors.roomType ? 'border-destructive' : ''}`}>
+              <SelectTrigger 
+                id="room-type-select"
+                className={`${errors.roomType ? 'border-destructive' : ''}`}
+                aria-label="Select room type"
+                aria-describedby={errors.roomType ? 'room-type-error' : undefined}
+              >
                 <SelectValue placeholder={isLoadingRooms ? 'Loading rooms...' : 'Select a room type'} />
               </SelectTrigger>
               <SelectContent className="max-h-[400px] overflow-y-auto">
@@ -348,18 +368,19 @@ export default function BookingForm() {
               </SelectContent>
             </Select>
             {roomsError ? (
-              <p className="text-sm text-destructive">{roomsError}</p>
+              <p id="room-type-error" className="text-sm text-destructive">{roomsError}</p>
             ) : errors.roomType ? (
-              <p className="text-sm text-destructive">{errors.roomType}</p>
+              <p id="room-type-error" className="text-sm text-destructive">{errors.roomType}</p>
             ) : null}
           </div>
 
           {/* Guests */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="adults">Adults</Label>
+              <Label htmlFor="adults-input">Adults</Label>
               <Input
-                id="adults"
+                id="adults-input"
+                name="adults"
                 type="number"
                 min={1}
                 max={10}
@@ -373,14 +394,17 @@ export default function BookingForm() {
                   }
                 }}
                 className={errors.adults ? 'border-destructive' : ''}
+                aria-invalid={!!errors.adults}
+                aria-describedby={errors.adults ? 'adults-error' : undefined}
               />
-              {errors.adults && <p className="text-sm text-destructive">{errors.adults}</p>}
+              {errors.adults && <p id="adults-error" className="text-sm text-destructive">{errors.adults}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="children">Children</Label>
+              <Label htmlFor="children-input">Children</Label>
               <Input
-                id="children"
+                id="children-input"
+                name="children"
                 type="number"
                 min={0}
                 max={10}
@@ -392,13 +416,19 @@ export default function BookingForm() {
                     setFormData(prev => ({ ...prev, children: newChildren }));
                   }
                 }}
+                aria-label="Number of children"
               />
             </div>
           </div>
 
           {/* Submit */}
           <div className="md:col-span-2">
-            <Button type="submit" className="w-full py-6 text-lg" size="lg">
+            <Button 
+              type="submit" 
+              className="w-full py-6 text-lg" 
+              size="lg"
+              aria-label="Submit booking form"
+            >
               Check Availability
             </Button>
           </div>

@@ -24,9 +24,6 @@ import { format, isBefore, isToday, isEqual } from 'date-fns'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
-  // Log the API base URL for debugging
-  console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
-  
   // Initialize dates as undefined - will be set by the reset effect
   const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
   const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
@@ -104,12 +101,17 @@ export default function Home() {
   const [isAtTop, setIsAtTop] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
-  const [isLoading, setIsLoading] = useState(false)
-  const [] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingNumber, setBookingNumber] = useState('');
+  const [error, setError] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('')
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
 
-  // Format price with Kina symbol and proper formatting
+  // Calculate number of nights - handle undefined dates during SSR
+  const nights = checkIn && checkOut 
+    ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   // Handle URL parameters when component mounts
   useEffect(() => {
@@ -342,10 +344,6 @@ export default function Home() {
 
   // Room rates calculation - using the roomRates defined above
 
-  // Calculate number of nights - handle undefined dates during SSR
-  const nights = checkIn && checkOut 
-    ? Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)))
-    : 0;
     
   // Calculate transport cost
   const calculateTransportCost = () => {
@@ -422,6 +420,23 @@ export default function Home() {
 
       // Make API call to submit booking
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+      console.log('Submitting booking to:', `${API_BASE}/booking.php`);
+      console.log('Request payload:', {
+        email,
+        fullName,
+        checkIn: formatDate(checkIn),
+        checkOut: formatDate(checkOut),
+        roomType,
+        adults,
+        children,
+        title,
+        phone: `${countryCode} ${phone}`,
+        transport: transportDetails,
+        payment: paymentMethod,
+        requests: specialRequest,
+        country
+      });
+
       const response = await fetch(`${API_BASE}/booking.php`, {
         method: 'POST',
         headers: { 
@@ -429,70 +444,109 @@ export default function Home() {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          email: email,
-          fullName: fullName,
+          email,
+          fullName,
           checkIn: formatDate(checkIn),
           checkOut: formatDate(checkOut),
-          roomType: roomType,
-          adults: adults,
-          children: children,
-          title: title,
+          roomType,
+          adults,
+          children,
+          title,
           phone: `${countryCode} ${phone}`,
           transport: transportDetails,
           payment: paymentMethod,
           requests: specialRequest,
-          country: country
+          country
         })
       });
 
+      // Get the response text first
+      const responseText = await response.text();
+      console.log('Booking API response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: responseText
+      });
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to submit booking');
+        // Try to extract error message from JSON response if possible
+        try {
+          const errorData = JSON.parse(responseText);
+          throw new Error(errorData.message || `Server responded with status ${response.status}: ${response.statusText}`);
+        } catch (e) {
+          // If not JSON, use the status text
+          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+        }
       }
 
-      const result = await response.json();
-      console.log('Booking response:', result);
-      
-      // Show success toast
-      showToast('Reservation confirmed! We have sent a confirmation to your email.', 'success');
-      
-      // Reset form and booking summary with default dates
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      setCheckIn(today);
-      setCheckOut(tomorrow);
-      setRoomType(roomId || '');
-      setAdults(1);
-      setChildren(0);
-      setFullName('');
-      setPhone('');
-      setEmail('');
-      setTitle('');
-      setCountry('');
-      setSpecialRequest('');
-      setTransportServices({
-        needsTransport: false,
-        pickupLocation: '',
-        pickupTime: ''
+      // Try to parse response as JSON, but handle non-JSON responses
+      let responseData;
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch (e) {
+        // If not JSON, treat it as a plain text response
+        responseData = { success: responseText.toLowerCase().includes('success') };
+      }
+
+      // Log the complete response for debugging
+      console.log('Full response data:', {
+        responseData,
+        rawResponse: responseText,
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
       });
-      setPaymentMethod('credit-card');
-      setErrors({});
-      setBookingDetails(null);
-      setIsBookingConfirmed(false);
-      setRecaptchaToken(null);
+      
+      // Check for success in the response
+      if (responseData.success !== true && responseData.success !== 'true') {
+        console.log('Response indicates failure. Response data structure:', {
+          hasMessage: 'message' in responseData,
+          hasErrors: 'errors' in responseData,
+          hasEmailError: responseData.errors?.email !== undefined,
+          responseKeys: Object.keys(responseData)
+        });
+        // If we have validation errors, display them
+        if (responseData.errors) {
+          // If there's an email error, show it specifically
+          if (responseData.errors.email) {
+            throw new Error(`Email error: ${responseData.errors.email}`);
+          }
+          // Show the first error if available
+          const firstError = Object.values(responseData.errors)[0];
+          if (firstError) {
+            throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
+          }
+        }
+        // Fallback to the message or default error
+        throw new Error(responseData.message || 'Message submission was not successful');
+      }
+      
+      // Handle successful booking
+      setBookingSuccess(true);
+      setBookingNumber(responseData.bookingNumber || 'N/A');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       
     } catch (error) {
       console.error('Booking failed:', error);
-      showToast(
-        error instanceof Error && error.message === 'reCAPTCHA verification failed'
-          ? 'Security verification failed. Please try again.'
-          : error instanceof Error
-          ? error.message
-          : 'Failed to process your booking. Please try again.', 
-        'error'
-      );
+      // Provide more detailed error message
+      let errorMessage = 'An unknown error occurred';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      setError(errorMessage);
+      // Log additional error details
+      if (error && typeof error === 'object') {
+        console.error('Error details:', {
+          name: 'name' in error ? error.name : 'UnknownError',
+          message: 'message' in error ? error.message : 'No error message',
+          stack: 'stack' in error ? error.stack : 'No stack trace'
+        });
+      } else {
+        console.error('Error details:', { error });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -738,6 +792,59 @@ export default function Home() {
           </button>
         </div>
       )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex items-center justify-between min-w-[300px] max-w-[90vw] md:max-w-md">
+            <div className="flex items-center">
+              <svg className="h-5 w-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="font-medium">{error}</span>
+            </div>
+            <button 
+              onClick={() => setError('')}
+              className="text-red-500 hover:text-red-700 ml-4"
+            >
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {bookingSuccess && bookingNumber && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg min-w-[300px] max-w-[90vw] md:max-w-md">
+            <div className="flex items-start">
+              <div className="shrink-0">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-green-800">Booking Successful!</h3>
+                <div className="mt-1 text-sm text-green-700">
+                  <p>Your booking has been confirmed.</p>
+                  <p className="mt-1 font-semibold">Booking Reference: {bookingNumber}</p>
+                </div>
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={() => setBookingSuccess(false)}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Navbar */}
       <nav 
         className={`sticky top-0 w-full transition-all duration-300 ${
@@ -954,8 +1061,8 @@ export default function Home() {
                   </Link>
                   <button 
                     onClick={() => {
-                      scrollToSection(exploreRef)
-                      setActiveSection('explore')
+                      scrollToSection(exploreRef);
+                      setActiveSection('explore');
                       setMobileMenuOpen(false)
                     }}
                     className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"
@@ -964,8 +1071,8 @@ export default function Home() {
                   </button>
                   <button 
                     onClick={() => {
-                      scrollToSection(roomsRef)
-                      setActiveSection('rooms')
+                      scrollToSection(roomsRef);
+                      setActiveSection('rooms');
                       setMobileMenuOpen(false)
                     }}
                     className="px-3 py-1.5 w-full text-left text-white hover:bg-gray-100/20 transition-colors text-sm"

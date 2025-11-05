@@ -56,11 +56,48 @@ export async function getPosts(type: string): Promise<WPPost[]> {
  */
 export async function getRooms(): Promise<WPPost[]> {
   try {
-    const rooms = await fetchAPI<WPPost[]>("rooms", { per_page: 50, _embed: true });
-    return rooms;
+    console.log('Fetching rooms from:', `${WORDPRESS_API_URL}/wp-json/wp/v2/rooms`);
+    const response = await fetch(
+      `${WORDPRESS_API_URL}/wp-json/wp/v2/rooms?per_page=50&_embed=true`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        error: errorText,
+      });
+      throw new Error(`Failed to fetch rooms: ${response.status} ${response.statusText}`);
+    }
+
+    const text = await response.text();
+    if (!text) {
+      console.warn('Empty response received from rooms API');
+      return [];
+    }
+
+    try {
+      const rooms = JSON.parse(text);
+      console.log('Successfully fetched rooms:', rooms.length);
+      return rooms;
+    } catch (parseError) {
+      console.error('Failed to parse rooms JSON:', {
+        error: parseError,
+        responseText: text,
+      });
+      throw new Error('Invalid JSON response from server');
+    }
   } catch (error) {
-    console.error("❌ Error fetching rooms:", error);
-    throw error;
+    console.error("❌ Error in getRooms:", error);
+    // Return empty array instead of throwing to prevent UI crashes
+    return [];
   }
 }
 
