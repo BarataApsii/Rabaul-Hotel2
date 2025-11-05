@@ -1700,11 +1700,36 @@ export default function Home() {
                   </div>
                   
                   {roomType && roomType !== 'select' && (() => {
-                    const selectedRoom = rooms.find(room => room.slug === roomType);
-                    const roomPrice = selectedRoom?.acf?.price_per_night;
-                    const numericPrice = roomPrice ? 
-                      (typeof roomPrice === 'string' ? parseFloat(roomPrice.replace(/[^0-9.]/g, '')) : Number(roomPrice)) : 
-                      0;
+                    const selectedRoom = rooms.find(room => room.slug === roomType || `room-${room.id}` === roomType);
+                    
+                    // Get price from various possible ACF fields
+                    const roomPrice = selectedRoom?.acf?.price_per_night || 
+                                    selectedRoom?.acf?.price || 
+                                    selectedRoom?.acf?.room_rates ||
+                                    selectedRoom?.acf?.['room_rates'];
+                    
+                    // Parse the price string to a number, handling different formats
+                    let numericPrice = 0;
+                    if (roomPrice) {
+                      if (typeof roomPrice === 'number') {
+                        numericPrice = roomPrice;
+                      } else if (typeof roomPrice === 'string') {
+                        // Handle string formats like "K1,000" or "1,000"
+                        const cleanPrice = roomPrice
+                          .replace(/[^0-9.]/g, '') // Remove all non-numeric characters except decimal point
+                          .replace(/\.(?=.*\.)/, ''); // Remove all but the last decimal point
+                        numericPrice = parseFloat(cleanPrice) || 0;
+                      }
+                    }
+                    
+                    console.log('Room price details:', {
+                      selectedRoom,
+                      roomPrice,
+                      numericPrice,
+                      nights,
+                      allAcfFields: selectedRoom ? Object.keys(selectedRoom.acf || {}) : []
+                    });
+                    
                     const totalPrice = numericPrice * nights;
                     
                     return (
