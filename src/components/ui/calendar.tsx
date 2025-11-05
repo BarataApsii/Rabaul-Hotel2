@@ -19,7 +19,6 @@ interface CalendarProps {
   components?: Partial<React.ComponentProps<typeof BaseDayPicker>['components']>
 }
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 export function Calendar({
   className,
@@ -34,18 +33,9 @@ export function Calendar({
   ...props
 }: CalendarProps) {
 
-  const renderWeekdays = () => (
-    <div className="flex justify-between text-gray-400 px-1 mb-1 text-xs font-normal">
-      {WEEKDAYS.map((day) => (
-        <div key={day} className="text-center flex-1">{day}</div>
-      ))}
-    </div>
-  )
 
   return (
     <div className={cn("relative w-full", className)}>
-      {renderWeekdays()}
-
       <BaseDayPicker
         mode="single"
         selected={selected}
@@ -54,7 +44,7 @@ export function Calendar({
         showOutsideDays={showOutsideDays}
         initialFocus={initialFocus}
         className={cn(
-          "bg-gray-50 text-gray-800 group/calendar p-2 rounded-md shadow-lg w-full",
+          "bg-white text-gray-800 p-4 rounded-lg shadow-lg w-full border border-gray-200",
           className
         )}
         formatters={{
@@ -63,27 +53,32 @@ export function Calendar({
         }}
         classNames={{
           root: "w-full",
-          months: "flex flex-col gap-2",
-          month: "flex flex-col gap-2",
-          nav: "flex w-full items-center justify-between mb-1",
-          nav_button_previous: cn(
-            buttonVariants({ variant: buttonVariant }),
-            "h-6 w-6 p-0"
+          months: "w-full",
+          month: "space-y-4 w-full",
+          caption: "flex justify-between items-center mb-4 px-1",
+          caption_label: "text-sm font-medium text-gray-900",
+          nav: "flex gap-1",
+          nav_button: cn(
+            buttonVariants({ variant: 'outline' }),
+            "h-7 w-7 p-0"
           ),
-          nav_button_next: cn(
-            buttonVariants({ variant: buttonVariant }),
-            "h-6 w-6 p-0"
+          nav_button_previous: "absolute left-4",
+          nav_button_next: "absolute right-4",
+          table: "w-full border-collapse",
+          head_row: "flex justify-between mb-2",
+          head_cell: "w-10 text-xs text-gray-500 font-medium text-center",
+          row: "flex w-full justify-between mt-2",
+          cell: "m-0 p-0 w-10 h-10 relative [&:has([aria-selected])]:bg-accent",
+          day: cn(
+            buttonVariants({ variant: 'ghost' }),
+            "h-10 w-10 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100"
           ),
-          caption: "hidden",
-          caption_label: "text-xs font-normal",
-          table: "grid grid-cols-5 gap-1 text-xs",
-          head_row: "hidden",
-          row: "flex w-full",
-          cell: "flex-1",
-          day: "relative aspect-square h-6 w-full select-none text-xs font-normal p-0",
-          day_today: "bg-blue-500 text-white rounded",
-          day_disabled: "text-gray-300 opacity-50 cursor-not-allowed",
-          day_outside: "hidden",
+          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+          day_today: "bg-accent text-accent-foreground",
+          day_outside: "text-muted-foreground opacity-50",
+          day_disabled: "text-muted-foreground opacity-50",
+          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+          day_hidden: "invisible",
           ...classNames,
         }}
         components={{
