@@ -19,7 +19,6 @@ interface CalendarProps {
   components?: Partial<React.ComponentProps<typeof BaseDayPicker>['components']>
 }
 
-
 export function Calendar({
   className,
   classNames,
@@ -32,10 +31,8 @@ export function Calendar({
   components,
   ...props
 }: CalendarProps) {
-
-
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn("relative w-full min-w-[300px]", className)}>
       <BaseDayPicker
         mode="single"
         selected={selected}
@@ -43,8 +40,10 @@ export function Calendar({
         disabled={disabled}
         showOutsideDays={showOutsideDays}
         initialFocus={initialFocus}
+        numberOfMonths={1} // only display 1 month
+        captionLayout="label" // arrow buttons navigation, no dropdown
         className={cn(
-          "bg-white text-gray-800 p-4 rounded-lg shadow-lg w-full border border-gray-200",
+          "bg-white text-gray-800 p-4 rounded-lg shadow-lg border border-gray-200",
           className
         )}
         formatters={{
@@ -57,21 +56,21 @@ export function Calendar({
           month: "space-y-4 w-full",
           caption: "flex justify-between items-center mb-4 px-1",
           caption_label: "text-sm font-medium text-gray-900",
-          nav: "flex gap-1",
+          nav: "flex justify-between px-1",
           nav_button: cn(
-            buttonVariants({ variant: 'outline' }),
+            buttonVariants({ variant: buttonVariant }),
             "h-7 w-7 p-0"
           ),
-          nav_button_previous: "absolute left-4",
-          nav_button_next: "absolute right-4",
+          nav_button_previous: "",
+          nav_button_next: "",
           table: "w-full border-collapse",
-          head_row: "flex justify-between mb-2",
-          head_cell: "w-10 text-xs text-gray-500 font-medium text-center",
-          row: "flex w-full justify-between mt-2",
-          cell: "m-0 p-0 w-10 h-10 relative [&:has([aria-selected])]:bg-accent",
+          head_row: "grid grid-cols-7 gap-0 mb-1 w-full",
+          head_cell: "flex items-center justify-center text-xs text-gray-500 font-medium p-0 w-9 h-6",
+          row: "grid grid-cols-7 gap-0 mt-1 w-full",
+          cell: "flex items-center justify-center p-0 w-9 h-9 relative [&:has([aria-selected])]:bg-accent",
           day: cn(
             buttonVariants({ variant: 'ghost' }),
-            "h-10 w-10 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100"
+            "h-8 w-8 p-0 font-normal text-sm aria-selected:opacity-100 hover:bg-gray-100"
           ),
           day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
           day_today: "bg-accent text-accent-foreground",
@@ -100,7 +99,7 @@ export function Calendar({
               <ChevronRightIcon className="h-4 w-4" />
             </Button>
           ),
-          ...components, // safe spread of extra components
+          ...components,
         }}
         {...props}
       />

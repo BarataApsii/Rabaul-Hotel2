@@ -109,7 +109,7 @@ export default function BookingForm() {
                   {formData.checkIn ? format(formData.checkIn, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-[300px] p-0" align="start">
                 <Calendar
                   selected={formData.checkIn}
                   onSelect={(date) => {
@@ -139,7 +139,7 @@ export default function BookingForm() {
                   {formData.checkOut ? format(formData.checkOut, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-[300px] p-0" align="start">
                 <Calendar
                   selected={formData.checkOut}
                   onSelect={(date) => {
