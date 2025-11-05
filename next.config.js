@@ -12,9 +12,17 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cms.rabaulhotel.com.pg' },
       { protocol: 'https', hostname: 'rabaul-admin.kesug.com' },
     ],
+    // Configure image formats and sizes
+    formats: ['image/webp'], // Serve WebP by default when possible
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
   },
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  env: { NEXT_PUBLIC_WORDPRESS_URL: process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://cms.rabaulhotel.com.pg/wp-cms' },
+  env: { 
+    NEXT_PUBLIC_WORDPRESS_URL: process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://cms.rabaulhotel.com.pg/wp-cms',
+    NEXT_PUBLIC_WORDPRESS_API_URL: process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://cms.rabaulhotel.com.pg/wp-json',
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cms.rabaulhotel.com.pg/api/'
+  },
 };
 
 module.exports = nextConfig;
