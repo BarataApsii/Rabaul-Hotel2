@@ -7,52 +7,43 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-type CalendarCaptionLayout = 'dropdown' | 'label' | 'dropdown-months' | 'dropdown-years';
-
 interface CalendarProps {
-  className?: string;
-  classNames?: Partial<React.ComponentProps<typeof BaseDayPicker>['classNames']>;
-  buttonVariant?: React.ComponentProps<typeof Button>['variant'];
-  captionLayout?: CalendarCaptionLayout;
-  showOutsideDays?: boolean;
-  formatters?: any;
-  components?: any;
-  selected?: Date | undefined;
-  onSelect?: (date: Date | undefined) => void;
-  disabled?: (date: Date) => boolean;
-  initialFocus?: boolean;
+  className?: string
+  classNames?: Partial<React.ComponentProps<typeof BaseDayPicker>['classNames']>
+  buttonVariant?: React.ComponentProps<typeof Button>['variant']
+  showOutsideDays?: boolean
+  selected?: Date | undefined
+  onSelect?: (date: Date | undefined) => void
+  disabled?: (date: Date) => boolean
+  initialFocus?: boolean
+  components?: Partial<React.ComponentProps<typeof BaseDayPicker>['components']>
 }
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 export function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = "dropdown",
   buttonVariant = "ghost",
-  formatters,
-  components,
   selected,
   onSelect,
   disabled,
   initialFocus = false,
+  components,
   ...props
 }: CalendarProps) {
 
-  // Custom render for weekday headers (Mon-Fri)
   const renderWeekdays = () => (
-    <div className="flex justify-between text-gray-300 px-1 mb-2">
+    <div className="flex justify-between text-gray-400 px-1 mb-1 text-xs font-normal">
       {WEEKDAYS.map((day) => (
-        <div key={day} className="text-center font-medium flex-1">
-          {day}
-        </div>
+        <div key={day} className="text-center flex-1">{day}</div>
       ))}
     </div>
   )
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative w-full", className)}>
       {renderWeekdays()}
 
       <BaseDayPicker
@@ -63,43 +54,43 @@ export function Calendar({
         showOutsideDays={showOutsideDays}
         initialFocus={initialFocus}
         className={cn(
-          "bg-gray-800 text-white group/calendar p-3 [--cell-size:2rem] rounded-md shadow-lg",
+          "bg-gray-50 text-gray-800 group/calendar p-2 rounded-md shadow-lg w-full",
           className
         )}
-        captionLayout={captionLayout} // now buttons
         formatters={{
           formatCaption: (date: Date) =>
             new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(date),
-          ...formatters,
         }}
         classNames={{
-          root: "w-fit",
-          months: "relative flex flex-col gap-4 md:flex-row",
-          month: "flex w-full flex-col gap-4",
-          nav: "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
+          root: "w-full",
+          months: "flex flex-col gap-2",
+          month: "flex flex-col gap-2",
+          nav: "flex w-full items-center justify-between mb-1",
           nav_button_previous: cn(
             buttonVariants({ variant: buttonVariant }),
-            "h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50"
+            "h-6 w-6 p-0"
           ),
           nav_button_next: cn(
             buttonVariants({ variant: buttonVariant }),
-            "h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50"
+            "h-6 w-6 p-0"
           ),
-          caption: "flex h-[--cell-size] w-full items-center justify-center px-[--cell-size] text-white font-medium",
-          table: "grid grid-cols-5 gap-1", // Mon-Fri only
+          caption: "hidden",
+          caption_label: "text-xs font-normal",
+          table: "grid grid-cols-5 gap-1 text-xs",
+          head_row: "hidden",
           row: "flex w-full",
           cell: "flex-1",
-          day: "relative aspect-square h-full w-full select-none p-0 text-center",
-          day_today: "bg-blue-600 text-white rounded-md",
-          day_disabled: "text-gray-500 opacity-50",
-          day_outside: "hidden", // hide Sat & Sun
+          day: "relative aspect-square h-6 w-full select-none text-xs font-normal p-0",
+          day_today: "bg-blue-500 text-white rounded",
+          day_disabled: "text-gray-300 opacity-50 cursor-not-allowed",
+          day_outside: "hidden",
           ...classNames,
         }}
         components={{
           PreviousMonthButton: ({ className, ...props }: React.HTMLAttributes<HTMLButtonElement>) => (
             <Button
               variant={buttonVariant}
-              className={cn("h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)}
+              className={cn("h-6 w-6 p-0 opacity-70 hover:opacity-100", className)}
               {...props}
             >
               <ChevronLeftIcon className="h-4 w-4" />
@@ -108,13 +99,13 @@ export function Calendar({
           NextMonthButton: ({ className, ...props }: React.HTMLAttributes<HTMLButtonElement>) => (
             <Button
               variant={buttonVariant}
-              className={cn("h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100", className)}
+              className={cn("h-6 w-6 p-0 opacity-70 hover:opacity-100", className)}
               {...props}
             >
               <ChevronRightIcon className="h-4 w-4" />
             </Button>
           ),
-          ...components,
+          ...components, // safe spread of extra components
         }}
         {...props}
       />
