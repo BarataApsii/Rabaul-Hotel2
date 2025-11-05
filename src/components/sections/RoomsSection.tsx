@@ -20,12 +20,14 @@ interface RoomMediaDetails {
 
 interface Room extends Omit<WPPost, '_embedded'> {
   acf?: {
-    room_rates?: string | number;
-    max_guests?: number | string;
-    guests?: number | string;
-    size?: string | number;
-    room_size?: string | number;
+    room_rates?: number;
+    max_guests?: number;
+    guests?: number;
+    size?: number;
+    room_size?: string;
     bed_type?: string;
+    featured_image?: number;
+    gallery?: number[];
     [key: string]: unknown;
   };
   title: {
