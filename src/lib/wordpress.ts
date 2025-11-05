@@ -12,6 +12,11 @@ export interface WPPost {
   title: {
     rendered: string;
   };
+  featured_title?: string;
+  room_rates?: string;
+  room_size?: string;
+  bed_type?: string;
+  max_guests?: number;
   excerpt?: {
     rendered: string;
   };
@@ -19,7 +24,15 @@ export interface WPPost {
     rendered: string;
   };
   featured_media?: number;
-  acf?: Record<string, any>;
+  acf?: {
+    price_per_night?: number;
+    max_guests?: number;
+    room_size?: string;
+    bed_type?: string;
+    featured_image?: number;
+    gallery?: number[];
+    [key: string]: any; // For any other ACF fields
+  };
   _embedded?: {
     'wp:featuredmedia'?: Array<{
       source_url: string;

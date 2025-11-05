@@ -21,7 +21,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore, isToday, isEqual } from 'date-fns'
-import { useWordPress } from '@/hooks/useWordPress'
 import { CalendarIcon, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, ArrowUp } from 'lucide-react'
 
 export default function Home() {
@@ -40,10 +39,39 @@ export default function Home() {
   const [title, setTitle] = useState<string>('mr')
   const [fullName, setFullName] = useState<string>('')
   
-  // Fetch room rates from WordPress
-  const { data: roomRatesData, loading: ratesLoading, error: ratesError } = useWordPress<{
-    [key: string]: number;
-  }>('/wp-json/wp/v2/room-rates');
+  // Fetch rooms from WordPress
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [loadingRooms, setLoadingRooms] = useState(true);
+  const [roomsError, setRoomsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        setLoadingRooms(true);
+        const response = await fetch(`${process.env['NEXT_PUBLIC_WORDPRESS_URL'] || 'https://cms.rabaulhotel.com.pg/wp-cms'}/wp-json/wp/v2/rooms?_embed&per_page=100`);
+        if (!response.ok) throw new Error('Failed to fetch rooms');
+        const data = await response.json();
+        setRooms(data);
+        
+        // Log room data for debugging
+        console.log('Fetched rooms for booking form:', data.map((r: any) => ({
+          id: r.id,
+          title: r.title?.rendered,
+          slug: r.slug,
+          price: r.acf?.price_per_night,
+          featured_image: r._embedded?.['wp:featuredmedia']?.[0]?.source_url
+        })));
+        
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+        setRoomsError('Failed to load room information. Please try again later.');
+      } finally {
+        setLoadingRooms(false);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   // Default room rates in case of loading or error
   const defaultRoomRates: Record<string, number> = {
@@ -57,7 +85,18 @@ export default function Home() {
   };
 
   // Use fetched room rates or fallback to defaults
-  const roomRates = ratesLoading || ratesError ? defaultRoomRates : roomRatesData || defaultRoomRates;
+  const roomRates = loadingRooms || roomsError ? defaultRoomRates : {
+    ...defaultRoomRates,
+    ...rooms.reduce((acc: Record<string, number>, room: any) => {
+      if (room.slug && room.acf?.price_per_night) {
+        acc[room.slug] = typeof room.acf.price_per_night === 'string' 
+          ? parseFloat(room.acf.price_per_night.replace(/[^0-9.]/g, '')) 
+          : room.acf.price_per_night;
+      }
+      return acc;
+    }, {})
+  };
+
   const [phone, setPhone] = useState<string>('')
   const [countryCode, setCountryCode] = useState<string>('+675')
   const [email, setEmail] = useState<string>('')
@@ -90,17 +129,7 @@ export default function Home() {
   const [paymentMethod, setPaymentMethod] = useState('')
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null)
 
-  // Map room IDs to their display names
-  const getRoomNameById = (roomId: string) => {
-    const roomMap: Record<string, string> = {
-      'deluxe': 'Deluxe Room',
-      'executive': 'Executive Suite',
-      'family': 'Family Room',
-      'standard': 'Standard Room',
-      'budget': 'Budget Room'
-    }
-    return roomMap[roomId] || 'Selected Room'
-  }
+  // Format price with Kina symbol and proper formatting
 
   // Handle URL parameters when component mounts
   useEffect(() => {
@@ -1343,22 +1372,41 @@ export default function Home() {
                       <Select 
                         onValueChange={setRoomType} 
                         value={selectedRoomId || roomType}
-                        disabled={!!selectedRoomId}
+                        disabled={!!selectedRoomId || loadingRooms}
                       >
                         <SelectTrigger className="h-12 bg-white/10 border-white/30 text-white">
-                          <SelectValue placeholder={selectedRoomId ? "Pre-selected Room" : "Select a room type"} />
+                          <SelectValue placeholder={loadingRooms ? 'Loading rooms...' : 'Select room type'} />
                         </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {selectedRoomId ? (
-                            <SelectItem value={selectedRoomId}>
-                              {getRoomNameById(selectedRoomId) || 'Selected Room'}
-                            </SelectItem>
+                        <SelectContent className="bg-white/90 backdrop-blur-sm border-white/30 max-h-[400px] overflow-y-auto">
+                          <SelectItem value="select" disabled>Select a room type</SelectItem>
+                          {loadingRooms ? (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">Loading rooms...</div>
+                          ) : roomsError ? (
+                            <div className="px-3 py-2 text-sm text-destructive">{roomsError}</div>
+                          ) : rooms.length === 0 ? (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">No rooms available</div>
                           ) : (
-                            <>
-                              <SelectItem value="deluxe">Deluxe Room</SelectItem>
-                              <SelectItem value="executive">Executive Suite</SelectItem>
-                              <SelectItem value="family">Family Room</SelectItem>
-                            </>
+                            rooms.map((room) => {
+                              const roomName = room.title?.rendered || 
+                                room.slug?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Room';
+                              
+                              const price = room.acf?.price_per_night;
+                              const hasPrice = price !== undefined && price !== null && price !== '';
+                              const formattedPrice = hasPrice ? `K${parseFloat(price).toFixed(2)}` : '';
+                              
+                              return (
+                                <SelectItem key={room.id} value={room.slug} className="text-gray-800 hover:bg-gray-100">
+                                  <div className="flex justify-between items-center w-full">
+                                    <span className="truncate pr-2 text-gray-800">{roomName}</span>
+                                    {hasPrice && (
+                                      <span className="ml-2 text-gray-600 whitespace-nowrap">
+                                        {formattedPrice} / night
+                                      </span>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              );
+                            })
                           )}
                         </SelectContent>
                       </Select>

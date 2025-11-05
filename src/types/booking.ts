@@ -16,6 +16,39 @@ export interface RoomRates {
   [key: string]: number; // Index signature for dynamic access
 }
 
+export interface WPRoom {
+  id: number;
+  slug: string;
+  title: {
+    rendered: string;
+  };
+  featured_title?: string;
+  room_rates?: string;
+  room_size?: string;
+  bed_type?: string;
+  max_guests?: number;
+  content?: {
+    rendered: string;
+  };
+  excerpt?: {
+    rendered: string;
+  };
+  acf?: {
+    price_per_night?: number;
+    max_guests?: number;
+    room_size?: string;
+    bed_type?: string;
+    featured_image?: number;
+    gallery?: number[];
+  };
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      alt_text?: string;
+    }>;
+  };
+}
+
 export interface BookingFormData {
   checkIn: Date | undefined;
   checkOut: Date | undefined;
