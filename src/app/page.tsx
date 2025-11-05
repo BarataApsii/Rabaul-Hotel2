@@ -74,28 +74,8 @@ export default function Home() {
   }, []);
 
   // Default room rates in case of loading or error
-  const defaultRoomRates: Record<string, number> = {
-    'select': 0,
-    'budget': 200,
-    'standard': 300,
-    'deluxe': 450,
-    'executive': 600,
-    'family': 500,
-    'conference': 1000
-  };
 
   // Use fetched room rates or fallback to defaults
-  const roomRates = loadingRooms || roomsError ? defaultRoomRates : {
-    ...defaultRoomRates,
-    ...rooms.reduce((acc: Record<string, number>, room: any) => {
-      if (room.slug && room.acf?.price_per_night) {
-        acc[room.slug] = typeof room.acf.price_per_night === 'string' 
-          ? parseFloat(room.acf.price_per_night.replace(/[^0-9.]/g, '')) 
-          : room.acf.price_per_night;
-      }
-      return acc;
-    }, {})
-  };
 
   const [phone, setPhone] = useState<string>('')
   const [countryCode, setCountryCode] = useState<string>('+675')
@@ -373,12 +353,7 @@ export default function Home() {
   }
 
   // Calculate costs with proper null checks
-  const calculatedAdults = adults || 1;
-  const calculatedChildren = children || 0;
   const transportCost = calculateTransportCost();
-  const roomCost = roomType && roomType !== 'select' 
-    ? roomRates[roomType] * nights * (calculatedAdults + Math.ceil(calculatedChildren / 2))
-    : 0;
 
   // Use public path for mobile banner
 
@@ -1724,12 +1699,28 @@ export default function Home() {
                     <span className="font-medium">{nights} night{nights > 1 ? 's' : ''}</span>
                   </div>
                   
-                  {roomType && roomType !== 'select' && (
-                    <div className="flex justify-between">
-                      <span>Room ({roomType.charAt(0).toUpperCase() + roomType.slice(1)}):</span>
-                      <span className="font-medium">K {roomRates[roomType as keyof typeof roomRates]} × {nights} = K {roomCost}</span>
-                    </div>
-                  )}
+                  {roomType && roomType !== 'select' && (() => {
+                    const selectedRoom = rooms.find(room => room.slug === roomType);
+                    const roomPrice = selectedRoom?.acf?.price_per_night;
+                    const numericPrice = roomPrice ? 
+                      (typeof roomPrice === 'string' ? parseFloat(roomPrice.replace(/[^0-9.]/g, '')) : Number(roomPrice)) : 
+                      0;
+                    const totalPrice = numericPrice * nights;
+                    
+                    return (
+                      <div className="space-y-1">
+                        <div className="flex justify-between">
+                          <span>Room ({roomType.charAt(0).toUpperCase() + roomType.slice(1)}) x {nights} night{nights !== 1 ? 's' : ''}:</span>
+                          <span className="font-medium">
+                            K {totalPrice.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="text-sm text-white/80 pl-2">
+                          (K {numericPrice.toFixed(2)} × {nights} night{nights !== 1 ? 's' : ''})
+                        </div>
+                      </div>
+                    );
+                  })()}
                   
                   {transportCost > 0 && (
                     <div className="pt-2 border-t border-white/20">
