@@ -2,8 +2,10 @@ import type { WPPost } from "./wordpress";
 export type { WPPost };
 
 // ✅ Use bracket syntax to fix TS4111
-const WORDPRESS_API_URL =
-  process.env["NEXT_PUBLIC_WORDPRESS_URL"] || "https://cms.rabaulhotel.com.pg/wp-cms";
+const WORDPRESS_API_URL = process.env["NEXT_PUBLIC_WORDPRESS_URL"];
+if (!WORDPRESS_API_URL) {
+  throw new Error('NEXT_PUBLIC_WORDPRESS_URL is not defined in environment variables');
+}
 const API_BASE_URL = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
 /**

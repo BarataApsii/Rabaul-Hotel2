@@ -45,7 +45,11 @@ export default function Home() {
     const fetchRooms = async () => {
       try {
         setLoadingRooms(true);
-        const response = await fetch(`${process.env['NEXT_PUBLIC_WORDPRESS_URL'] || 'https://cms.rabaulhotel.com.pg/wp-cms'}/wp-json/wp/v2/rooms?_embed&per_page=100`);
+        const wordpressUrl = process.env['NEXT_PUBLIC_WORDPRESS_URL'];
+        if (!wordpressUrl) {
+          throw new Error('WordPress URL is not configured');
+        }
+        const response = await fetch(`${wordpressUrl}/wp-json/wp/v2/rooms?_embed&per_page=100`);
         if (!response.ok) throw new Error('Failed to fetch rooms');
         const data = await response.json();
         setRooms(data);

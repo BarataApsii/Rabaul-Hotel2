@@ -100,16 +100,20 @@ export default function BookingForm() {
         
         let roomRates: RoomRates = {};
         try {
-          const wordpressUrl = process.env['NEXT_PUBLIC_WORDPRESS_URL'] || 'https://cms.rabaulhotel.com.pg/wp-cms';
-          const ratesResponse = await fetch(`${wordpressUrl}/wp-json/wp/v2/rooms?_fields=id,acf`);
-          if (ratesResponse.ok) {
-            const ratesData = await ratesResponse.json();
-            roomRates = ratesData.reduce((acc: RoomRates, room: any) => {
-              if (room.acf) {
-                acc[room.id] = room.acf;
-              }
-              return acc;
-            }, {} as RoomRates);
+          const wordpressUrl = process.env['NEXT_PUBLIC_WORDPRESS_URL'];
+          if (!wordpressUrl) {
+            console.warn('WordPress URL is not configured');
+          } else {
+            const ratesResponse = await fetch(`${wordpressUrl}/wp-json/wp/v2/rooms?_fields=id,acf`);
+            if (ratesResponse.ok) {
+              const ratesData = await ratesResponse.json();
+              roomRates = ratesData.reduce((acc: RoomRates, room: any) => {
+                if (room.acf) {
+                  acc[room.id] = room.acf;
+                }
+                return acc;
+              }, {} as RoomRates);
+            }
           }
         } catch (error) {
           console.warn('Could not fetch room rates:', error);

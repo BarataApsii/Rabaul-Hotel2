@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const wordpressUrl = process.env.WORDPRESS_API_URL || 'https://cms.rabaulhotel.com.pg/wp-cms';
+    const wordpressUrl = process.env['NEXT_PUBLIC_WORDPRESS_URL'];
+    if (!wordpressUrl) {
+      throw new Error('WordPress URL is not configured');
+    }
     const apiUrl = `${wordpressUrl}/wp-json/wp/v2/rooms?_embed&per_page=100`;
     console.log('Fetching rooms from:', apiUrl);
     
