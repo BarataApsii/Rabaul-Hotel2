@@ -592,100 +592,50 @@ export default function Home() {
     setIsLoading(true);
     
     try {
-      // Use the Next.js API route
-      const apiUrl = '/api/contact';
-      
-      // Prepare form data
-      const formData = new FormData();
-      formData.append('name', contactName);
-      formData.append('email', contactEmail);
-      formData.append('message', contactMessage);
-      formData.append('g-recaptcha-response', recaptchaToken);
-      
-      if (phone) {
-        formData.append('phone', phone);
-      }
-      
+      // Prepare the payload for PHP API
+      const payload = {
+        name: contactName,
+        email: contactEmail,
+        phone: phone || '',
+        message: contactMessage,
+        'g-recaptcha-response': recaptchaToken
+      };
+
       // Log the request for debugging
-      console.log('Sending request to:', apiUrl);
-      console.log('Form data:', Object.fromEntries(formData.entries()));
+      console.log('Sending request to PHP API with payload:', payload);
       
-      // Make the request to our API route
-      console.log('Sending form data...');
-      const response = await fetch(apiUrl, {
+      // Make the request to our Next.js API route
+      const response = await fetch('/api/contact-form', {
         method: 'POST',
-        body: formData,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
       });
 
-      // Get the response as text first to handle different response types
-      const responseText = await response.text();
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      console.log('Response body:', responseText);
+      // Parse the response
+      const result = await response.json();
+      console.log('API Response:', result);
       
-      if (!response.ok) {
-        // Try to extract error message from JSON response if possible
-        try {
-          const errorData = JSON.parse(responseText);
-          throw new Error(errorData.message || `Server responded with status ${response.status}: ${response.statusText}`);
-        } catch (e) {
-          // If not JSON, use the status text
-          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+      if (!response.ok || !result.success) {
+        // If we have a detailed error message, use it
+        if (result.error === 'html_response') {
+          throw new Error('The server returned an error page. Please check the PHP configuration.');
         }
+        throw new Error(result.message || `Server responded with status ${response.status}`);
       }
 
-      // Try to parse response as JSON, but handle non-JSON responses
-      let responseData;
-      try {
-        responseData = responseText ? JSON.parse(responseText) : {};
-      } catch (e) {
-        // If not JSON, treat it as a plain text response
-        responseData = { success: responseText.toLowerCase().includes('success') };
-      }
-
-      // Log the complete response for debugging
-      console.log('Full response data:', {
-        responseData,
-        rawResponse: responseText,
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-      
-      // Check for success in the response
-      if (responseData.success !== true && responseData.success !== 'true') {
-        console.log('Response indicates failure. Response data structure:', {
-          hasMessage: 'message' in responseData,
-          hasErrors: 'errors' in responseData,
-          hasEmailError: responseData.errors?.email !== undefined,
-          responseKeys: Object.keys(responseData)
-        });
-        // If we have validation errors, display them
-        if (responseData.errors) {
-          // If there's an email error, show it specifically
-          if (responseData.errors.email) {
-            throw new Error(`Email error: ${responseData.errors.email}`);
-          }
-          // Show the first error if available
-          const firstError = Object.values(responseData.errors)[0];
-          if (firstError) {
-            throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
-          }
-        }
-        // Fallback to the message or default error
-        throw new Error(responseData.message || 'Message submission was not successful');
-      }
-      
-      // Show success toast
-      showToast('Thank you for your message! We will get back to you soon.', 'success')
+      // Show success message
+      showToast(result.message || 'Thank you for your message! We will get back to you soon.', 'success');
       
       // Reset form
-      setContactName('')
-      setContactEmail('')
-      setContactMessage('')
-      setPhone('')
-      setRecaptchaToken(null)
-      setErrors({})
+      setContactName('');
+      setContactEmail('');
+      setContactMessage('');
+      setPhone('');
+      setRecaptchaToken(null);
+      setErrors({});
       
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -1138,7 +1088,7 @@ export default function Home() {
                         fill
                         sizes="(max-width: 1536px) 100vw, 1536px"
                         className="object-cover brightness-110 contrast-110"
-                        priority={index === 0}
+                        priority={index === 0 || slide.src.includes('rabaul_market.jpg')}
                         quality={100}
                       />
                       <div className="absolute inset-0 bg-black/10" />
@@ -1191,9 +1141,10 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 {/* Check-in */}
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-700">Check-in</Label>
+                  <Label htmlFor="check-in" className="text-sm font-medium text-gray-700">Check-in</Label>
                   <div className="relative">
                     <input
+                      id="check-in"
                       type="date"
                       className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                       value={checkIn ? format(checkIn, 'yyyy-MM-dd') : ''}
@@ -1205,9 +1156,10 @@ export default function Home() {
                 
                 {/* Check-out */}
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-700">Check-out</Label>
+                  <Label htmlFor="check-out" className="text-sm font-medium text-gray-700">Check-out</Label>
                   <div className="relative">
                     <input
+                      id="check-out"
                       type="date"
                       className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                       value={checkOut ? format(checkOut, 'yyyy-MM-dd') : ''}
@@ -1219,8 +1171,9 @@ export default function Home() {
                 
                 {/* Guests */}
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-700">Guests</Label>
+                  <Label htmlFor="guests" className="text-sm font-medium text-gray-700">Guests</Label>
                   <select
+                    id="guests"
                     className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                     value={adults}
                     onChange={(e) => setAdults(parseInt(e.target.value))}
@@ -1235,8 +1188,9 @@ export default function Home() {
                 
                 {/* Room Type */}
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-700">Room Type</Label>
+                  <Label htmlFor="room-type" className="text-sm font-medium text-gray-700">Room Type</Label>
                   <select
+                    id="room-type"
                     className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1a5f2c] focus:border-transparent text-gray-900 bg-white"
                     value={roomType}
                     onChange={(e) => setRoomType(e.target.value)}

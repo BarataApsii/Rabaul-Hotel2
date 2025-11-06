@@ -1,16 +1,45 @@
 import { NextResponse } from 'next/server';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import nodemailer from 'nodemailer';
+
+// Create a transporter object using the default SMTP transport
+const transporter = nodemailer.createTransport({
+  host: process.env['EMAIL_SERVER_HOST'],
+  port: parseInt(process.env['EMAIL_SERVER_PORT'] || '587'),
+  secure: process.env['EMAIL_SERVER_SECURE'] === 'true', // true for 465, false for other ports
+  auth: {
+    user: process.env['EMAIL_SERVER_USER'],
+    pass: process.env['EMAIL_SERVER_PASSWORD'],
+  },
+});
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    let name: string = '';
+    let email: string = '';
+    let message: string = '';
+    let phone: string = '';
+    let recaptchaToken: string = '';
+
+    // Check content type to handle both form data and JSON
+    const contentType = request.headers.get('content-type') || '';
     
-    // Extract form data
-    const name = formData.get('name')?.toString() || '';
-    const email = formData.get('email')?.toString() || '';
-    const message = formData.get('message')?.toString() || '';
-    const phone = formData.get('phone')?.toString() || '';
-    const recaptchaToken = formData.get('g-recaptcha-response')?.toString() || '';
+    if (contentType.includes('multipart/form-data') || contentType.includes('application/x-www-form-urlencoded')) {
+      const formData = await request.formData();
+      name = formData.get('name')?.toString() || '';
+      email = formData.get('email')?.toString() || '';
+      message = formData.get('message')?.toString() || '';
+      phone = formData.get('phone')?.toString() || '';
+      recaptchaToken = formData.get('g-recaptcha-response')?.toString() || '';
+    } else {
+      // Handle JSON request
+      const jsonData = await request.json();
+      name = jsonData.name || '';
+      email = jsonData.email || '';
+      message = jsonData.message || '';
+      phone = jsonData.phone || '';
+      recaptchaToken = jsonData['g-recaptcha-response'] || '';
+    }
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -29,12 +58,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    // Here you would typically:
-    // 1. Save the contact form submission to your database
-    // 2. Send a notification email
-    // 3. Log the submission
-    
-    // For now, we'll just log the submission and return success
+    // Log the submission
     console.log('New contact form submission:', {
       name,
       email,
@@ -43,10 +67,53 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString()
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Your message has been sent successfully!'
-    }, { status: 200 });
+    // Prepare email content
+    const mailOptions = {
+      from: `"Rabaul Hotel Contact Form" <${process.env['EMAIL_FROM'] || process.env['EMAIL_SERVER_USER']}>`,
+      to: process.env['CONTACT_FORM_RECIPIENT'] || process.env['EMAIL_FROM'] || process.env['EMAIL_SERVER_USER'],
+      subject: `New Contact Form Submission from ${name}`,
+      text: `
+        You have a new contact form submission:
+        
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone || 'Not provided'}
+        
+        Message:
+        ${message}
+        
+        Timestamp: ${new Date().toISOString()}
+      `,
+      html: `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+        <p><em>Timestamp: ${new Date().toLocaleString()}</em></p>
+      `
+    };
+
+    // Send email
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Contact form email sent successfully');
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Your message has been sent successfully! We will get back to you soon.'
+      }, { status: 200 });
+      
+    } catch (emailError) {
+      console.error('Error sending contact form email:', emailError);
+      
+      // Still return success to the user but log the error
+      return NextResponse.json({
+        success: true,
+        message: 'Your message has been received, but there was an issue sending the notification. We will get back to you soon.'
+      }, { status: 200 });
+    }
   } catch (error) {
     console.error('Error processing contact form:', error);
     return NextResponse.json({
