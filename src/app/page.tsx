@@ -555,25 +555,35 @@ export default function Home() {
       setIsLoading(false);
     }
   }
+
+  const validateContactForm = () => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!contactName.trim()) {
+      newErrors['contactName'] = 'Name is required'
+    }
+    
+    if (!contactEmail.trim()) {
+      newErrors['contactEmail'] = 'Email is required'
+    } else if (!/\S+@\S+\.\S+/.test(contactEmail)) {
+      newErrors['contactEmail'] = 'Please enter a valid email address'
+    }
+    
+    if (!contactMessage.trim()) {
+      newErrors['contactMessage'] = 'Message is required'
+    } else if (contactMessage.trim().length < 10) {
+      newErrors['contactMessage'] = 'Message should be at least 10 characters long'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
   
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateContactForm()) return;
     
-    // Basic validation
-    if (!contactName.trim()) {
-      setErrors(prev => ({ ...prev, contactName: 'Name is required' }));
-      return;
-    }
-    if (!contactEmail.trim() || !/\S+@\S+\.\S+/.test(contactEmail)) {
-      setErrors(prev => ({ ...prev, contactEmail: 'Valid email is required' }));
-      return;
-    }
-    if (!contactMessage.trim()) {
-      setErrors(prev => ({ ...prev, contactMessage: 'Message is required' }));
-      return;
-    }
-    
-    // Verify reCAPTCHA
+    // Verify reCAPTCHA first
     if (!recaptchaToken) {
       showToast('Please complete the reCAPTCHA verification', 'error');
       return;
@@ -582,54 +592,111 @@ export default function Home() {
     setIsLoading(true);
     
     try {
-      const formData = {
-        name: contactName.trim(),
-        email: contactEmail.trim(),
-        message: contactMessage.trim(),
-        subject: 'Contact Form Submission',
-        phone: (phone || '').trim(),
-        'g-recaptcha-response': recaptchaToken
-      };
+      // Use the Next.js API route
+      const apiUrl = '/api/contact';
       
-      // Log the request for debugging
-      console.log('Sending contact form data:', formData);
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('name', contactName);
+      formData.append('email', contactEmail);
+      formData.append('message', contactMessage);
+      formData.append('g-recaptcha-response', recaptchaToken);
       
-      // Make the request to our API route
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      const responseData = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to send message');
+      if (phone) {
+        formData.append('phone', phone);
       }
       
-      // Show success message
-      showToast('Thank you for your message! We will get back to you soon.', 'success');
+      // Log the request for debugging
+      console.log('Sending request to:', apiUrl);
+      console.log('Form data:', Object.fromEntries(formData.entries()));
+      
+      // Make the request to our API route
+      console.log('Sending form data...');
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Get the response as text first to handle different response types
+      const responseText = await response.text();
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('Response body:', responseText);
+      
+      if (!response.ok) {
+        // Try to extract error message from JSON response if possible
+        try {
+          const errorData = JSON.parse(responseText);
+          throw new Error(errorData.message || `Server responded with status ${response.status}: ${response.statusText}`);
+        } catch (e) {
+          // If not JSON, use the status text
+          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+        }
+      }
+
+      // Try to parse response as JSON, but handle non-JSON responses
+      let responseData;
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch (e) {
+        // If not JSON, treat it as a plain text response
+        responseData = { success: responseText.toLowerCase().includes('success') };
+      }
+
+      // Log the complete response for debugging
+      console.log('Full response data:', {
+        responseData,
+        rawResponse: responseText,
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
+      // Check for success in the response
+      if (responseData.success !== true && responseData.success !== 'true') {
+        console.log('Response indicates failure. Response data structure:', {
+          hasMessage: 'message' in responseData,
+          hasErrors: 'errors' in responseData,
+          hasEmailError: responseData.errors?.email !== undefined,
+          responseKeys: Object.keys(responseData)
+        });
+        // If we have validation errors, display them
+        if (responseData.errors) {
+          // If there's an email error, show it specifically
+          if (responseData.errors.email) {
+            throw new Error(`Email error: ${responseData.errors.email}`);
+          }
+          // Show the first error if available
+          const firstError = Object.values(responseData.errors)[0];
+          if (firstError) {
+            throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
+          }
+        }
+        // Fallback to the message or default error
+        throw new Error(responseData.message || 'Message submission was not successful');
+      }
+      
+      // Show success toast
+      showToast('Thank you for your message! We will get back to you soon.', 'success')
       
       // Reset form
-      setContactName('');
-      setContactEmail('');
-      setContactMessage('');
-      setPhone('');
-      setRecaptchaToken(null);
-      setErrors({});
+      setContactName('')
+      setContactEmail('')
+      setContactMessage('')
+      setPhone('')
+      setRecaptchaToken(null)
+      setErrors({})
       
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('Failed to send message:', error)
       showToast(
         error instanceof Error 
           ? error.message 
-          : 'Failed to send your message. Please try again later.', 
+          : 'Failed to send your message. Please try again.', 
         'error'
-      );
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
