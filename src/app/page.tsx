@@ -404,10 +404,24 @@ export default function Home() {
       return;
     }
 
-    // Get the room price with fallbacks
-    const roomPrice = selectedRoom.acf?.price_per_night || 
-                     (selectedRoom.meta && selectedRoom.meta.price_per_night) || 
-                     0;
+    // Log the selected room for debugging
+    console.log('Selected Room Object:', JSON.stringify(selectedRoom, null, 2));
+    
+    // Get the room price with comprehensive fallbacks
+    let roomPrice = 0;
+    
+    // Check various possible locations for the price
+    if (selectedRoom.acf?.price_per_night) {
+      roomPrice = parseFloat(selectedRoom.acf.price_per_night);
+    } else if (selectedRoom.meta?.price_per_night) {
+      roomPrice = parseFloat(selectedRoom.meta.price_per_night);
+    } else if (selectedRoom.acf?.price) {
+      roomPrice = parseFloat(selectedRoom.acf.price);
+    } else if (selectedRoom.meta?.price) {
+      roomPrice = parseFloat(selectedRoom.meta.price);
+    }
+    
+    console.log('Extracted room price:', roomPrice);
     
     setIsLoading(true);
     setError('');
@@ -425,19 +439,25 @@ export default function Home() {
       const bookingReference = `B-${Date.now().toString().slice(-6)}`;
       
       // Prepare the request payload
+      // Prepare the request payload
       const payload = {
         name: fullName,
         email: email,
         phone: phone,
         roomType: selectedRoom.title?.rendered || roomType,
-        roomPrice: parseFloat(roomPrice),
+        roomPrice: roomPrice, // Already parsed as float
         nights: nights,
         checkin: formatDate(checkIn),
         checkout: formatDate(checkOut),
         guests: `${adults} ${adults === 1 ? 'adult' : 'adults'}${children > 0 ? `, ${children} ${children === 1 ? 'child' : 'children'}` : ''}`,
         message: specialRequest,
         'g-recaptcha-response': recaptchaToken,
-        bookingNumber: bookingReference
+        bookingNumber: bookingReference,
+        needsTransport: transportServices.needsTransport ? 'yes' : 'no',
+        ...(transportServices.needsTransport && {
+          pickupLocation: transportServices.pickupLocation,
+          pickupTime: transportServices.pickupTime
+        })
       };
 
       console.log('Submitting booking with payload:', payload);
