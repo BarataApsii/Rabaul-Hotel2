@@ -489,8 +489,8 @@ export default function Home() {
       // Show success message
       showToast('Booking submitted successfully! We will contact you shortly to confirm.', 'success');
       
-      // Scroll to top to show success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll to bottom to show success message
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       
     } catch (error) {
       console.error('Booking failed:', error);
@@ -672,7 +672,7 @@ export default function Home() {
 
       {/* Success Message */}
       {bookingSuccess && bookingNumber && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg min-w-[300px] max-w-[90vw] md:max-w-md">
             <div className="flex items-start">
               <div className="shrink-0">
