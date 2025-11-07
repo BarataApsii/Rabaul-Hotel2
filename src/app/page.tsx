@@ -81,7 +81,7 @@ export default function Home() {
   const [phone, setPhone] = useState<string>('')
   const [countryCode, setCountryCode] = useState<string>('+675')
   const [email, setEmail] = useState<string>('')
-  const [country, setCountry] = useState<string>('')
+  const [, setCountry] = useState<string>('')
   const [specialRequest, setSpecialRequest] = useState<string>('')
   const [transportServices, setTransportServices] = useState({
     needsTransport: false,
@@ -373,6 +373,9 @@ export default function Home() {
     } else if (!/^[\d\s\-+()]*$/.test(phone)) {
       newErrors['phone'] = 'Phone number is invalid'
     }
+    if (roomType === 'select' || !roomType) {
+      newErrors['roomType'] = 'Please select a room type'
+    }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -380,7 +383,7 @@ export default function Home() {
   
   const handleBookingConfirm = async () => {
     // First validate the form
-    if (!validateBookingForm()) return
+    if (!validateBookingForm()) return;
     
     // Ensure check-in and check-out dates are set
     if (!checkIn || !checkOut) {
@@ -393,164 +396,107 @@ export default function Home() {
       setErrors(prev => ({ ...prev, recaptcha: 'Please complete the reCAPTCHA' }));
       return;
     }
+
+    // Find the selected room to get the price
+    const selectedRoom = rooms.find(room => room.slug === roomType || room.id.toString() === roomType);
+    if (!selectedRoom) {
+      setError('Please select a valid room type');
+      return;
+    }
     
     setIsLoading(true);
+    setError('');
     
     try {
-      // Verify reCAPTCHA token with our API
-      const recaptchaResponse = await fetch('/api/verify-recaptcha', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: recaptchaToken }),
-      });
-
-      const recaptchaData = await recaptchaResponse.json();
-
-      if (!recaptchaData.success) {
-        throw new Error('reCAPTCHA verification failed');
-      }
-
-      // Format dates for API
+      // Format dates for API (YYYY-MM-DD)
       const formatDate = (date: Date) => {
         return date.toISOString().split('T')[0];
       };
 
-      // Prepare transport details
-      const transportDetails = transportServices.needsTransport 
-        ? `Pickup from: ${transportServices.pickupLocation} at ${transportServices.pickupTime}` 
-        : 'No transport required';
+      // Calculate number of nights
+      const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Prepare the request payload to match PHP API expectations
+      const payload = {
+        name: fullName,
+        email: email,
+        phone: phone,
+        roomType: selectedRoom.title?.rendered || roomType,
+        roomPrice: parseFloat(selectedRoom.acf?.price_per_night || '0'),
+        nights: nights,
+        checkin: formatDate(checkIn),
+        checkout: formatDate(checkOut),
+        guests: `${adults} ${adults === 1 ? 'adult' : 'adults'}${children > 0 ? `, ${children} ${children === 1 ? 'child' : 'children'}` : ''}`,
+        message: specialRequest,
+        'g-recaptcha-response': recaptchaToken
+      };
 
-      // Make API call to submit booking
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
-      console.log('Submitting booking to:', `${API_BASE}/booking.php`);
-      console.log('Request payload:', {
-        email,
-        fullName,
-        checkIn: formatDate(checkIn),
-        checkOut: formatDate(checkOut),
-        roomType,
-        adults,
-        children,
-        title,
-        phone: `${countryCode} ${phone}`,
-        transport: transportDetails,
-        payment: paymentMethod,
-        requests: specialRequest,
-        country
-      });
+      console.log('Submitting booking with payload:', payload);
 
-      const response = await fetch(`${API_BASE}/booking.php`, {
+      // Use the Next.js API route instead of calling the PHP API directly
+      const response = await fetch('/api/book', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          email,
-          fullName,
-          checkIn: formatDate(checkIn),
-          checkOut: formatDate(checkOut),
-          roomType,
-          adults,
-          children,
-          title,
-          phone: `${countryCode} ${phone}`,
-          transport: transportDetails,
-          payment: paymentMethod,
-          requests: specialRequest,
-          country
-        })
+        body: JSON.stringify(payload)
       });
 
-      // Get the response text first
       const responseText = await response.text();
       console.log('Booking API response:', {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
         body: responseText
       });
 
-      if (!response.ok) {
-        // Try to extract error message from JSON response if possible
-        try {
-          const errorData = JSON.parse(responseText);
-          throw new Error(errorData.message || `Server responded with status ${response.status}: ${response.statusText}`);
-        } catch (e) {
-          // If not JSON, use the status text
-          throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
-        }
-      }
-
-      // Try to parse response as JSON, but handle non-JSON responses
+      // Try to parse response as JSON
       let responseData;
       try {
         responseData = responseText ? JSON.parse(responseText) : {};
       } catch (e) {
-        // If not JSON, treat it as a plain text response
-        responseData = { success: responseText.toLowerCase().includes('success') };
+        console.error('Failed to parse response as JSON:', e);
+        throw new Error('Invalid response from server');
       }
 
-      // Log the complete response for debugging
-      console.log('Full response data:', {
-        responseData,
-        rawResponse: responseText,
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-      
-      // Check for success in the response
-      if (responseData.success !== true && responseData.success !== 'true') {
-        console.log('Response indicates failure. Response data structure:', {
-          hasMessage: 'message' in responseData,
-          hasErrors: 'errors' in responseData,
-          hasEmailError: responseData.errors?.email !== undefined,
-          responseKeys: Object.keys(responseData)
-        });
-        // If we have validation errors, display them
+      if (!response.ok) {
+        // Handle validation errors from PHP
         if (responseData.errors) {
-          // If there's an email error, show it specifically
-          if (responseData.errors.email) {
-            throw new Error(`Email error: ${responseData.errors.email}`);
-          }
-          // Show the first error if available
-          const firstError = Object.values(responseData.errors)[0];
-          if (firstError) {
-            throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
-          }
+          const errorMessages = Object.values(responseData.errors).flat();
+          throw new Error(errorMessages.join('\n'));
         }
-        // Fallback to the message or default error
-        throw new Error(responseData.message || 'Message submission was not successful');
+        throw new Error(responseData.message || `Request failed with status ${response.status}`);
+      }
+      
+      if (!responseData.success) {
+        throw new Error(responseData.message || 'Booking submission failed');
       }
       
       // Handle successful booking
       setBookingSuccess(true);
-      setBookingNumber(responseData.bookingNumber || 'N/A');
+      setBookingNumber(responseData.bookingNumber || `B-${Date.now().toString().slice(-6)}`);
+      
+      // Reset form
+      setFullName('');
+      setEmail('');
+      setPhone('');
+      setRoomType('select');
+      setAdults(2);
+      setChildren(0);
+      setSpecialRequest('');
+      setRecaptchaToken(null);
+      
+      // Show success message
+      showToast('Booking submitted successfully! We will contact you shortly to confirm.', 'success');
+      
+      // Scroll to top to show success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
     } catch (error) {
       console.error('Booking failed:', error);
-      // Provide more detailed error message
-      let errorMessage = 'An unknown error occurred';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit booking';
       setError(errorMessage);
-      // Log additional error details
-      if (error && typeof error === 'object') {
-        console.error('Error details:', {
-          name: 'name' in error ? error.name : 'UnknownError',
-          message: 'message' in error ? error.message : 'No error message',
-          stack: 'stack' in error ? error.stack : 'No stack trace'
-        });
-      } else {
-        console.error('Error details:', { error });
-      }
+      showToast(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }
