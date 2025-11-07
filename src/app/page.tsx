@@ -381,7 +381,15 @@ export default function Home() {
     return Object.keys(newErrors).length === 0
   }
   
-  const handleBookingConfirm = async () => {
+  const handleBookingConfirm = async (e: React.FormEvent) => {
+    // Prevent default form submission if called from a form
+    if (e) {
+      e.preventDefault();
+    }
+    
+    // Prevent multiple submissions
+    if (isLoading) return;
+    
     // First validate the form
     if (!validateBookingForm()) return;
     
@@ -556,6 +564,10 @@ export default function Home() {
   
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isLoading) return;
+    
     if (!validateContactForm()) return;
     
     // Verify reCAPTCHA first
@@ -1805,7 +1817,8 @@ export default function Home() {
                 </div>
 
                 <Button 
-                  onClick={handleBookingConfirm} 
+                  type="button"
+                  onClick={(e) => handleBookingConfirm(e)} 
                   className="w-full mt-4 py-4 text-base font-semibold bg-[#1a5f2c] hover:bg-[#2a7d3c] text-white shadow-lg transform transition-all duration-200"
                   disabled={isLoading}
                 >
