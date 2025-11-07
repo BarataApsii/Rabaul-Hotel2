@@ -403,6 +403,11 @@ export default function Home() {
       setError('Please select a valid room type');
       return;
     }
+
+    // Get the room price with fallbacks
+    const roomPrice = selectedRoom.acf?.price_per_night || 
+                     (selectedRoom.meta && selectedRoom.meta.price_per_night) || 
+                     0;
     
     setIsLoading(true);
     setError('');
@@ -416,19 +421,23 @@ export default function Home() {
       // Calculate number of nights
       const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
       
-      // Prepare the request payload to match PHP API expectations
+      // Generate a booking reference
+      const bookingReference = `B-${Date.now().toString().slice(-6)}`;
+      
+      // Prepare the request payload
       const payload = {
         name: fullName,
         email: email,
         phone: phone,
         roomType: selectedRoom.title?.rendered || roomType,
-        roomPrice: parseFloat(selectedRoom.acf?.price_per_night || '0'),
+        roomPrice: parseFloat(roomPrice),
         nights: nights,
         checkin: formatDate(checkIn),
         checkout: formatDate(checkOut),
         guests: `${adults} ${adults === 1 ? 'adult' : 'adults'}${children > 0 ? `, ${children} ${children === 1 ? 'child' : 'children'}` : ''}`,
         message: specialRequest,
-        'g-recaptcha-response': recaptchaToken
+        'g-recaptcha-response': recaptchaToken,
+        bookingNumber: bookingReference
       };
 
       console.log('Submitting booking with payload:', payload);
